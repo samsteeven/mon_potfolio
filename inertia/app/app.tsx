@@ -1,28 +1,19 @@
-/// <reference path="../../adonisrc.ts" />
-/// <reference path="../../config/inertia.ts" />
-
-import '../css/app.css';
-import { hydrateRoot } from 'react-dom/client'
-import { createInertiaApp } from '@inertiajs/react';
-import { resolvePageComponent } from '@adonisjs/inertia/helpers'
-
-const appName = import.meta.env.VITE_APP_NAME || 'AdonisJS'
+import React from 'react'
+import { createInertiaApp } from '@inertiajs/react'
+import { createRoot } from 'react-dom/client'
+import RootLayout from '~/layout/RootLayout'
+import "~/css/app.css";
 
 createInertiaApp({
-  progress: { color: '#5468FF' },
-
-  title: (title) => `${title} - ${appName}`,
-
   resolve: (name) => {
-    return resolvePageComponent(
-      `../pages/${name}.tsx`,
-      import.meta.glob('../pages/**/*.tsx'),
-    )
+    // Chargement dynamique de tes pages
+    const pages = import.meta.glob('../pages/**/*.tsx', { eager: true })
+    const page: any = pages[`../pages/${name}.tsx`]
+    // Applique le layout par défaut si la page n’en a pas
+    page.default.layout = page.default.layout || ((page: React.ReactNode) => <RootLayout>{page}</RootLayout>)
+    return page
   },
-
   setup({ el, App, props }) {
-    
-    hydrateRoot(el, <App {...props} />)
-    
+    createRoot(el).render(<App {...props} />)
   },
-});
+})

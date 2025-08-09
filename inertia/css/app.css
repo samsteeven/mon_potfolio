@@ -1,10 +1,65 @@
-* {
-  margin: 0;
-  padding: 0;
+@import "tailwindcss";
+
+/* Dites à Tailwind où scanner les classes */
+@source "../**/*.{ts,tsx,js,jsx}";
+@source "../../resources/views/**/*.edge";
+
+/* Thème (design tokens) */
+@theme {
+  /* Couleurs principales */
+  --color-background: #0b0b0f;
+  --color-background-light: #1f1f25;
+  --color-foreground: #ffffff;
+  --color-muted-foreground: #9ca3af; /* gris clair */
+  --color-primary: #22d3ee;          /* cyan */
+
+  /* Bordures / anneaux (pratiques pour composants) */
+  --color-border: #2b2b32;
+  --color-ring: #22d3ee;
+
+  /* Breakpoints (optionnel, utile pour .container custom ci-dessous) */
+  --breakpoint-sm: 640px;
+  --breakpoint-md: 768px;
+  --breakpoint-lg: 1024px;
+  --breakpoint-xl: 1280px;
+  --breakpoint-2xl: 1536px;
+
+  /* Fonts (optionnel) */
+  --font-sans: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial, "Noto Sans", "Helvetica Neue", "Apple Color Emoji", "Segoe UI Emoji";
 }
 
-html,
-body {
-  height: 100%;
+/* Styles de base (appliquent les couleurs du thème) */
+:root {
+  color-scheme: dark;
+}
+
+html, body {
+  background-color: var(--color-background);
+  color: var(--color-foreground);
+  font-family: var(--font-sans), serif;
+  min-height: 100%;
+}
+
+/* Utilitaire .container (si tu utilises .container dans ton JSX) */
+.container {
   width: 100%;
+  margin-inline: auto;
+  padding-inline: 1rem;
+  max-width: 100%;
+}
+@media (min-width: 640px) { .container { max-width: 640px; } }
+@media (min-width: 768px) { .container { max-width: 768px; } }
+@media (min-width: 1024px) { .container { max-width: 1024px; } }
+@media (min-width: 1280px) { .container { max-width: 1280px; } }
+@media (min-width: 1536px) { .container { max-width: 1536px; } }
+
+/* Classe utilitaire pour la police Anton si tu l’emploies dans le JSX */
+.font-anton {
+  font-family: "Anton", system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+}
+
+/* Exemple: affiner la sélection (optionnel) */
+::selection {
+  background-color: color-mix(in oklab, var(--color-primary) 25%, transparent);
+  color: var(--color-foreground);
 }
