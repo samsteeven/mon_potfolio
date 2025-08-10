@@ -52,7 +52,7 @@ const Experiences = () => {
   );
 
   return (
-    <section className="py-section" id="my-experience">
+    <section className="py-section mb-72" id="my-experience">
       <div className="container" ref={containerRef}>
         <SectionTitle title="My Experience" />
         <div className="grid gap-14">
