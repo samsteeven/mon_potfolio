@@ -10,30 +10,23 @@ export const AuthSync = () => {
   const { auth } = usePage<InertiaProps>().props
 
   useEffect(() => {
-    // Fonction de synchronisation
-    const syncAuth = () => {
-      const hasSessionCookie = document.cookie.includes('samen-session')
+    // Écouter UNIQUEMENT les événements de navigation (bouton retour/précédent)
+    const AuthSync = () => {
+      // Vérifier si on a perdu l'utilisateur lors de la navigation
       const hasUser = auth?.user
 
-      if (hasSessionCookie && !hasUser) {
-        console.log('Session détectée mais utilisateur manquant, synchronisation...')
+      if (!hasUser) {
+        //Navigation par bouton retour détectée, utilisateur manquant, synchronisation...
         router.reload({ only: ['auth'] })
       }
     }
+    // Attendre un peu que la page soit chargée puis synchroniser
+    setTimeout(AuthSync, 100)
 
-    // Synchroniser immédiatement
-    syncAuth()
-
-    // Écouter les événements de navigation (bouton retour/précédent)
-    const handlePopState = () => {
-      // Attendre un peu que la page soit chargée puis synchroniser
-      setTimeout(syncAuth, 100)
-    }
-
-    window.addEventListener('popstate', handlePopState)
+    window.addEventListener('popstate', AuthSync)
 
     return () => {
-      window.removeEventListener('popstate', handlePopState)
+      window.removeEventListener('popstate', AuthSync)
     }
   }, [auth?.user])
 

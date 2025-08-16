@@ -11,8 +11,8 @@ import router from '@adonisjs/core/services/router'
 import { middleware } from '#start/kernel'
 
 // Routes publiques avec silent_auth pour avoir accès à l'utilisateur connecté
-router.on('/').renderInertia('home').as('home').middleware(middleware.silent_auth())
-
+router.on('/').renderInertia('home').as('home')
+router.get('test', (ctx) => ctx.auth.user)
 // Routes d'authentification
 router
   .group(() => {
