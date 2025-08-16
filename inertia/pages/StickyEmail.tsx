@@ -1,4 +1,4 @@
-import { GENERAL_INFO } from '~/lib/data';
+import { GENERAL_INFO } from '@/data';
 
 const StickyEmail = () => {
     return (

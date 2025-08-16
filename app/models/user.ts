@@ -8,11 +8,11 @@ import { compose } from '@adonisjs/core/helpers'
 import type { HasMany, HasOne } from '@adonisjs/lucid/types/relations'
 
 const AuthFinder = withAuthFinder(() => hash.use('argon'), {
-  uids: ['email', 'username'],
+  uids: ['email'],
   passwordColumnName: 'password',
 })
 
-export class User extends compose(BaseModel, AuthFinder) {
+export default class User extends compose(BaseModel, AuthFinder) {
   @column({ isPrimary: true })
   declare id: number
 
@@ -42,5 +42,4 @@ export class User extends compose(BaseModel, AuthFinder) {
 
   @column.dateTime({ columnName: 'updated_at', autoCreate: true, autoUpdate: true })
   declare updatedAt: DateTime | null
-
 }

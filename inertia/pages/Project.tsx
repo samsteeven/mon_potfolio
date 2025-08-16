@@ -1,6 +1,6 @@
-import TransitionLink from '~/components/TransitionLink';
-import { cn } from '~/lib/utils';
-import { IProject } from '~/types';
+import TransitionLink from '@/components/TransitionLink';
+import { cn } from '@/utils';
+import { Project } from '~/types';
 import { useGSAP } from '@gsap/react';
 import gsap from 'gsap';
 import { useEffect, useRef, useState } from 'react';
@@ -8,12 +8,12 @@ import { ensureGsapScrollTrigger } from '~/utils/gsapClient';
 
 interface Props {
   index: number;
-  project: IProject;
+  projet: Project;
   selectedProject: string | null;
   onMouseEnter: (_slug: string) => void;
 }
 
-const Project = ({ index, project, selectedProject, onMouseEnter }: Props) => {
+const Projet = ({ index, projet, selectedProject, onMouseEnter }: Props) => {
   const externalLinkSVGRef = useRef<SVGSVGElement>(null);
   const [ready, setReady] = useState(false);
 
@@ -33,7 +33,7 @@ const Project = ({ index, project, selectedProject, onMouseEnter }: Props) => {
 
   const handleMouseEnter = contextSafe?.(() => {
     if (!ready) return;
-    onMouseEnter(project.slug);
+    onMouseEnter(projet.slug);
 
     const arrowLine = externalLinkSVGRef.current?.querySelector('#arrow-line') as SVGPathElement;
     const arrowCurb = externalLinkSVGRef.current?.querySelector('#arrow-curb') as SVGPathElement;
@@ -69,19 +69,19 @@ const Project = ({ index, project, selectedProject, onMouseEnter }: Props) => {
 
   return (
     <TransitionLink
-      href={`/projects/${project.slug}`}
+      href={`/projects/${projet.slug}`}
       className="project-item group leading-none py-5 md:border-b first:!pt-0 last:pb-0 last:border-none md:group-hover/projects:opacity-30 md:hover:!opacity-100 transition-all"
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
     >
       {selectedProject === null && (
         <img
-          src={project.thumbnail}
+          src={projet.thumbnail}
           alt="Project"
           width="300"
           height="200"
           className={cn('w-full object-cover mb-6 aspect-[3/2] object-top')}
-          key={project.slug}
+          key={projet.slug}
           loading="lazy"
         />
       )}
@@ -89,7 +89,7 @@ const Project = ({ index, project, selectedProject, onMouseEnter }: Props) => {
         <div className="font-anton text-muted-foreground">_{(index + 1).toString().padStart(2, '0')}.</div>
         <div className="">
           <h4 className="text-4xl xs:text-6xl flex gap-4 font-anton transition-all duration-700 bg-gradient-to-r from-primary to-foreground from-[50%] to-[50%] bg-[length:200%] bg-right bg-clip-text text-transparent group-hover:bg-left">
-            {project.title}
+            {projet.title}
             <span className="text-foreground opacity-0 group-hover:opacity-100 transition-all">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -110,7 +110,7 @@ const Project = ({ index, project, selectedProject, onMouseEnter }: Props) => {
             </span>
           </h4>
           <div className="mt-2 flex flex-wrap gap-3 text-muted-foreground text-xs">
-            {project.techStack.slice(0, 3).map((tech, idx, stackArr) => (
+            {projet.techStack.slice(0, 3).map((tech, idx, stackArr) => (
               <div className="gap-3 flex items-center" key={tech}>
                 <span className="">{tech}</span>
                 {idx !== stackArr.length - 1 && (
@@ -125,4 +125,4 @@ const Project = ({ index, project, selectedProject, onMouseEnter }: Props) => {
   );
 };
 
-export default Project;
+export default Projet;

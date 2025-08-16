@@ -1,7 +1,7 @@
 // TypeScript
 import { DateTime } from 'luxon'
 import { BaseModel, column, belongsTo } from '@adonisjs/lucid/orm'
-import { User } from './user.js'
+import User from '#models/user'
 import type { BelongsTo } from '@adonisjs/lucid/types/relations'
 
 export default class Contact extends BaseModel {

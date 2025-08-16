@@ -1,52 +1,52 @@
-import { useEffect, useRef, useState } from "react";
-import { GENERAL_INFO } from "~/lib/data";
-import { GitFork, Star } from "lucide-react";
+import { useEffect, useRef, useState } from 'react'
+import { GENERAL_INFO } from '@/data'
+import { GitFork, Star } from 'lucide-react'
 
 interface RepoStats {
-  stargazers_count: number;
-  forks_count: number;
+  stargazers_count: number
+  forks_count: number
 }
 
 export default function Footer() {
-  const [stars, setStars] = useState(0);
-  const [forks, setForks] = useState(0);
-  const fetchedOnce = useRef(false);
+  const [stars, setStars] = useState(0)
+  const [forks, setForks] = useState(0)
+  const fetchedOnce = useRef(false)
 
   useEffect(() => {
-    if (fetchedOnce.current) return;
-    fetchedOnce.current = true;
+    if (fetchedOnce.current) return
+    fetchedOnce.current = true
 
-    const controller = new AbortController();
-    const timeout = setTimeout(() => controller.abort(), 5000);
+    const controller = new AbortController()
+    const timeout = setTimeout(() => controller.abort(), 5000)
 
-    (async () => {
+    ;(async () => {
       try {
-        const res = await fetch("https://api.github.com/repos/tajmirul/portfolio-2.0", {
+        const res = await fetch('https://api.github.com/repos/tajmirul/portfolio-2.0', {
           signal: controller.signal,
           headers: {
             // Aide à éviter certains rejets (GitHub aime avoir un User-Agent)
-            "User-Agent": "portfolio-app",
-            Accept: "application/vnd.github+json",
+            'User-Agent': 'portfolio-app',
+            'Accept': 'application/vnd.github+json',
           },
-        });
+        })
 
         if (!res.ok) {
           // 429/403 rate limit => on garde les valeurs par défaut
-          return;
+          return
         }
 
-        const data = (await res.json()) as Partial<RepoStats>;
-        setStars(typeof data.stargazers_count === "number" ? data.stargazers_count : 0);
-        setForks(typeof data.forks_count === "number" ? data.forks_count : 0);
+        const data = (await res.json()) as Partial<RepoStats>
+        setStars(typeof data.stargazers_count === 'number' ? data.stargazers_count : 0)
+        setForks(typeof data.forks_count === 'number' ? data.forks_count : 0)
       } catch {
         // Silence les erreurs réseau; on garde 0
       } finally {
-        clearTimeout(timeout);
+        clearTimeout(timeout)
       }
-    })();
+    })()
 
-    return () => controller.abort();
-  }, []);
+    return () => controller.abort()
+  }, [])
 
   return (
     <footer className="text-center pb-5" id="contact">
@@ -79,5 +79,5 @@ export default function Footer() {
         </div>
       </div>
     </footer>
-  );
+  )
 }

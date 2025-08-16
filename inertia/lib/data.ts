@@ -1,4 +1,4 @@
-import { IProject } from '~/types';
+import { Project } from '~/types';
 
 export const GENERAL_INFO = {
     email: 'tasmirolislam@gmail.com',
@@ -108,7 +108,7 @@ export const MY_STACK = {
     ],
 };
 
-export const PROJECTS: IProject[] = [
+export const PROJECTS: Project[] = [
     {
         title: 'MTI Electronics',
         slug: 'mti-electronics',

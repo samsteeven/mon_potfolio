@@ -1,6 +1,6 @@
 'use client';
-import SectionTitle from '~/components/SectionTitle';
-import { MY_STACK } from '~/lib/data';
+import SectionTitle from '@/components/SectionTitle';
+import { MY_STACK } from '@/data';
 import { useGSAP } from '@gsap/react';
 import gsap from 'gsap';
 import { useEffect, useRef, useState } from 'react';

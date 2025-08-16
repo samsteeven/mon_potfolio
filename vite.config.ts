@@ -10,22 +10,19 @@ export default defineConfig({
     inertia({ ssr: { enabled: true, entrypoint: 'inertia/app/ssr.tsx' } }),
     react(),
     adonisjs({ entrypoints: ['inertia/app/app.tsx'], reload: ['resources/views/**/*.edge'] }),
-    tailwind()
+    tailwind(),
   ],
 
   resolve: {
     alias: {
       '~/': `${getDirname(import.meta.url)}/inertia/`,
+      '@': `${getDirname(import.meta.url)}/inertia/lib`,
     },
   },
 
   // Important pour éviter le require(esm) de GSAP en SSR
   ssr: {
-    noExternal: [
-      'gsap',
-      '@gsap/react',
-      'gsap/*',
-    ],
+    noExternal: ['gsap', '@gsap/react', 'gsap/*'],
   },
 
   // Optionnel: évite la pré-optimisation côté dev qui peut casser GSAP

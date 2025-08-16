@@ -44,7 +44,7 @@ export function RoughAnnotate({
       padding,
       animationDuration,
       iterations,
-    } as any) // cast simple pour satisfaire TS selon la version de types
+    } as any)
 
     if (show) {
       annotation.show()

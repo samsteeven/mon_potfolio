@@ -6,8 +6,8 @@ export default class extends BaseSchema {
   async up() {
     this.schema.createTable(this.tableName, (table) => {
       table.bigIncrements('id')
-      table.string('name').notNullable().index()
-      table.string('category').notNullable().index()
+      table.string('name', 191).notNullable().index()
+      table.string('category', 191).notNullable().index()
       table.string('img_path').notNullable()
       table.string('lien_origin').nullable()
       table.text('description').nullable()

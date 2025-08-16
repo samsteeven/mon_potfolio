@@ -1,19 +1,26 @@
-import React from 'react'
+import React, { StrictMode } from 'react'
 import { createInertiaApp } from '@inertiajs/react'
-import { createRoot } from 'react-dom/client'
+import { hydrateRoot } from 'react-dom/client'
 import RootLayout from '~/layout/RootLayout'
-import "~/css/app.css";
+import '~/css/app.css'
 
 createInertiaApp({
+  progress: { color: '#5468FF' },
   resolve: (name) => {
     // Chargement dynamique de tes pages
     const pages = import.meta.glob('../pages/**/*.tsx', { eager: true })
     const page: any = pages[`../pages/${name}.tsx`]
-    // Applique le layout par défaut si la page n’en a pas
-    page.default.layout = page.default.layout || ((page: React.ReactNode) => <RootLayout>{page}</RootLayout>)
+    // Applique le layout par défaut si la page n'en a pas
+    page.default.layout =
+      page.default.layout ||
+      ((page: React.ReactNode) => (
+        <StrictMode>
+          <RootLayout>{page}</RootLayout>
+        </StrictMode>
+      ))
     return page
   },
   setup({ el, App, props }) {
-    createRoot(el).render(<App {...props} />)
+    hydrateRoot(el, <App {...props} />)
   },
-})
+}).then()

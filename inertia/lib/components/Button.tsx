@@ -1,7 +1,7 @@
 import { Link } from '@inertiajs/react'
 import { AnchorHTMLAttributes, ButtonHTMLAttributes, ComponentProps, ReactNode } from 'react';
 import { Variant } from '~/types';
-import { cn } from '~/lib/utils';
+import { cn } from '@/utils';
 
 const Child = ({ icon }: any) => (
     <span className="flex items-center justify-center gap-3">
