@@ -111,19 +111,19 @@ export function WritingList({ items, lang }: { items: WritingItem[]; lang: Langu
               style={{ animationDelay: `${i * 60}ms` }}
               className="fade-up group flex flex-col gap-2 rounded-2xl border border-line bg-paper-raised/20 p-5 transition-all duration-300 hover:border-accent/30 hover:bg-paper-raised hover:shadow-md"
             >
-              <div className="flex items-start justify-between gap-4">
-                <div className="flex items-center gap-3">
+              <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between sm:gap-4">
+                <div className="flex flex-col gap-1.5 sm:flex-row sm:items-center sm:gap-3">
                   <h3 className="font-display text-base font-semibold transition group-hover:text-accent">
                     {item.title}
                   </h3>
-                  <span className="inline-flex items-center gap-1.5 font-mono text-[10px] text-accent/80 border border-accent/20 bg-accent/5 rounded px-1.5 py-0.5">
+                  <span className="inline-flex items-center gap-1.5 self-start font-mono text-[10px] text-accent/80 border border-accent/20 bg-accent/5 rounded px-1.5 py-0.5">
                     <span>
                       {lang === "en" ? `In ${pageLangLabel}` : `En ${pageLangLabel}`}
                     </span>
                     <LanguageFlag lang={(item.lang as Language) || "fr"} />
                   </span>
                 </div>
-                <span className="shrink-0 font-mono text-[11px] text-ink-soft">{item.date}</span>
+                <span className="shrink-0 font-mono text-[11px] text-ink-soft sm:pt-0.5">{item.date}</span>
               </div>
               <p className="text-sm text-ink-soft">{item.description}</p>
               {item.tags.length > 0 && (

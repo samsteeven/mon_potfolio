@@ -161,20 +161,22 @@ export default async function HomePage({ params }: PageProps) {
                 style={{ animationDelay: `${i * 80}ms` }}
                 className="fade-up group flex flex-col gap-3 rounded-2xl border border-line bg-paper-raised/20 p-6 transition-all duration-300 hover:border-accent/30 hover:bg-paper-raised hover:shadow-md"
               >
-                <div className="flex items-center justify-between gap-4">
-                  <div className="flex items-center gap-3">
-                    <h3 className="font-display text-lg font-semibold transition group-hover:text-accent">
-                      {page.data.title}
-                    </h3>
-                    <StatusDot status={page.data.status} />
-                    <span className="inline-flex items-center gap-1.5 font-mono text-[10px] text-accent/80 border border-accent/20 bg-accent/5 rounded px-1.5 py-0.5">
+                <div className="flex items-start justify-between gap-4">
+                  <div className="flex flex-col gap-1.5 sm:flex-row sm:items-center sm:gap-3">
+                    <div className="flex items-center gap-2">
+                      <h3 className="font-display text-lg font-semibold transition group-hover:text-accent">
+                        {page.data.title}
+                      </h3>
+                      <StatusDot status={page.data.status} />
+                    </div>
+                    <span className="inline-flex items-center gap-1.5 self-start font-mono text-[10px] text-accent/80 border border-accent/20 bg-accent/5 rounded px-1.5 py-0.5">
                       <span>
                         {lang === "en" ? `In ${pageLangLabel}` : `En ${pageLangLabel}`}
                       </span>
                       <LanguageFlag lang={(page.data.lang as Language) || "fr"} />
                     </span>
                   </div>
-                  <ArrowUpRight className="h-4 w-4 shrink-0 text-ink-soft transition-all duration-300 group-hover:-translate-y-0.5 group-hover:translate-x-0.5 group-hover:text-accent" />
+                  <ArrowUpRight className="h-4 w-4 shrink-0 mt-1 text-ink-soft transition-all duration-300 group-hover:-translate-y-0.5 group-hover:translate-x-0.5 group-hover:text-accent" />
                 </div>
                 <p className="text-sm text-ink-soft">{page.data.description}</p>
                 <div className="mt-1 flex flex-wrap items-center gap-2">
@@ -252,6 +254,11 @@ export default async function HomePage({ params }: PageProps) {
                       {page.data.description}
                     </p>
 
+                    {/* Date sur mobile uniquement */}
+                    <span className="sm:hidden font-mono text-[10px] text-ink-soft/60 block mt-2">
+                      {page.data.date}
+                    </span>
+
                     {/* Tags */}
                     {page.data.tags.length > 0 && (
                       <div className="mt-2 flex flex-wrap gap-1.5">
@@ -267,9 +274,9 @@ export default async function HomePage({ params }: PageProps) {
                     )}
                   </div>
 
-                  {/* Date + flèche */}
+                  {/* Date (desktop) + flèche */}
                   <div className="shrink-0 flex flex-col items-end gap-3 pt-0.5">
-                    <span className="font-mono text-[10px] text-ink-soft/60">{page.data.date}</span>
+                    <span className="hidden sm:block font-mono text-[10px] text-ink-soft/60">{page.data.date}</span>
                     <ArrowUpRight className="h-3.5 w-3.5 text-ink-soft/20 transition-all duration-300 group-hover:text-accent group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
                   </div>
                 </Link>
