@@ -4,7 +4,7 @@ export function SiteFooter({ lang }: { lang: Language }) {
   const t = translations[lang] || translations.en;
 
   return (
-    <footer className="border-t border-line">
+    <footer className="border-t border-line bg-paper relative z-10">
       <div className="mx-auto flex max-w-3xl flex-col gap-3 px-6 py-10 font-mono text-[11px] text-ink-soft sm:flex-row sm:items-center sm:justify-between">
         <span className="tracking-wide">{t.footer.location}</span>
         <div className="flex gap-4">
