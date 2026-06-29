@@ -43,9 +43,11 @@ export default async function RootLayout({ children, params }: LayoutProps) {
   return (
     <html lang={lang} className="h-full antialiased" suppressHydrationWarning>
       <head>
-        <Script id="theme-initializer" strategy="beforeInteractive">
-          {themeScript}
-        </Script>
+        <Script
+          id="theme-initializer"
+          strategy="beforeInteractive"
+          dangerouslySetInnerHTML={{ __html: themeScript }}
+        />
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         {/* eslint-disable-next-line @next/next/no-page-custom-font -- pattern valide en App Router pour des polices non gérées par next/font */}
