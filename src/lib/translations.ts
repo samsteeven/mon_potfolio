@@ -9,8 +9,8 @@ export const translations = {
       location: "Douala, Cameroon",
       bio: "Full-Stack Developer & Tech Lead. I design systems that hold up in real-world conditions — currently at Tribunejustice, a legaltech platform.",
       status: "AI Agents — MCP · LangGraph · CrewAI",
-      viewWork: "View Work",
-      contact: "Contact",
+      readPosts: "Read all posts",
+      scheduleMeeting: "Schedule a meeting",
     },
     about: {
       title: "About",
@@ -66,8 +66,8 @@ export const translations = {
       location: "Douala, Cameroun",
       bio: "Développeur full-stack & Tech Lead. Je conçois des systèmes qui tiennent en conditions réelles — actuellement sur Tribunejustice, une plateforme legaltech.",
       status: "Agents IA — MCP · LangGraph · CrewAI",
-      viewWork: "Voir le travail",
-      contact: "Contact",
+      readPosts: "Lire les articles",
+      scheduleMeeting: "Planifier une réunion",
     },
     about: {
       title: "À propos",
