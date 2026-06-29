@@ -20,7 +20,7 @@ export default async function HomePage({ params }: PageProps) {
   const allWriting = writingSource
     .getPages()
     .sort((a, b) => (a.data.date < b.data.date ? 1 : -1));
-  const writing = allWriting.slice(0, 3);
+  const writing = allWriting.slice(0, 5);
 
   return (
     <main className="mx-auto max-w-3xl px-6">
@@ -182,47 +182,77 @@ export default async function HomePage({ params }: PageProps) {
 
       {/* ---------- WRITING ---------- */}
       <section id="writing" className="border-t border-line py-20">
-        <h2 className="font-display text-2xl font-semibold">{t.writing.title}</h2>
-        <div className="mt-8 flex flex-col gap-3">
+        <div className="flex items-end justify-between mb-10">
+          <h2 className="font-display text-2xl font-semibold">{t.writing.title}</h2>
+          <Link
+            href={`/${lang}/writing`}
+            className="inline-flex items-center gap-1 font-mono text-xs uppercase tracking-wider text-ink-soft transition hover:text-accent"
+          >
+            {t.writing.seeAll} <ArrowUpRight className="h-3.5 w-3.5" />
+          </Link>
+        </div>
+
+        <ol className="space-y-0 divide-y divide-line">
           {writing.map((page, i) => {
-            const pageLangLabel = page.data.lang === "en" 
-              ? (lang === "en" ? "English" : "Anglais") 
+            const pageLangLabel = page.data.lang === "en"
+              ? (lang === "en" ? "English" : "Anglais")
               : (lang === "en" ? "French" : "Français");
 
             return (
-              <Link
-                key={page.url}
-                href={`/${lang}${page.url}`}
-                style={{ animationDelay: `${i * 80}ms` }}
-                className="fade-up group flex flex-col gap-2 rounded-2xl border border-line bg-paper-raised/20 p-5 transition-all duration-300 hover:border-accent/30 hover:bg-paper-raised hover:shadow-md"
-              >
-                <div className="flex items-start justify-between gap-4">
-                  <div className="flex items-center gap-3">
-                    <h3 className="font-display text-base font-semibold transition group-hover:text-accent">
-                      {page.data.title}
-                    </h3>
-                    <span className="inline-flex items-center gap-1.5 font-mono text-[10px] text-accent/80 border border-accent/20 bg-accent/5 rounded px-1.5 py-0.5">
-                      <span>
-                        {lang === "en" ? `In ${pageLangLabel}` : `En ${pageLangLabel}`}
-                      </span>
-                      <LanguageFlag lang={(page.data.lang as Language) || "fr"} />
-                    </span>
-                  </div>
-                  <span className="shrink-0 font-mono text-[11px] text-ink-soft">
-                    {page.data.date}
+              <li key={page.url}>
+                <Link
+                  href={`/${lang}${page.url}`}
+                  style={{ animationDelay: `${i * 70}ms` }}
+                  className="fade-up group flex items-start gap-5 py-5 transition-all duration-200 -mx-4 px-4 rounded-xl hover:bg-paper-raised/50"
+                >
+                  {/* Index */}
+                  <span className="shrink-0 mt-0.5 w-7 font-mono text-[11px] text-ink-soft/40 tabular-nums select-none group-hover:text-accent/50 transition-colors">
+                    {String(i + 1).padStart(2, "0")}
                   </span>
-                </div>
-                <p className="text-sm text-ink-soft line-clamp-2">{page.data.description}</p>
-              </Link>
+
+                  {/* Contenu principal */}
+                  <div className="flex-1 min-w-0">
+                    {/* Ligne supérieure : titre + drapeau de langue */}
+                    <div className="flex items-center gap-2 flex-wrap">
+                      <h3 className="font-display text-base font-semibold text-ink group-hover:text-accent transition-colors leading-snug">
+                        {page.data.title}
+                      </h3>
+                      <span className="inline-flex items-center gap-1 font-mono text-[9px] text-accent/70 border border-accent/20 bg-accent/5 rounded px-1.5 py-0.5 shrink-0">
+                        {pageLangLabel}
+                        <LanguageFlag lang={(page.data.lang as Language) || "fr"} />
+                      </span>
+                    </div>
+
+                    {/* Description */}
+                    <p className="mt-1 text-sm text-ink-soft line-clamp-1">
+                      {page.data.description}
+                    </p>
+
+                    {/* Tags */}
+                    {page.data.tags.length > 0 && (
+                      <div className="mt-2 flex flex-wrap gap-1.5">
+                        {page.data.tags.map((tag: string) => (
+                          <span
+                            key={tag}
+                            className="rounded-full border border-line bg-paper-raised/60 px-2 py-0.5 font-mono text-[9px] text-ink-soft group-hover:border-accent/15 group-hover:text-accent/70 transition-colors"
+                          >
+                            #{tag}
+                          </span>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Date + flèche */}
+                  <div className="shrink-0 flex flex-col items-end gap-3 pt-0.5">
+                    <span className="font-mono text-[10px] text-ink-soft/60">{page.data.date}</span>
+                    <ArrowUpRight className="h-3.5 w-3.5 text-ink-soft/20 transition-all duration-300 group-hover:text-accent group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
+                  </div>
+                </Link>
+              </li>
             );
           })}
-        </div>
-        <Link
-          href={`/${lang}/writing`}
-          className="mt-6 inline-flex items-center gap-1 font-mono text-xs uppercase tracking-wider text-ink-soft transition hover:text-accent"
-        >
-          {t.writing.seeAll} <ArrowUpRight className="h-3.5 w-3.5" />
-        </Link>
+        </ol>
       </section>
     </main>
   );
