@@ -54,9 +54,9 @@ export default async function HomePage({ params }: PageProps) {
   const writing = allWriting.slice(0, 5);
 
   return (
-    <main className="mx-auto max-w-3xl px-6">
+    <main className="mx-auto max-w-3xl px-6 pb-24">
       {/* ---------- HERO ---------- */}
-      <section className="py-24 sm:py-32">
+      <section className="py-24 sm:py-36">
         {/* Avatar */}
         {/*<div*/}
         {/*  className="fade-up mb-8"*/}
@@ -154,7 +154,7 @@ export default async function HomePage({ params }: PageProps) {
       </section>
 
       {/* ---------- ABOUT ---------- */}
-      <section id="about" className="border-t border-line py-20">
+      <section id="about" className="border-t border-line py-28 sm:py-36">
         <h2 className="font-display text-2xl font-semibold">{t.about.title}</h2>
         <div className="mt-8 grid grid-cols-1 gap-6 md:grid-cols-3">
           {[
@@ -179,7 +179,7 @@ export default async function HomePage({ params }: PageProps) {
       </section>
 
       {/* ---------- STACK ---------- */}
-      <section id="stack" className="border-t border-line py-20">
+      <section id="stack" className="border-t border-line py-28 sm:py-36">
         <h2 className="font-display text-2xl font-semibold">{t.stack.title}</h2>
         <div className="mt-8 flex flex-col divide-y divide-line">
           {t.stack.items.map((item, i) => (
@@ -219,7 +219,7 @@ export default async function HomePage({ params }: PageProps) {
       </section>
 
       {/* ---------- WORK ---------- */}
-      <section id="work" className="border-t border-line py-20">
+      <section id="work" className="border-t border-line py-28 sm:py-36">
         <h2 className="font-display text-2xl font-semibold">{t.work.title}</h2>
         <div className="mt-8 flex flex-col gap-4">
           {work.map((page, i) => {
@@ -269,7 +269,7 @@ export default async function HomePage({ params }: PageProps) {
       </section>
 
       {/* ---------- WRITING ---------- */}
-      <section id="writing" className="border-t border-line py-20">
+      <section id="writing" className="border-t border-line py-28 sm:py-36">
         <div className="flex items-end justify-between mb-10">
           <h2 className="font-display text-2xl font-semibold">{t.writing.title}</h2>
           <Link
