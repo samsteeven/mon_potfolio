@@ -8,7 +8,7 @@ export function SiteFooter({ lang }: { lang: Language }) {
       <div className="mx-auto flex max-w-3xl flex-col gap-3 px-6 py-10 font-mono text-[11px] text-ink-soft sm:flex-row sm:items-center sm:justify-between">
         <span className="tracking-wide">{t.footer.location}</span>
         <div className="flex gap-4">
-          <a href="mailto:samendjiaha@gmail.com" className="transition duration-200 hover:text-accent">
+          <a href="mailto:contact@samensteeve.com" className="transition duration-200 hover:text-accent">
             Email
           </a>
           <a href="https://linkedin.com/in/samsteeven" target="_blank" rel="noopener noreferrer" className="transition duration-200 hover:text-accent">

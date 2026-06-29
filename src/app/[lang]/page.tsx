@@ -108,7 +108,7 @@ export default async function HomePage({ params }: PageProps) {
             {t.hero.readPosts}
           </Link>
           <a
-            href="mailto:samendjiaha@gmail.com"
+            href="mailto:contact@samensteeve.com"
             className="rounded-full bg-ink px-5 py-2.5 font-mono text-xs uppercase tracking-wide text-paper transition-all duration-300 hover:scale-105 hover:bg-accent hover:text-white hover:shadow-lg hover:shadow-accent/15 active:scale-95"
           >
             {t.hero.scheduleMeeting}
@@ -125,7 +125,7 @@ export default async function HomePage({ params }: PageProps) {
           </p>
           <div className="mt-4 flex gap-5 text-ink-soft">
             <a
-              href="mailto:samendjiaha@gmail.com"
+              href="mailto:contact@samensteeve.com"
               className="transition-all duration-200 hover:text-accent hover:scale-110"
               aria-label="Email"
             >
