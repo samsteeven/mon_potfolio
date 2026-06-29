@@ -4,6 +4,7 @@ import { workSource, writingSource } from "@/lib/source";
 import { StatusDot } from "@/components/status-dot";
 import { translations, type Language } from "@/lib/translations";
 import { LanguageFlag } from "@/components/language-flag";
+import { ScrollReveal } from "@/components/scroll-reveal";
 
 const LinkedinIcon = (props: React.SVGProps<SVGSVGElement>) => (
   <svg
@@ -155,114 +156,120 @@ export default async function HomePage({ params }: PageProps) {
 
       {/* ---------- ABOUT ---------- */}
       <section id="about" className="border-t border-line py-28 sm:py-36">
-        <h2 className="font-display text-2xl font-semibold">{t.about.title}</h2>
+        <ScrollReveal>
+          <h2 className="font-display text-2xl font-semibold">{t.about.title}</h2>
+        </ScrollReveal>
         <div className="mt-8 grid grid-cols-1 gap-6 md:grid-cols-3">
           {[
             { q: t.about.q1, a: t.about.a1 },
             { q: t.about.q2, a: t.about.a2 },
             { q: t.about.q3, a: t.about.a3 },
           ].map((item, i) => (
-            <div
-              key={item.q}
-              className="fade-up flex flex-col justify-between rounded-2xl border border-line bg-paper-raised/40 p-6 shadow-sm transition-all duration-300 hover:border-accent/30 hover:bg-paper-raised hover:shadow-md"
-              style={{ animationDelay: `${i * 80}ms` }}
-            >
-              <div>
-                <p className="font-mono text-xs uppercase tracking-wider text-accent font-semibold">
-                  {item.q}
-                </p>
-                <p className="mt-4 text-sm leading-relaxed text-ink-soft">{item.a}</p>
+            <ScrollReveal key={item.q} delay={i * 100} className="h-full">
+              <div
+                className="flex flex-col justify-between h-full rounded-2xl border border-line bg-paper-raised/40 p-6 shadow-sm transition-all duration-300 ease-out hover:-translate-y-1.5 hover:border-accent/35 hover:bg-paper-raised hover:shadow-md hover:shadow-accent/[0.01]"
+              >
+                <div>
+                  <p className="font-mono text-xs uppercase tracking-wider text-accent font-semibold">
+                    {item.q}
+                  </p>
+                  <p className="mt-4 text-sm leading-relaxed text-ink-soft">{item.a}</p>
+                </div>
               </div>
-            </div>
+            </ScrollReveal>
           ))}
         </div>
       </section>
 
       {/* ---------- STACK ---------- */}
       <section id="stack" className="border-t border-line py-28 sm:py-36">
-        <h2 className="font-display text-2xl font-semibold">{t.stack.title}</h2>
+        <ScrollReveal>
+          <h2 className="font-display text-2xl font-semibold">{t.stack.title}</h2>
+        </ScrollReveal>
         <div className="mt-8 flex flex-col divide-y divide-line">
           {t.stack.items.map((item, i) => (
-            <div
-              key={item.name}
-              className="fade-up group flex items-center justify-between gap-5 py-5 -mx-4 px-4 rounded-xl transition duration-200 hover:bg-paper-raised/30"
-              style={{ animationDelay: `${i * 60}ms` }}
-            >
-              {/* Numéro */}
-              <span className="shrink-0 w-8 font-mono text-[11px] text-ink-soft/40 tabular-nums select-none group-hover:text-accent/50 transition-colors">
-                {String(i + 1).padStart(2, "0")}
-              </span>
-
-              {/* Contenu */}
-              <div className="flex-1 min-w-0">
-                <h3 className="font-display text-base font-semibold text-ink">
-                  {item.name}
-                </h3>
-                <p className="mt-0.5 text-sm text-ink-soft leading-relaxed">
-                  {item.desc}
-                </p>
-              </div>
-
-              {/* Flèche cliquable */}
-              <a
-                href={item.url}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="shrink-0 p-2 -mr-2 rounded-lg text-ink-soft/30 hover:text-accent hover:bg-accent/5 transition-all duration-200"
-                aria-label={`Visit ${item.name}`}
+            <ScrollReveal key={item.name} delay={i * 60}>
+              <div
+                className="group flex items-center justify-between gap-5 py-5 -mx-4 px-4 rounded-xl transition-all duration-300 ease-out hover:bg-paper-raised/40 hover:translate-x-2"
               >
-                <ArrowUpRight className="h-4 w-4 transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
-              </a>
-            </div>
+                {/* Numéro */}
+                <span className="shrink-0 w-8 font-mono text-[11px] text-ink-soft/40 tabular-nums select-none group-hover:text-accent/60 transition-colors">
+                  {String(i + 1).padStart(2, "0")}
+                </span>
+
+                {/* Contenu */}
+                <div className="flex-1 min-w-0">
+                  <h3 className="font-display text-base font-semibold text-ink group-hover:text-accent transition-colors">
+                    {item.name}
+                  </h3>
+                  <p className="mt-0.5 text-sm text-ink-soft leading-relaxed">
+                    {item.desc}
+                  </p>
+                </div>
+
+                {/* Flèche cliquable */}
+                <a
+                  href={item.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="shrink-0 p-2 -mr-2 rounded-lg text-ink-soft/30 hover:text-accent hover:bg-accent/5 transition-all duration-200"
+                  aria-label={`Visit ${item.name}`}
+                >
+                  <ArrowUpRight className="h-4 w-4 transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
+                </a>
+              </div>
+            </ScrollReveal>
           ))}
         </div>
       </section>
 
       {/* ---------- WORK ---------- */}
       <section id="work" className="border-t border-line py-28 sm:py-36">
-        <h2 className="font-display text-2xl font-semibold">{t.work.title}</h2>
+        <ScrollReveal>
+          <h2 className="font-display text-2xl font-semibold">{t.work.title}</h2>
+        </ScrollReveal>
         <div className="mt-8 flex flex-col gap-4">
           {work.map((page, i) => {
             return (
-              <div
-                key={page.url}
-                style={{ animationDelay: `${i * 80}ms` }}
-                className="fade-up flex flex-col gap-4 rounded-2xl border border-line bg-paper-raised/20 p-6 transition-all duration-300 hover:border-accent/15 hover:bg-paper-raised hover:shadow-sm"
-              >
-                <div className="flex flex-col gap-1.5 sm:flex-row sm:items-center sm:justify-between">
-                  <div className="flex items-center gap-3">
-                    <h3 className="font-display text-lg font-semibold text-ink">
-                      {page.data.title}
-                    </h3>
-                    <StatusDot status={page.data.status} />
+              <ScrollReveal key={page.url} delay={i * 80}>
+                <div
+                  className="flex flex-col gap-4 rounded-2xl border border-line bg-paper-raised/20 p-6 transition-all duration-300 ease-out hover:-translate-y-1.5 hover:border-accent/20 hover:bg-paper-raised hover:shadow-md hover:shadow-accent/[0.01]"
+                >
+                  <div className="flex flex-col gap-1.5 sm:flex-row sm:items-center sm:justify-between">
+                    <div className="flex items-center gap-3">
+                      <h3 className="font-display text-lg font-semibold text-ink">
+                        {page.data.title}
+                      </h3>
+                      <StatusDot status={page.data.status} />
+                    </div>
+                    <span className="font-mono text-[11px] text-ink-soft/70">
+                      {page.data.role} · {page.data.date}
+                    </span>
                   </div>
-                  <span className="font-mono text-[11px] text-ink-soft/70">
-                    {page.data.role} · {page.data.date}
-                  </span>
-                </div>
-                <p className="text-sm leading-relaxed text-ink-soft">{page.data.description}</p>
-                <div className="flex flex-wrap items-center justify-between gap-3 pt-3 border-t border-line/40">
-                  <div className="flex flex-wrap items-center gap-2">
-                    {page.data.stack.map((tech) => (
-                      <span
-                        key={tech}
-                        className="rounded-full border border-line bg-paper-raised/60 px-2.5 py-0.5 font-mono text-[9px] text-ink-soft transition duration-300"
+                  <p className="text-sm leading-relaxed text-ink-soft">{page.data.description}</p>
+                  <div className="flex flex-wrap items-center justify-between gap-3 pt-3 border-t border-line/40">
+                    <div className="flex flex-wrap items-center gap-2">
+                      {page.data.stack.map((tech) => (
+                        <span
+                          key={tech}
+                          className="rounded-full border border-line bg-paper-raised/60 px-2.5 py-0.5 font-mono text-[9px] text-ink-soft transition duration-300"
+                        >
+                          {tech}
+                        </span>
+                      ))}
+                    </div>
+                    {page.data.featured && (
+                      <Link
+                        href={`/${lang}${page.url}`}
+                        className="inline-flex items-center gap-1.5 font-mono text-[11px] uppercase tracking-wide text-accent/80 hover:text-accent transition-all duration-200 hover:gap-2 shrink-0"
                       >
-                        {tech}
-                      </span>
-                    ))}
+                        {t.work.caseStudy}
+                        <ArrowUpRight className="h-3.5 w-3.5" />
+                      </Link>
+                    )}
                   </div>
-                  {page.data.featured && (
-                    <Link
-                      href={`/${lang}${page.url}`}
-                      className="inline-flex items-center gap-1.5 font-mono text-[11px] uppercase tracking-wide text-accent/80 hover:text-accent transition-all duration-200 hover:gap-2 shrink-0"
-                    >
-                      {t.work.caseStudy}
-                      <ArrowUpRight className="h-3.5 w-3.5" />
-                    </Link>
-                  )}
                 </div>
-              </div>
+              </ScrollReveal>
             );
           })}
         </div>
@@ -270,15 +277,17 @@ export default async function HomePage({ params }: PageProps) {
 
       {/* ---------- WRITING ---------- */}
       <section id="writing" className="border-t border-line py-28 sm:py-36">
-        <div className="flex items-end justify-between mb-10">
-          <h2 className="font-display text-2xl font-semibold">{t.writing.title}</h2>
-          <Link
-            href={`/${lang}/writing`}
-            className="inline-flex items-center gap-1 font-mono text-xs uppercase tracking-wider text-ink-soft transition hover:text-accent"
-          >
-            {t.writing.seeAll} <ArrowUpRight className="h-3.5 w-3.5" />
-          </Link>
-        </div>
+        <ScrollReveal>
+          <div className="flex items-end justify-between mb-10">
+            <h2 className="font-display text-2xl font-semibold">{t.writing.title}</h2>
+            <Link
+              href={`/${lang}/writing`}
+              className="inline-flex items-center gap-1 font-mono text-xs uppercase tracking-wider text-ink-soft transition hover:text-accent"
+            >
+              {t.writing.seeAll} <ArrowUpRight className="h-3.5 w-3.5" />
+            </Link>
+          </div>
+        </ScrollReveal>
 
         <div className="flex flex-col divide-y divide-line">
           {writing.map((page, i) => {
@@ -287,64 +296,64 @@ export default async function HomePage({ params }: PageProps) {
               : (lang === "en" ? "French" : "Français");
 
             return (
-              <Link
-                key={page.url}
-                href={`/${lang}${page.url}`}
-                style={{ animationDelay: `${i * 70}ms` }}
-                className="fade-up group flex items-start gap-5 py-6 transition-all duration-200 -mx-2 px-2 rounded-xl hover:bg-paper-raised/50"
-              >
-                {/* Miniature à gauche */}
-                <div className="shrink-0 w-32 h-24 sm:w-40 sm:h-28 rounded-xl overflow-hidden border border-line bg-paper-raised flex items-center justify-center">
-                  {page.data.cover ? (
-                    /* eslint-disable-next-line @next/next/no-img-element */
-                    <img
-                      src={page.data.cover}
-                      alt={page.data.title}
-                      className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
-                    />
-                  ) : (
-                    <span className="font-mono text-2xl font-bold text-ink-soft/15 select-none">
-                      {String(i + 1).padStart(2, "0")}
-                    </span>
-                  )}
-                </div>
-
-                {/* Contenu à droite */}
-                <div className="flex-1 min-w-0">
-                  {/* Date + badge langue */}
-                  <div className="flex items-center gap-2 mb-1.5">
-                    <span className="font-mono text-xs text-ink-soft/60">{page.data.date}</span>
-                    <span className="inline-flex items-center gap-1 font-mono text-[9px] text-accent/70 border border-accent/20 bg-accent/5 rounded px-1.5 py-0.5">
-                      {pageLangLabel}
-                      <LanguageFlag lang={(page.data.lang as Language) || "fr"} />
-                    </span>
+              <ScrollReveal key={page.url} delay={i * 70}>
+                <Link
+                  href={`/${lang}${page.url}`}
+                  className="group flex items-start gap-5 py-6 transition-all duration-300 ease-out -mx-4 px-4 rounded-2xl hover:bg-paper-raised/60 hover:shadow-sm hover:shadow-accent/[0.01] hover:-translate-y-0.5"
+                >
+                  {/* Miniature à gauche */}
+                  <div className="shrink-0 w-32 h-24 sm:w-40 sm:h-28 rounded-xl overflow-hidden border border-line bg-paper-raised flex items-center justify-center">
+                    {page.data.cover ? (
+                      /* eslint-disable-next-line @next/next/no-img-element */
+                      <img
+                        src={page.data.cover}
+                        alt={page.data.title}
+                        className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-103"
+                      />
+                    ) : (
+                      <span className="font-mono text-2xl font-bold text-ink-soft/15 select-none">
+                        {String(i + 1).padStart(2, "0")}
+                      </span>
+                    )}
                   </div>
 
-                  {/* Titre */}
-                  <h3 className="font-display text-lg font-semibold text-ink group-hover:text-accent transition-colors leading-snug">
-                    {page.data.title}
-                  </h3>
-
-                  {/* Description */}
-                  <p className="mt-1.5 text-sm text-ink-soft line-clamp-2">
-                    {page.data.description}
-                  </p>
-
-                  {/* Tags */}
-                  {page.data.tags.length > 0 && (
-                    <div className="mt-3 flex flex-wrap gap-1.5">
-                      {page.data.tags.map((tag: string) => (
-                        <span
-                          key={tag}
-                          className="rounded-full border border-line bg-paper-raised/60 px-2.5 py-0.5 font-mono text-[10px] text-ink-soft group-hover:border-accent/20 group-hover:text-accent/70 transition-colors"
-                        >
-                          {tag}
-                        </span>
-                      ))}
+                  {/* Contenu à droite */}
+                  <div className="flex-1 min-w-0">
+                    {/* Date + badge langue */}
+                    <div className="flex items-center gap-2 mb-1.5">
+                      <span className="font-mono text-xs text-ink-soft/60">{page.data.date}</span>
+                      <span className="inline-flex items-center gap-1 font-mono text-[9px] text-accent/70 border border-accent/20 bg-accent/5 rounded px-1.5 py-0.5">
+                        {pageLangLabel}
+                        <LanguageFlag lang={(page.data.lang as Language) || "fr"} />
+                      </span>
                     </div>
-                  )}
-                </div>
-              </Link>
+
+                    {/* Titre */}
+                    <h3 className="font-display text-lg font-semibold text-ink group-hover:text-accent transition-colors leading-snug">
+                      {page.data.title}
+                    </h3>
+
+                    {/* Description */}
+                    <p className="mt-1.5 text-sm text-ink-soft line-clamp-2">
+                      {page.data.description}
+                    </p>
+
+                    {/* Tags */}
+                    {page.data.tags.length > 0 && (
+                      <div className="mt-3 flex flex-wrap gap-1.5">
+                        {page.data.tags.map((tag: string) => (
+                          <span
+                            key={tag}
+                            className="rounded-full border border-line bg-paper-raised/60 px-2.5 py-0.5 font-mono text-[10px] text-ink-soft group-hover:border-accent/20 group-hover:text-accent/70 transition-colors"
+                          >
+                            {tag}
+                          </span>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                </Link>
+              </ScrollReveal>
             );
           })}
         </div>

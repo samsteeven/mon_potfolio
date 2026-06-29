@@ -36,6 +36,7 @@
 }
 
 html {
+  scroll-behavior: smooth;
   background: var(--paper);
   scrollbar-color: var(--line) var(--paper-raised);
   scrollbar-width: auto;
