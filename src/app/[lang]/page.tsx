@@ -26,21 +26,34 @@ export default async function HomePage({ params }: PageProps) {
     <main className="mx-auto max-w-3xl px-6">
       {/* ---------- HERO ---------- */}
       <section className="py-24 sm:py-32">
+        {/* Avatar */}
+        <div
+          className="fade-up mb-8"
+          style={{ animationDelay: "0ms" }}
+        >
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src="/avatar.png"
+            alt="Samen Steeve"
+            className="h-16 w-16 rounded-full border-2 border-line object-cover shadow-md"
+          />
+        </div>
+
         <p
           className="fade-up font-mono text-xs uppercase tracking-widest text-ink-soft"
-          style={{ animationDelay: "0ms" }}
+          style={{ animationDelay: "60ms" }}
         >
           {t.hero.location}
         </p>
         <h1
           className="fade-up mt-4 font-display text-4xl font-semibold tracking-tight sm:text-5xl"
-          style={{ animationDelay: "80ms" }}
+          style={{ animationDelay: "120ms" }}
         >
           Samen Steeve
         </h1>
         <p
           className="fade-up mt-4 max-w-xl text-lg text-ink-soft"
-          style={{ animationDelay: "160ms" }}
+          style={{ animationDelay: "180ms" }}
         >
           {t.hero.bio}
         </p>
@@ -205,10 +218,21 @@ export default async function HomePage({ params }: PageProps) {
                   style={{ animationDelay: `${i * 70}ms` }}
                   className="fade-up group flex items-start gap-5 py-5 transition-all duration-200 -mx-4 px-4 rounded-xl hover:bg-paper-raised/50"
                 >
-                  {/* Index */}
-                  <span className="shrink-0 mt-0.5 w-7 font-mono text-[11px] text-ink-soft/40 tabular-nums select-none group-hover:text-accent/50 transition-colors">
-                    {String(i + 1).padStart(2, "0")}
-                  </span>
+                  {/* Miniature de couverture OU index numéroté */}
+                  <div className="shrink-0 w-20 h-14 sm:w-28 sm:h-18 rounded-xl overflow-hidden border border-line bg-paper-raised flex items-center justify-center">
+                    {page.data.cover ? (
+                      /* eslint-disable-next-line @next/next/no-img-element */
+                      <img
+                        src={page.data.cover}
+                        alt={page.data.title}
+                        className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
+                      />
+                    ) : (
+                      <span className="font-mono text-[10px] sm:text-xs text-ink-soft/40 group-hover:text-accent transition-colors">
+                        {String(i + 1).padStart(2, "0")}
+                      </span>
+                    )}
+                  </div>
 
                   {/* Contenu principal */}
                   <div className="flex-1 min-w-0">

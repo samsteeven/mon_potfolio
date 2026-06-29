@@ -1,6 +1,6 @@
 ---
 title: "Pourquoi je teste les agents IA directement sur un projet de production"
-description: "Build in public : ce que j'apprends en intégrant MCP, LangGraph et CrewAI dans la stack de TribuneJustice."
+description: "Build in public : ce que j'apprends en intégrant MCP, LangGraph et CrewAI dans la stack de Tribunejustice."
 date: "2026-06-01"
 tags: ["Agents IA", "MCP", "LangChain"]
 published: true
@@ -8,7 +8,7 @@ lang: "fr"
 cover: "/covers/agents-ia.jpg"
 ---
 
-La plupart des tutos sur les agents IA tournent autour de démos jouets. J'ai préféré tester directement sur TribuneJustice, un projet en production avec de vraies contraintes de sécurité.
+La plupart des tutos sur les agents IA tournent autour de démos jouets. J'ai préféré tester directement sur Tribunejustice, un projet en production avec de vraies contraintes de sécurité.
 
 ## Pourquoi ce choix
 
@@ -18,9 +18,9 @@ Un agent qui fonctionne bien sur un exemple isolé ne dit rien de sa capacité �
 
 Un exemple Jupyter Notebook avec 3 lignes de LangChain, c'est bien pour apprendre. Mais ça ne prépare pas aux vraies questions : comment gérer les tokens, les timeouts, les erreurs réseau, ou les réponses partielles de l'API ?
 
-### Pourquoi TribuneJustice
+### Pourquoi Tribunejustice
 
-TribuneJustice est un système existant avec une API structurée, des règles métier précises et des contraintes de sécurité réelles. C'est le terrain idéal pour tester si un agent IA peut s'intégrer dans un contexte professionnel.
+Tribunejustice est un système existant avec une API structurée, des règles métier précises et des contraintes de sécurité réelles. C'est le terrain idéal pour tester si un agent IA peut s'intégrer dans un contexte professionnel.
 
 ## Mise en place du serveur MCP
 
@@ -44,7 +44,7 @@ Une chaîne LangChain classique est linéaire. LangGraph permet des boucles cond
 
 ## Ce que je couvre dans la suite
 
-1. Mise en place d'un serveur MCP connecté à TribuneJustice
+1. Mise en place d'un serveur MCP connecté à Tribunejustice
 2. Orchestration avec LangGraph
 3. Workflows multi-agents avec CrewAI
 4. Sécurisation de l'ensemble

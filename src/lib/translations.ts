@@ -7,7 +7,7 @@ export const translations = {
     },
     hero: {
       location: "Douala, Cameroon",
-      bio: "Full-Stack Developer & Tech Lead. I design systems that hold up in real-world conditions — currently at TribuneJustice, a legaltech platform.",
+      bio: "Full-Stack Developer & Tech Lead. I design systems that hold up in real-world conditions — currently at Tribunejustice, a legaltech platform.",
       status: "AI Agents — MCP · LangGraph · CrewAI",
       viewWork: "View Work",
       contact: "Contact",
@@ -15,7 +15,7 @@ export const translations = {
     about: {
       title: "About",
       q1: "What are you working on?",
-      a1: "Tech Lead & Project Manager at TribuneJustice, a legaltech platform. In parallel, I integrate AI agents directly into this production stack.",
+      a1: "Tech Lead & Project Manager at Tribunejustice, a legaltech platform. In parallel, I integrate AI agents directly into this production stack.",
       q2: "Education & Background",
       a2: "Master EADL at IUC (Douala), currently applying for Master II programs in France.",
       q3: "My Mission & Vision",
@@ -64,7 +64,7 @@ export const translations = {
     },
     hero: {
       location: "Douala, Cameroun",
-      bio: "Développeur full-stack & Tech Lead. Je conçois des systèmes qui tiennent en conditions réelles — actuellement sur TribuneJustice, une plateforme legaltech.",
+      bio: "Développeur full-stack & Tech Lead. Je conçois des systèmes qui tiennent en conditions réelles — actuellement sur Tribunejustice, une plateforme legaltech.",
       status: "Agents IA — MCP · LangGraph · CrewAI",
       viewWork: "Voir le travail",
       contact: "Contact",
@@ -72,7 +72,7 @@ export const translations = {
     about: {
       title: "À propos",
       q1: "Sur quoi tu travailles ?",
-      a1: "Tech Lead & Chef de projet sur TribuneJustice, une plateforme legaltech. En parallèle, j'intègre des agents IA directement dans cette stack de production.",
+      a1: "Tech Lead & Chef de projet sur Tribunejustice, une plateforme legaltech. En parallèle, j'intègre des agents IA directement dans cette stack de production.",
       q2: "Formation & Études",
       a2: "Master EADL à l'IUC (Douala), avec des candidatures en cours pour un Master II en France.",
       q3: "Ma Mission & Vision",
