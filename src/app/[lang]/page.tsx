@@ -118,7 +118,7 @@ export default async function HomePage({ params }: PageProps) {
 
         {/* Let's Connect */}
         <div
-          className="fade-up mt-20 pt-10 border-t border-line/50 max-w-sm"
+          className="fade-up mt-12 pt-10 border-t border-line/50 max-w-sm"
           style={{ animationDelay: "400ms" }}
         >
           <p className="font-mono text-[11px] font-semibold uppercase tracking-widest text-ink/80">
