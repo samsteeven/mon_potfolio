@@ -4,6 +4,7 @@ import { useMemo, useState } from "react";
 import Link from "next/link";
 import { Search, X } from "lucide-react";
 import { translations, type Language } from "@/lib/translations";
+import { LanguageFlag } from "@/components/language-flag";
 
 interface WritingItem {
   url: string;
@@ -100,8 +101,8 @@ export function WritingList({ items, lang }: { items: WritingItem[]; lang: Langu
       <div className="flex flex-col gap-4">
         {filtered.map((item, i) => {
           const pageLangLabel = item.lang === "en"
-            ? (lang === "en" ? "English 🇬🇧" : "Anglais 🇬🇧")
-            : (lang === "en" ? "French 🇫🇷" : "Français 🇫🇷");
+            ? (lang === "en" ? "English" : "Anglais")
+            : (lang === "en" ? "French" : "Français");
 
           return (
             <Link
@@ -115,8 +116,11 @@ export function WritingList({ items, lang }: { items: WritingItem[]; lang: Langu
                   <h3 className="font-display text-base font-semibold transition group-hover:text-accent">
                     {item.title}
                   </h3>
-                  <span className="font-mono text-[10px] text-accent/80 border border-accent/20 bg-accent/5 rounded px-1.5 py-0.5">
-                    {lang === "en" ? `In ${pageLangLabel}` : `En ${pageLangLabel}`}
+                  <span className="inline-flex items-center gap-1.5 font-mono text-[10px] text-accent/80 border border-accent/20 bg-accent/5 rounded px-1.5 py-0.5">
+                    <span>
+                      {lang === "en" ? `In ${pageLangLabel}` : `En ${pageLangLabel}`}
+                    </span>
+                    <LanguageFlag lang={(item.lang as Language) || "fr"} />
                   </span>
                 </div>
                 <span className="shrink-0 font-mono text-[11px] text-ink-soft">{item.date}</span>

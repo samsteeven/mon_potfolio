@@ -7,6 +7,7 @@ import { getMDXComponents } from "@/components/mdx/mdx-components";
 import { StatusDot } from "@/components/status-dot";
 import { translations, type Language } from "@/lib/translations";
 import { TableOfContents, type TocItem } from "@/components/table-of-contents";
+import { LanguageFlag } from "@/components/language-flag";
 
 interface PageProps {
   params: Promise<{ lang: Language; slug: string }>;
@@ -47,11 +48,11 @@ export default async function WorkPage({ params }: PageProps) {
   const postLangLabel =
     page.data.lang === "en"
       ? lang === "en"
-        ? "English 🇬🇧"
-        : "Anglais 🇬🇧"
+        ? "English"
+        : "Anglais"
       : lang === "en"
-        ? "French 🇫🇷"
-        : "Français 🇫🇷";
+        ? "French"
+        : "Français";
 
   // Extraction des headings depuis le TOC généré par Fumadocs
   const tocItems: TocItem[] = (page.data.toc ?? [])
@@ -97,8 +98,11 @@ export default async function WorkPage({ params }: PageProps) {
         </p>
         <div className="mt-6 flex flex-wrap items-center gap-3">
           <StatusDot status={page.data.status} />
-          <span className="font-mono text-[10px] text-accent/80 border border-accent/20 bg-accent/5 rounded px-1.5 py-0.5">
-            {lang === "en" ? `Post in ${postLangLabel}` : `Rédigé en ${postLangLabel}`}
+          <span className="inline-flex items-center gap-1.5 font-mono text-[10px] text-accent/80 border border-accent/20 bg-accent/5 rounded px-1.5 py-0.5">
+            <span>
+              {lang === "en" ? `Post in ${postLangLabel}` : `Rédigé en ${postLangLabel}`}
+            </span>
+            <LanguageFlag lang={page.data.lang || "fr"} />
           </span>
           <div className="flex flex-wrap gap-2">
             {page.data.stack.map((tech) => (

@@ -3,6 +3,7 @@ import { ArrowUpRight } from "lucide-react";
 import { workSource, writingSource } from "@/lib/source";
 import { StatusDot } from "@/components/status-dot";
 import { translations, type Language } from "@/lib/translations";
+import { LanguageFlag } from "@/components/language-flag";
 
 interface PageProps {
   params: Promise<{ lang: Language }>;
@@ -137,8 +138,8 @@ export default async function HomePage({ params }: PageProps) {
         <div className="mt-8 flex flex-col gap-4">
           {work.map((page, i) => {
             const pageLangLabel = page.data.lang === "en" 
-              ? (lang === "en" ? "English 🇬🇧" : "Anglais 🇬🇧") 
-              : (lang === "en" ? "French 🇫🇷" : "Français 🇫🇷");
+              ? (lang === "en" ? "English" : "Anglais") 
+              : (lang === "en" ? "French" : "Français");
 
             return (
               <Link
@@ -153,8 +154,11 @@ export default async function HomePage({ params }: PageProps) {
                       {page.data.title}
                     </h3>
                     <StatusDot status={page.data.status} />
-                    <span className="font-mono text-[10px] text-accent/80 border border-accent/20 bg-accent/5 rounded px-1.5 py-0.5">
-                      {lang === "en" ? `In ${pageLangLabel}` : `En ${pageLangLabel}`}
+                    <span className="inline-flex items-center gap-1.5 font-mono text-[10px] text-accent/80 border border-accent/20 bg-accent/5 rounded px-1.5 py-0.5">
+                      <span>
+                        {lang === "en" ? `In ${pageLangLabel}` : `En ${pageLangLabel}`}
+                      </span>
+                      <LanguageFlag lang={(page.data.lang as Language) || "fr"} />
                     </span>
                   </div>
                   <ArrowUpRight className="h-4 w-4 shrink-0 text-ink-soft transition-all duration-300 group-hover:-translate-y-0.5 group-hover:translate-x-0.5 group-hover:text-accent" />
@@ -182,8 +186,8 @@ export default async function HomePage({ params }: PageProps) {
         <div className="mt-8 flex flex-col gap-3">
           {writing.map((page, i) => {
             const pageLangLabel = page.data.lang === "en" 
-              ? (lang === "en" ? "English 🇬🇧" : "Anglais 🇬🇧") 
-              : (lang === "en" ? "French 🇫🇷" : "Français 🇫🇷");
+              ? (lang === "en" ? "English" : "Anglais") 
+              : (lang === "en" ? "French" : "Français");
 
             return (
               <Link
@@ -197,8 +201,11 @@ export default async function HomePage({ params }: PageProps) {
                     <h3 className="font-display text-base font-semibold transition group-hover:text-accent">
                       {page.data.title}
                     </h3>
-                    <span className="font-mono text-[10px] text-accent/80 border border-accent/20 bg-accent/5 rounded px-1.5 py-0.5">
-                      {lang === "en" ? `In ${pageLangLabel}` : `En ${pageLangLabel}`}
+                    <span className="inline-flex items-center gap-1.5 font-mono text-[10px] text-accent/80 border border-accent/20 bg-accent/5 rounded px-1.5 py-0.5">
+                      <span>
+                        {lang === "en" ? `In ${pageLangLabel}` : `En ${pageLangLabel}`}
+                      </span>
+                      <LanguageFlag lang={(page.data.lang as Language) || "fr"} />
                     </span>
                   </div>
                   <span className="shrink-0 font-mono text-[11px] text-ink-soft">
