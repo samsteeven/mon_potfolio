@@ -35,7 +35,7 @@ export function SiteHeader({ lang }: { lang: Language }) {
           href={`/${lang}`}
           className="font-display text-sm font-semibold tracking-tight text-ink transition hover:opacity-80"
         >
-          Samen Steeve<span className="text-accent">.</span>
+          SAMEN STEEVE<span className="text-accent">.</span>
         </Link>
 
         {/* Navigation desktop (md+) */}
