@@ -58,17 +58,17 @@ export default async function HomePage({ params }: PageProps) {
       {/* ---------- HERO ---------- */}
       <section className="py-24 sm:py-32">
         {/* Avatar */}
-        <div
-          className="fade-up mb-8"
-          style={{ animationDelay: "0ms" }}
-        >
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
-            src="/avatar.png"
-            alt="Samen Steeve"
-            className="h-24 w-24 sm:h-28 sm:w-28 rounded-full border-2 border-line object-cover shadow-md"
-          />
-        </div>
+        {/*<div*/}
+        {/*  className="fade-up mb-8"*/}
+        {/*  style={{ animationDelay: "0ms" }}*/}
+        {/*>*/}
+        {/*  /!* eslint-disable-next-line @next/next/no-img-element *!/*/}
+        {/*  <img*/}
+        {/*    src="/avatar.png"*/}
+        {/*    alt="Samen Steeve"*/}
+        {/*    className="h-24 w-24 sm:h-28 sm:w-28 rounded-full border-2 border-line object-cover shadow-md"*/}
+        {/*  />*/}
+        {/*</div>*/}
 
         <p
           className="fade-up font-mono text-xs uppercase tracking-widest text-ink-soft"
@@ -183,12 +183,9 @@ export default async function HomePage({ params }: PageProps) {
         <h2 className="font-display text-2xl font-semibold">{t.stack.title}</h2>
         <div className="mt-8 flex flex-col divide-y divide-line">
           {t.stack.items.map((item, i) => (
-            <a
+            <div
               key={item.name}
-              href={item.url}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="fade-up group flex items-center gap-5 py-5 transition-all duration-200 hover:bg-paper-raised/40 -mx-4 px-4 rounded-xl"
+              className="fade-up group flex items-center justify-between gap-5 py-5 -mx-4 px-4 rounded-xl transition duration-200 hover:bg-paper-raised/30"
               style={{ animationDelay: `${i * 60}ms` }}
             >
               {/* Numéro */}
@@ -198,7 +195,7 @@ export default async function HomePage({ params }: PageProps) {
 
               {/* Contenu */}
               <div className="flex-1 min-w-0">
-                <h3 className="font-display text-base font-semibold text-ink group-hover:text-accent transition-colors">
+                <h3 className="font-display text-base font-semibold text-ink">
                   {item.name}
                 </h3>
                 <p className="mt-0.5 text-sm text-ink-soft leading-relaxed">
@@ -206,9 +203,17 @@ export default async function HomePage({ params }: PageProps) {
                 </p>
               </div>
 
-              {/* Flèche */}
-              <ArrowUpRight className="shrink-0 h-4 w-4 text-ink-soft/30 transition-all duration-300 group-hover:text-accent group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
-            </a>
+              {/* Flèche cliquable */}
+              <a
+                href={item.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="shrink-0 p-2 -mr-2 rounded-lg text-ink-soft/30 hover:text-accent hover:bg-accent/5 transition-all duration-200"
+                aria-label={`Visit ${item.name}`}
+              >
+                <ArrowUpRight className="h-4 w-4 transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
+              </a>
+            </div>
           ))}
         </div>
       </section>
@@ -218,46 +223,46 @@ export default async function HomePage({ params }: PageProps) {
         <h2 className="font-display text-2xl font-semibold">{t.work.title}</h2>
         <div className="mt-8 flex flex-col gap-4">
           {work.map((page, i) => {
-            const pageLangLabel = page.data.lang === "en" 
-              ? (lang === "en" ? "English 🇬🇧" : "Anglais 🇬🇧") 
-              : (lang === "en" ? "French 🇫🇷" : "Français 🇫🇷");
-
             return (
-              <Link
+              <div
                 key={page.url}
-                href={`/${lang}${page.url}`}
                 style={{ animationDelay: `${i * 80}ms` }}
-                className="fade-up group flex flex-col gap-3 rounded-2xl border border-line bg-paper-raised/20 p-6 transition-all duration-300 hover:border-accent/30 hover:bg-paper-raised hover:shadow-md"
+                className="fade-up flex flex-col gap-4 rounded-2xl border border-line bg-paper-raised/20 p-6 transition-all duration-300 hover:border-accent/15 hover:bg-paper-raised hover:shadow-sm"
               >
-                <div className="flex items-start justify-between gap-4">
-                  <div className="flex flex-col gap-1.5 sm:flex-row sm:items-center sm:gap-3">
-                    <div className="flex items-center gap-2">
-                      <h3 className="font-display text-lg font-semibold transition group-hover:text-accent">
-                        {page.data.title}
-                      </h3>
-                      <StatusDot status={page.data.status} />
-                    </div>
-                    <span className="inline-flex items-center gap-1.5 self-start font-mono text-[10px] text-accent/80 border border-accent/20 bg-accent/5 rounded px-1.5 py-0.5">
-                      <span>
-                        {lang === "en" ? `In ${pageLangLabel}` : `En ${pageLangLabel}`}
-                      </span>
-                      <LanguageFlag lang={(page.data.lang as Language) || "fr"} />
-                    </span>
+                <div className="flex flex-col gap-1.5 sm:flex-row sm:items-center sm:justify-between">
+                  <div className="flex items-center gap-3">
+                    <h3 className="font-display text-lg font-semibold text-ink">
+                      {page.data.title}
+                    </h3>
+                    <StatusDot status={page.data.status} />
                   </div>
-                  <ArrowUpRight className="h-4 w-4 shrink-0 mt-1 text-ink-soft transition-all duration-300 group-hover:-translate-y-0.5 group-hover:translate-x-0.5 group-hover:text-accent" />
+                  <span className="font-mono text-[11px] text-ink-soft/70">
+                    {page.data.role} · {page.data.date}
+                  </span>
                 </div>
-                <p className="text-sm text-ink-soft">{page.data.description}</p>
-                <div className="mt-1 flex flex-wrap items-center gap-2">
-                  {page.data.stack.map((tech) => (
-                    <span
-                      key={tech}
-                      className="rounded border border-line bg-paper-raised/60 px-2 py-0.5 font-mono text-[10px] text-ink-soft transition duration-300 group-hover:border-accent/15 group-hover:bg-accent/5 group-hover:text-accent"
+                <p className="text-sm leading-relaxed text-ink-soft">{page.data.description}</p>
+                <div className="flex flex-wrap items-center justify-between gap-3 pt-3 border-t border-line/40">
+                  <div className="flex flex-wrap items-center gap-2">
+                    {page.data.stack.map((tech) => (
+                      <span
+                        key={tech}
+                        className="rounded-full border border-line bg-paper-raised/60 px-2.5 py-0.5 font-mono text-[9px] text-ink-soft transition duration-300"
+                      >
+                        {tech}
+                      </span>
+                    ))}
+                  </div>
+                  {page.data.featured && (
+                    <Link
+                      href={`/${lang}${page.url}`}
+                      className="inline-flex items-center gap-1.5 font-mono text-[11px] uppercase tracking-wide text-accent/80 hover:text-accent transition-all duration-200 hover:gap-2 shrink-0"
                     >
-                      {tech}
-                    </span>
-                  ))}
+                      {t.work.caseStudy}
+                      <ArrowUpRight className="h-3.5 w-3.5" />
+                    </Link>
+                  )}
                 </div>
-              </Link>
+              </div>
             );
           })}
         </div>

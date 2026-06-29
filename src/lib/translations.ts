@@ -12,6 +12,10 @@ export const translations = {
       readPosts: "Read all posts",
       scheduleMeeting: "Schedule a meeting",
     },
+    work: {
+      title: "Work",
+      caseStudy: "Read case study",
+    },
     about: {
       title: "About",
       q1: "What are you working on?",
@@ -20,13 +24,6 @@ export const translations = {
       a2: "Master EADL at IUC (Douala), currently applying for Master II programs in France.",
       q3: "My Mission & Vision",
       a3: "Contributing concretely to the digital development of Cameroon and sub-Saharan Africa with robust, production-grade tools.",
-    },
-    work: {
-      title: "Work",
-      status: {
-        shipped: "Shipped",
-        "in-progress": "In Progress",
-      },
     },
     writing: {
       title: "Writing",
@@ -80,10 +77,7 @@ export const translations = {
     },
     work: {
       title: "Travail",
-      status: {
-        shipped: "Livré",
-        "in-progress": "En cours",
-      },
+      caseStudy: "Lire l'étude de cas",
     },
     writing: {
       title: "Écrits",
