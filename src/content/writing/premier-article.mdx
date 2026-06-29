@@ -1,0 +1,52 @@
+---
+title: "Pourquoi je teste les agents IA directement sur un projet de production"
+description: "Build in public : ce que j'apprends en intégrant MCP, LangGraph et CrewAI dans la stack de TribuneJustice."
+date: "2026-06-01"
+tags: ["Agents IA", "MCP", "LangChain"]
+published: true
+lang: "fr"
+cover: "/covers/agents-ia.jpg"
+---
+
+La plupart des tutos sur les agents IA tournent autour de démos jouets. J'ai préféré tester directement sur TribuneJustice, un projet en production avec de vraies contraintes de sécurité.
+
+## Pourquoi ce choix
+
+Un agent qui fonctionne bien sur un exemple isolé ne dit rien de sa capacité à tenir dans une stack existante, avec ses propres règles d'auth, son chiffrement, et ses contraintes réseau.
+
+### Le problème des démos isolées
+
+Un exemple Jupyter Notebook avec 3 lignes de LangChain, c'est bien pour apprendre. Mais ça ne prépare pas aux vraies questions : comment gérer les tokens, les timeouts, les erreurs réseau, ou les réponses partielles de l'API ?
+
+### Pourquoi TribuneJustice
+
+TribuneJustice est un système existant avec une API structurée, des règles métier précises et des contraintes de sécurité réelles. C'est le terrain idéal pour tester si un agent IA peut s'intégrer dans un contexte professionnel.
+
+## Mise en place du serveur MCP
+
+Le Model Context Protocol (MCP) est un standard proposé par Anthropic pour permettre aux LLMs de dialoguer avec des services externes de façon structurée.
+
+### Définir les outils exposés
+
+Chaque outil MCP correspond à une action que l'agent peut déclencher : lire un dossier, créer une notification, récupérer une liste de documents. La définition est simple — un nom, une description et un schéma JSON.
+
+### Gestion des permissions
+
+La partie la plus délicate reste la gestion des permissions. Un agent ne doit pas pouvoir déclencher n'importe quelle action pour n'importe quel utilisateur. On a mis en place un système de scopes par token.
+
+## Orchestration avec LangGraph
+
+LangGraph permet de définir des workflows complexes sous forme de graphe de nœuds. Chaque nœud est une étape du raisonnement de l'agent.
+
+### Avantages par rapport à une chaîne simple
+
+Une chaîne LangChain classique est linéaire. LangGraph permet des boucles conditionnelles, des branches parallèles et des points de contrôle humains — exactement ce dont on a besoin pour des workflows de validation juridique.
+
+## Ce que je couvre dans la suite
+
+1. Mise en place d'un serveur MCP connecté à TribuneJustice
+2. Orchestration avec LangGraph
+3. Workflows multi-agents avec CrewAI
+4. Sécurisation de l'ensemble
+
+La suite arrive au fil des semaines.

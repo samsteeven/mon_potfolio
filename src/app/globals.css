@@ -1,0 +1,101 @@
+@import "tailwindcss";
+
+/* Active le mode sombre par classe .dark plutôt que uniquement par préférence système */
+@custom-variant dark (&:where(.dark, .dark *));
+
+:root {
+  color-scheme: light;
+  --paper: #f4f6f9;
+  --paper-raised: #ffffff;
+  --ink: #0f172a;
+  --ink-soft: #475569;
+  --line: #e2e8f0;
+  --accent: #4f46e5;
+}
+
+.dark {
+  color-scheme: dark;
+  --paper: #0b0f19;
+  --paper-raised: #151e33;
+  --ink: #f1f5f9;
+  --ink-soft: #94a3b8;
+  --line: #1e293b;
+  --accent: #818cf8;
+}
+
+@theme inline {
+  --color-paper: var(--paper);
+  --color-paper-raised: var(--paper-raised);
+  --color-ink: var(--ink);
+  --color-ink-soft: var(--ink-soft);
+  --color-line: var(--line);
+  --color-accent: var(--accent);
+  --font-display: "Instrument Sans", ui-sans-serif, system-ui, sans-serif;
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, "SFMono-Regular", monospace;
+}
+
+html {
+  background: var(--paper);
+  scrollbar-color: var(--line) var(--paper-raised);
+  scrollbar-width: auto;
+}
+
+/* Personnalisation moderne de la scrollbar pour WebKit (Chrome, Safari, Edge) */
+::-webkit-scrollbar {
+  width: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--paper-raised);
+  border-left: 1px solid var(--line);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--line);
+  border: 2px solid var(--paper-raised);
+  border-radius: 6px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--ink-soft);
+}
+
+body {
+  transition: background-color 0.2s ease, color 0.2s ease;
+  background-image: radial-gradient(circle at 50% -200px, rgba(79, 70, 229, 0.07), transparent 800px);
+  background-repeat: no-repeat;
+}
+
+.dark body {
+  background-image: radial-gradient(circle at 50% -200px, rgba(129, 140, 248, 0.09), transparent 800px);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-pulse {
+    animation: none;
+  }
+  *,
+  *::before,
+  *::after {
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+  }
+}
+
+/* Micro-animation d'entrée — utilisée avec un délai échelonné en ligne
+   (style={{ animationDelay: ... }}) pour faire apparaître les listes en cascade. */
+@keyframes fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.fade-up {
+  animation: fade-up 0.6s ease-out both;
+}

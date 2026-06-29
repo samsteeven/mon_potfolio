@@ -1,0 +1,61 @@
+import type { Metadata } from "next";
+import "../globals.css";
+import { SiteHeader } from "@/components/site-header";
+import { SiteFooter } from "@/components/site-footer";
+import type { Language } from "@/lib/translations";
+
+export const metadata: Metadata = {
+  title: "Samen Steeve — Full-Stack Developer & Tech Lead",
+  description:
+    "Full-Stack Developer & Tech Lead, building robust systems and autonomous AI agents.",
+  metadataBase: new URL(
+    process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000"
+  ),
+};
+
+// Generates static paths for both languages
+export function generateStaticParams() {
+  return [{ lang: "en" }, { lang: "fr" }];
+}
+
+// Applique le thème stocké avant le premier rendu, pour éviter un flash
+// de la mauvaise couleur au chargement.
+const themeScript = `
+  (function () {
+    try {
+      var stored = localStorage.getItem('theme');
+      var theme = stored || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+      if (theme === 'dark') document.documentElement.classList.add('dark');
+    } catch (e) {}
+  })();
+`;
+
+interface LayoutProps {
+  children: React.ReactNode;
+  params: Promise<{ lang: string }>;
+}
+
+export default async function RootLayout({ children, params }: LayoutProps) {
+  const { lang: rawLang } = await params;
+  const lang = (rawLang === "fr" ? "fr" : "en") as Language;
+
+  return (
+    <html lang={lang} className="h-full antialiased" suppressHydrationWarning>
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: themeScript }} />
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        {/* eslint-disable-next-line @next/next/no-page-custom-font -- pattern valide en App Router pour des polices non gérées par next/font */}
+        <link
+          href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@500;600&family=Inter:wght@400;500&family=JetBrains+Mono:wght@400;500&display=swap"
+          rel="stylesheet"
+        />
+      </head>
+      <body className="flex min-h-full flex-col bg-paper text-ink font-sans antialiased" suppressHydrationWarning>
+        <SiteHeader lang={lang} />
+        <div className="flex-1">{children}</div>
+        <SiteFooter lang={lang} />
+      </body>
+    </html>
+  );
+}

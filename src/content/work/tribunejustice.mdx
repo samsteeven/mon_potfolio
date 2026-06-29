@@ -1,0 +1,29 @@
+---
+title: "TribuneJustice"
+description: "Plateforme legaltech avec paiements en séquestre, communication temps réel et chiffrement des données sensibles."
+date: "2026-01-15"
+role: "Tech Lead & Chef de projet"
+stack: ["Laravel 11", "Angular", "Next.js", "Docker", "Redis", "Laravel Reverb"]
+status: "in-progress"
+featured: true
+lang: "fr"
+---
+
+## Le contexte
+
+TribuneJustice est une plateforme de services juridiques qui doit gérer des données sensibles, des paiements en séquestre entre clients et avocats, et de la communication en temps réel — tout en restant utilisable par des gens qui ne sont pas familiers avec la tech.
+
+## Les décisions techniques
+
+- **Authentification** : SSO via JWT, pensé pour supporter plusieurs applications clientes (Angular + Next.js) sur la même base d'identité.
+- **Paiements** : séquestre (escrow) via Laravel Wallet, pour sécuriser les transactions entre les parties jusqu'à la résolution d'un dossier.
+- **Données sensibles** : chiffrement AES-256-CBC au niveau applicatif, en complément du chiffrement at-rest classique.
+- **Réseau** : durcissement via Cloudflare (WAF + DNSSEC) pour limiter l'exposition d'une plateforme qui traite des informations juridiques.
+
+## Ce que j'ai appris
+
+Piloter à la fois l'architecture et l'équipe sur un projet à enjeux (données juridiques, argent en jeu) m'a forcé à arbitrer en permanence entre rapidité de livraison et rigueur — typiquement sur la validation des formulaires et la cohérence des clés i18n entre les modules.
+
+## La suite
+
+Le projet sert actuellement de terrain d'expérimentation pour l'intégration d'agents IA (MCP, LangGraph, CrewAI) directement dans la stack de production.
