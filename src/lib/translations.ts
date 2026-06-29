@@ -47,12 +47,12 @@ export const translations = {
     stack: {
       title: "Tech Stack",
       items: [
-        { name: "Next.js / React", desc: "My go-to framework for building high-performance, SEO-friendly web applications." },
-        { name: "TypeScript", desc: "Type safety and clarity for building robust and bug-free codebases." },
-        { name: "Node.js", desc: "The engine behind my fast and asynchronous API services." },
-        { name: "AI Agents (MCP / LangGraph)", desc: "My emerging expertise in orchestrating production-connected autonomous workflows." },
-        { name: "Laravel", desc: "The ideal tool to rapidly scaffold robust and secure backends with elegance." },
-        { name: "Tailwind CSS", desc: "The absolute standard for crafting sleek, modern, and responsive UIs at speed." },
+        { name: "Next.js / React", url: "https://nextjs.org", desc: "My go-to framework for building high-performance, SEO-friendly web applications." },
+        { name: "TypeScript", url: "https://www.typescriptlang.org", desc: "Type safety and clarity for building robust and bug-free codebases." },
+        { name: "Node.js", url: "https://nodejs.org", desc: "The engine behind my fast and asynchronous API services." },
+        { name: "AI Agents (MCP / LangGraph)", url: "https://langchain-ai.github.io/langgraph/", desc: "My emerging expertise in orchestrating production-connected autonomous workflows." },
+        { name: "Laravel", url: "https://laravel.com", desc: "The ideal tool to rapidly scaffold robust and secure backends with elegance." },
+        { name: "Tailwind CSS", url: "https://tailwindcss.com", desc: "The absolute standard for crafting sleek, modern, and responsive UIs at speed." },
       ]
     },
   },
@@ -104,12 +104,12 @@ export const translations = {
     stack: {
       title: "Stack technique",
       items: [
-        { name: "Next.js / React", desc: "Mon framework de prédilection pour bâtir des applications web performantes et optimisées pour le SEO." },
-        { name: "TypeScript", desc: "La sécurité et la clarté du typage statique pour des bases de code robustes et sans bugs." },
-        { name: "Node.js", desc: "Le moteur de mes APIs et serveurs, optimisé pour les entrées/sorties asynchrones rapides." },
-        { name: "Agents IA (MCP / LangGraph)", desc: "Mon expertise émergente pour orchestrer des workflows autonomes connectés à la production." },
-        { name: "Laravel", desc: "L'outil idéal pour structurer rapidement des backends robustes et sécurisés avec élégance." },
-        { name: "Tailwind CSS", desc: "L'évidence pour designer des interfaces fluides, propres et responsives à la vitesse de la lumière." },
+        { name: "Next.js / React", url: "https://nextjs.org", desc: "Mon framework de prédilection pour bâtir des applications web performantes et optimisées pour le SEO." },
+        { name: "TypeScript", url: "https://www.typescriptlang.org", desc: "La sécurité et la clarté du typage statique pour des bases de code robustes et sans bugs." },
+        { name: "Node.js", url: "https://nodejs.org", desc: "Le moteur de mes APIs et serveurs, optimisé pour les entrées/sorties asynchrones rapides." },
+        { name: "Agents IA (MCP / LangGraph)", url: "https://langchain-ai.github.io/langgraph/", desc: "Mon expertise émergente pour orchestrer des workflows autonomes connectés à la production." },
+        { name: "Laravel", url: "https://laravel.com", desc: "L'outil idéal pour structurer rapidement des backends robustes et sécurisés avec élégance." },
+        { name: "Tailwind CSS", url: "https://tailwindcss.com", desc: "L'évidence pour designer des interfaces fluides, propres et responsives à la vitesse de la lumière." },
       ]
     },
   },

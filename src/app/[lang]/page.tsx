@@ -99,20 +99,34 @@ export default async function HomePage({ params }: PageProps) {
       {/* ---------- STACK ---------- */}
       <section id="stack" className="border-t border-line py-20">
         <h2 className="font-display text-2xl font-semibold">{t.stack.title}</h2>
-        <div className="mt-8 grid grid-cols-1 gap-6 sm:grid-cols-2">
+        <div className="mt-8 flex flex-col divide-y divide-line">
           {t.stack.items.map((item, i) => (
-            <div
+            <a
               key={item.name}
-              className="fade-up flex flex-col justify-between rounded-2xl border border-line bg-paper-raised/40 p-6 shadow-sm transition-all duration-300 hover:border-accent/30 hover:bg-paper-raised hover:shadow-md"
-              style={{ animationDelay: `${i * 80}ms` }}
+              href={item.url}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="fade-up group flex items-center gap-5 py-5 transition-all duration-200 hover:bg-paper-raised/40 -mx-4 px-4 rounded-xl"
+              style={{ animationDelay: `${i * 60}ms` }}
             >
-              <div>
-                <h3 className="font-mono text-xs uppercase tracking-wider text-accent font-semibold">
+              {/* Numéro */}
+              <span className="shrink-0 w-8 font-mono text-[11px] text-ink-soft/40 tabular-nums select-none group-hover:text-accent/50 transition-colors">
+                {String(i + 1).padStart(2, "0")}
+              </span>
+
+              {/* Contenu */}
+              <div className="flex-1 min-w-0">
+                <h3 className="font-display text-base font-semibold text-ink group-hover:text-accent transition-colors">
                   {item.name}
                 </h3>
-                <p className="mt-4 text-sm leading-relaxed text-ink-soft">{item.desc}</p>
+                <p className="mt-0.5 text-sm text-ink-soft leading-relaxed">
+                  {item.desc}
+                </p>
               </div>
-            </div>
+
+              {/* Flèche */}
+              <ArrowUpRight className="shrink-0 h-4 w-4 text-ink-soft/30 transition-all duration-300 group-hover:text-accent group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
+            </a>
           ))}
         </div>
       </section>
