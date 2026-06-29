@@ -35,7 +35,7 @@ export default async function HomePage({ params }: PageProps) {
           <img
             src="/avatar.png"
             alt="Samen Steeve"
-            className="h-16 w-16 rounded-full border-2 border-line object-cover shadow-md"
+            className="h-24 w-24 sm:h-28 sm:w-28 rounded-full border-2 border-line object-cover shadow-md"
           />
         </div>
 
@@ -151,8 +151,8 @@ export default async function HomePage({ params }: PageProps) {
         <div className="mt-8 flex flex-col gap-4">
           {work.map((page, i) => {
             const pageLangLabel = page.data.lang === "en" 
-              ? (lang === "en" ? "English" : "Anglais") 
-              : (lang === "en" ? "French" : "Français");
+              ? (lang === "en" ? "English 🇬🇧" : "Anglais 🇬🇧") 
+              : (lang === "en" ? "French 🇫🇷" : "Français 🇫🇷");
 
             return (
               <Link
@@ -219,7 +219,7 @@ export default async function HomePage({ params }: PageProps) {
                   className="fade-up group flex items-start gap-5 py-5 transition-all duration-200 -mx-4 px-4 rounded-xl hover:bg-paper-raised/50"
                 >
                   {/* Miniature de couverture OU index numéroté */}
-                  <div className="shrink-0 w-20 h-14 sm:w-28 sm:h-18 rounded-xl overflow-hidden border border-line bg-paper-raised flex items-center justify-center">
+                  <div className="shrink-0 w-24 h-16 sm:w-36 sm:h-20 rounded-xl overflow-hidden border border-line bg-paper-raised flex items-center justify-center">
                     {page.data.cover ? (
                       /* eslint-disable-next-line @next/next/no-img-element */
                       <img
