@@ -47,7 +47,7 @@ export default async function RootLayout({ children, params }: LayoutProps) {
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         {/* eslint-disable-next-line @next/next/no-page-custom-font -- pattern valide en App Router pour des polices non gérées par next/font */}
         <link
-          href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@500;600&family=Inter:wght@400;500&family=JetBrains+Mono:wght@400;500&display=swap"
+          href="https://fonts.googleapis.com/css2?family=Outfit:wght@600;700;800&family=Instrument+Sans:wght@500;600&family=Inter:wght@400;500&family=JetBrains+Mono:wght@400;500&display=swap"
           rel="stylesheet"
         />
       </head>

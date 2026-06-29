@@ -77,13 +77,13 @@ export default async function HomePage({ params }: PageProps) {
           {t.hero.location}
         </p>
         <h1
-          className="fade-up mt-4 font-display text-4xl font-semibold tracking-tight sm:text-5xl"
-          style={{ animationDelay: "120ms" }}
+          className="fade-up mt-4 text-5xl font-extrabold tracking-tight sm:text-6xl text-ink"
+          style={{ fontFamily: "'Outfit', sans-serif", animationDelay: "120ms" }}
         >
           Samen Steeve
         </h1>
         <p
-          className="fade-up mt-4 max-w-xl text-lg text-ink-soft"
+          className="fade-up mt-5 max-w-xl text-lg text-ink-soft"
           style={{ animationDelay: "180ms" }}
         >
           {t.hero.bio}
@@ -117,19 +117,19 @@ export default async function HomePage({ params }: PageProps) {
 
         {/* Let's Connect */}
         <div
-          className="fade-up mt-16 pt-8 border-t border-line/50 max-w-xs"
+          className="fade-up mt-20 pt-10 border-t border-line/50 max-w-sm"
           style={{ animationDelay: "400ms" }}
         >
-          <p className="font-mono text-[10px] uppercase tracking-widest text-ink-soft/60">
+          <p className="font-mono text-[11px] font-semibold uppercase tracking-widest text-ink/80">
             Let&apos;s connect
           </p>
-          <div className="mt-4 flex gap-5 text-ink-soft">
+          <div className="mt-5 flex gap-6 text-ink-soft">
             <a
               href="mailto:contact@samensteeve.com"
               className="transition-all duration-200 hover:text-accent hover:scale-110"
               aria-label="Email"
             >
-              <Mail className="h-5 w-5" />
+              <Mail className="h-7 w-7" />
             </a>
             <a
               href="https://linkedin.com/in/samsteeven"
@@ -138,7 +138,7 @@ export default async function HomePage({ params }: PageProps) {
               className="transition-all duration-200 hover:text-accent hover:scale-110"
               aria-label="LinkedIn"
             >
-              <LinkedinIcon className="h-5 w-5" />
+              <LinkedinIcon className="h-7 w-7" />
             </a>
             <a
               href="https://github.com/samsteeven"
@@ -147,7 +147,7 @@ export default async function HomePage({ params }: PageProps) {
               className="transition-all duration-200 hover:text-accent hover:scale-110"
               aria-label="GitHub"
             >
-              <GithubIcon className="h-5 w-5" />
+              <GithubIcon className="h-7 w-7" />
             </a>
           </div>
         </div>

@@ -40,6 +40,8 @@ export const translations = {
     },
     footer: {
       location: "Douala, Cameroon",
+      specialty: "Full-Stack Developer & Tech Lead",
+      rights: "All rights reserved",
     },
     stack: {
       title: "Tech Stack",
@@ -94,6 +96,8 @@ export const translations = {
     },
     footer: {
       location: "Douala, Cameroun",
+      specialty: "Développeur Full-Stack & Tech Lead",
+      rights: "Tous droits réservés",
     },
     stack: {
       title: "Stack technique",
