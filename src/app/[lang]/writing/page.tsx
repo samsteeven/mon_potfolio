@@ -32,6 +32,7 @@ export default async function WritingIndexPage({ params }: PageProps) {
       date: page.data.date,
       tags: page.data.tags,
       lang: page.data.lang || "fr",
+      cover: page.data.cover,
     }));
 
   return (

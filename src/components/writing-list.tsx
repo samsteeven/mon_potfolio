@@ -2,7 +2,7 @@
 
 import { useMemo, useState } from "react";
 import Link from "next/link";
-import { Search, X } from "lucide-react";
+import { ArrowUpRight, Search, X } from "lucide-react";
 import { translations, type Language } from "@/lib/translations";
 import { LanguageFlag } from "@/components/language-flag";
 
@@ -13,6 +13,7 @@ interface WritingItem {
   date: string;
   tags: string[];
   lang: string;
+  cover?: string;
 }
 
 export function WritingList({ items, lang }: { items: WritingItem[]; lang: Language }) {
@@ -97,8 +98,8 @@ export function WritingList({ items, lang }: { items: WritingItem[]; lang: Langu
         </div>
       )}
 
-      {/* Liste des posts */}
-      <div className="flex flex-col gap-4">
+      {/* Grille des posts — 2 colonnes sur sm+, 1 colonne sur mobile */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
         {filtered.map((item, i) => {
           const pageLangLabel = item.lang === "en"
             ? (lang === "en" ? "English" : "Anglais")
@@ -109,40 +110,61 @@ export function WritingList({ items, lang }: { items: WritingItem[]; lang: Langu
               key={item.url}
               href={`/${lang}${item.url}`}
               style={{ animationDelay: `${i * 60}ms` }}
-              className="fade-up group flex flex-col gap-2 rounded-2xl border border-line bg-paper-raised/20 p-5 transition-all duration-300 hover:border-accent/30 hover:bg-paper-raised hover:shadow-md"
+              className="fade-up group flex flex-col rounded-2xl border border-line bg-paper-raised/20 overflow-hidden transition-all duration-300 hover:border-accent/30 hover:bg-paper-raised hover:shadow-md"
             >
-              <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between sm:gap-4">
-                <div className="flex flex-col gap-1.5 sm:flex-row sm:items-center sm:gap-3">
-                  <h3 className="font-display text-base font-semibold transition group-hover:text-accent">
+              {/* Image de couverture en haut, pleine largeur */}
+              <div className="relative w-full h-44 overflow-hidden bg-paper-raised border-b border-line">
+                {item.cover ? (
+                  /* eslint-disable-next-line @next/next/no-img-element */
+                  <img
+                    src={item.cover}
+                    alt={item.title}
+                    className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+                  />
+                ) : (
+                  <div className="h-full w-full flex items-center justify-center">
+                    <span className="font-mono text-3xl font-bold text-ink-soft/10 select-none">
+                      {String(i + 1).padStart(2, "0")}
+                    </span>
+                  </div>
+                )}
+              </div>
+
+              {/* Contenu */}
+              <div className="flex flex-col flex-1 gap-3 p-5">
+                {/* En-tête : titre + date */}
+                <div className="flex items-start justify-between gap-3">
+                  <h3 className="font-display text-base font-semibold text-ink group-hover:text-accent transition-colors leading-snug">
                     {item.title}
                   </h3>
-                  <span className="inline-flex items-center gap-1.5 self-start font-mono text-[10px] text-accent/80 border border-accent/20 bg-accent/5 rounded px-1.5 py-0.5">
-                    <span>
-                      {lang === "en" ? `In ${pageLangLabel}` : `En ${pageLangLabel}`}
-                    </span>
+                  <ArrowUpRight className="shrink-0 mt-0.5 h-4 w-4 text-ink-soft/30 transition-all duration-300 group-hover:text-accent group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
+                </div>
+
+                {/* Description */}
+                <p className="text-sm text-ink-soft line-clamp-2 flex-1">{item.description}</p>
+
+                {/* Footer : badge langue + date */}
+                <div className="flex items-center justify-between gap-2 pt-1">
+                  <span className="inline-flex items-center gap-1 font-mono text-[9px] text-accent/70 border border-accent/20 bg-accent/5 rounded px-1.5 py-0.5">
+                    {pageLangLabel}
                     <LanguageFlag lang={(item.lang as Language) || "fr"} />
                   </span>
+                  <div className="flex items-center gap-2">
+                    {item.tags.length > 0 && (
+                      <span className="font-mono text-[9px] text-ink-soft/50">
+                        {item.tags.slice(0, 2).map((t) => `#${t}`).join(" ")}
+                        {item.tags.length > 2 && " …"}
+                      </span>
+                    )}
+                    <span className="font-mono text-[10px] text-ink-soft/60">{item.date}</span>
+                  </div>
                 </div>
-                <span className="shrink-0 font-mono text-[11px] text-ink-soft sm:pt-0.5">{item.date}</span>
               </div>
-              <p className="text-sm text-ink-soft">{item.description}</p>
-              {item.tags.length > 0 && (
-                <div className="mt-2 flex flex-wrap gap-2">
-                  {item.tags.map((tag) => (
-                    <span
-                      key={tag}
-                      className="rounded border border-line bg-paper-raised/60 px-2 py-0.5 font-mono text-[10px] text-ink-soft transition duration-300 group-hover:border-accent/15 group-hover:bg-accent/5 group-hover:text-accent"
-                    >
-                      #{tag}
-                    </span>
-                  ))}
-                </div>
-              )}
             </Link>
           );
         })}
         {filtered.length === 0 && (
-          <p className="py-10 text-center font-mono text-xs text-ink-soft">{t.writing.empty}</p>
+          <p className="col-span-2 py-10 text-center font-mono text-xs text-ink-soft">{t.writing.empty}</p>
         )}
       </div>
     </div>

@@ -207,83 +207,63 @@ export default async function HomePage({ params }: PageProps) {
           </Link>
         </div>
 
-        <ol className="space-y-0 divide-y divide-line">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
           {writing.map((page, i) => {
             const pageLangLabel = page.data.lang === "en"
               ? (lang === "en" ? "English" : "Anglais")
               : (lang === "en" ? "French" : "Français");
 
             return (
-              <li key={page.url}>
-                <Link
-                  href={`/${lang}${page.url}`}
-                  style={{ animationDelay: `${i * 70}ms` }}
-                  className="fade-up group flex items-start gap-5 py-5 transition-all duration-200 -mx-4 px-4 rounded-xl hover:bg-paper-raised/50"
-                >
-                  {/* Miniature de couverture OU index numéroté */}
-                  <div className="shrink-0 w-24 h-16 sm:w-36 sm:h-20 rounded-xl overflow-hidden border border-line bg-paper-raised flex items-center justify-center">
-                    {page.data.cover ? (
-                      /* eslint-disable-next-line @next/next/no-img-element */
-                      <img
-                        src={page.data.cover}
-                        alt={page.data.title}
-                        className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
-                      />
-                    ) : (
-                      <span className="font-mono text-[10px] sm:text-xs text-ink-soft/40 group-hover:text-accent transition-colors">
+              <Link
+                key={page.url}
+                href={`/${lang}${page.url}`}
+                style={{ animationDelay: `${i * 70}ms` }}
+                className="fade-up group flex flex-col rounded-2xl border border-line bg-paper-raised/20 overflow-hidden transition-all duration-300 hover:border-accent/30 hover:bg-paper-raised hover:shadow-md"
+              >
+                {/* Image de couverture en haut, pleine largeur */}
+                <div className="relative w-full h-40 overflow-hidden bg-paper-raised border-b border-line">
+                  {page.data.cover ? (
+                    /* eslint-disable-next-line @next/next/no-img-element */
+                    <img
+                      src={page.data.cover}
+                      alt={page.data.title}
+                      className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+                    />
+                  ) : (
+                    <div className="h-full w-full flex items-center justify-center">
+                      <span className="font-mono text-3xl font-bold text-ink-soft/10 select-none">
                         {String(i + 1).padStart(2, "0")}
                       </span>
-                    )}
-                  </div>
-
-                  {/* Contenu principal */}
-                  <div className="flex-1 min-w-0">
-                    {/* Ligne supérieure : titre + drapeau de langue */}
-                    <div className="flex items-center gap-2 flex-wrap">
-                      <h3 className="font-display text-base font-semibold text-ink group-hover:text-accent transition-colors leading-snug">
-                        {page.data.title}
-                      </h3>
-                      <span className="inline-flex items-center gap-1 font-mono text-[9px] text-accent/70 border border-accent/20 bg-accent/5 rounded px-1.5 py-0.5 shrink-0">
-                        {pageLangLabel}
-                        <LanguageFlag lang={(page.data.lang as Language) || "fr"} />
-                      </span>
                     </div>
+                  )}
+                </div>
 
-                    {/* Description */}
-                    <p className="mt-1 text-sm text-ink-soft line-clamp-1">
-                      {page.data.description}
-                    </p>
+                {/* Contenu */}
+                <div className="flex flex-col flex-1 gap-2 p-5">
+                  <div className="flex items-start justify-between gap-3">
+                    <h3 className="font-display text-base font-semibold text-ink group-hover:text-accent transition-colors leading-snug">
+                      {page.data.title}
+                    </h3>
+                    <ArrowUpRight className="shrink-0 mt-0.5 h-4 w-4 text-ink-soft/30 transition-all duration-300 group-hover:text-accent group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
+                  </div>
 
-                    {/* Date sur mobile uniquement */}
-                    <span className="sm:hidden font-mono text-[10px] text-ink-soft/60 block mt-2">
-                      {page.data.date}
+                  <p className="text-sm text-ink-soft line-clamp-2 flex-1">
+                    {page.data.description}
+                  </p>
+
+                  {/* Footer */}
+                  <div className="flex items-center justify-between gap-2 pt-1">
+                    <span className="inline-flex items-center gap-1 font-mono text-[9px] text-accent/70 border border-accent/20 bg-accent/5 rounded px-1.5 py-0.5">
+                      {pageLangLabel}
+                      <LanguageFlag lang={(page.data.lang as Language) || "fr"} />
                     </span>
-
-                    {/* Tags */}
-                    {page.data.tags.length > 0 && (
-                      <div className="mt-2 flex flex-wrap gap-1.5">
-                        {page.data.tags.map((tag: string) => (
-                          <span
-                            key={tag}
-                            className="rounded-full border border-line bg-paper-raised/60 px-2 py-0.5 font-mono text-[9px] text-ink-soft group-hover:border-accent/15 group-hover:text-accent/70 transition-colors"
-                          >
-                            #{tag}
-                          </span>
-                        ))}
-                      </div>
-                    )}
+                    <span className="font-mono text-[10px] text-ink-soft/60">{page.data.date}</span>
                   </div>
-
-                  {/* Date (desktop) + flèche */}
-                  <div className="shrink-0 flex flex-col items-end gap-3 pt-0.5">
-                    <span className="hidden sm:block font-mono text-[10px] text-ink-soft/60">{page.data.date}</span>
-                    <ArrowUpRight className="h-3.5 w-3.5 text-ink-soft/20 transition-all duration-300 group-hover:text-accent group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
-                  </div>
-                </Link>
-              </li>
+                </div>
+              </Link>
             );
           })}
-        </ol>
+        </div>
       </section>
     </main>
   );
