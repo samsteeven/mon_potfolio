@@ -109,7 +109,9 @@ export default async function HomePage({ params }: PageProps) {
             {t.hero.readPosts}
           </Link>
           <a
-            href="mailto:contact@samensteeve.com"
+            href="https://cal.com/samen-steeve/30min"
+            target="_blank"
+            rel="noopener noreferrer"
             className="rounded-full bg-ink px-5 py-2.5 font-mono text-xs uppercase tracking-wide text-paper transition-all duration-300 hover:scale-105 hover:bg-accent hover:text-white hover:shadow-lg hover:shadow-accent/15 active:scale-95"
           >
             {t.hero.scheduleMeeting}

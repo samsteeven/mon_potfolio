@@ -32,6 +32,11 @@ export const translations = {
       empty: "No posts found for this filter.",
       searchPlaceholder: "Search by title, description or tag...",
     },
+    notFound: {
+      title: "Page not found",
+      message: "This page doesn't exist or has moved.",
+      cta: "Go back home",
+    },
     details: {
       back: "Back",
       role: "Role",
@@ -42,6 +47,7 @@ export const translations = {
       location: "Douala, Cameroon",
       specialty: "Full-Stack Developer & Tech Lead",
       rights: "All rights reserved",
+      bookCall: "Book a 30-min call",
     },
     stack: {
       title: "Tech Stack",
@@ -88,6 +94,11 @@ export const translations = {
       empty: "Aucun écrit pour ce filtre.",
       searchPlaceholder: "Rechercher par titre, description ou tag...",
     },
+    notFound: {
+      title: "Page introuvable",
+      message: "Cette page n'existe pas ou a été déplacée.",
+      cta: "Retour à l'accueil",
+    },
     details: {
       back: "Retour",
       role: "Rôle",
@@ -98,6 +109,7 @@ export const translations = {
       location: "Douala, Cameroun",
       specialty: "Développeur Full-Stack & Tech Lead",
       rights: "Tous droits réservés",
+      bookCall: "Planifier un appel",
     },
     stack: {
       title: "Stack technique",

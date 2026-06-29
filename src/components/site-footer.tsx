@@ -1,4 +1,4 @@
-import { Mail } from "lucide-react";
+import { Calendar, Mail } from "lucide-react";
 import { translations, type Language } from "@/lib/translations";
 
 const LinkedinIcon = (props: React.SVGProps<SVGSVGElement>) => (
@@ -86,6 +86,19 @@ export function SiteFooter({ lang }: { lang: Language }) {
             </a>
           </div>
 
+        </div>
+
+        {/* CTA meeting */}
+        <div className="mt-8 flex justify-center sm:justify-start">
+          <a
+            href="https://cal.com/samen-steeve/30min"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-2 rounded-full bg-ink px-5 py-2.5 font-mono text-xs uppercase tracking-wide text-paper transition-all duration-300 hover:scale-105 hover:bg-accent hover:text-white hover:shadow-lg hover:shadow-accent/15 active:scale-95"
+          >
+            <Calendar className="h-3.5 w-3.5" />
+            {t.footer.bookCall}
+          </a>
         </div>
       </div>
     </footer>
