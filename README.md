@@ -53,10 +53,22 @@ Contenu de l'étude de cas en Markdown/MDX...
 
 ## État du design
 
-Ce scaffold est volontairement **non designé** — c'est une structure technique fonctionnelle (build + lint propres) en attendant le passage design. Toute la mise en forme vit dans des classes Tailwind directement dans les composants ; aucune dépendance bloquante n'a été prise sur une direction visuelle.
+Ce portfolio est entièrement **designé et personnalisé** avec une esthétique premium et moderne :
+- **Palette de couleurs** : Mode sombre haut de gamme basé sur un ton *Zinc mat* très profond (`#09090b` / `#18181b`) avec de discrets halos de lumière colorés (glow radial), et un mode clair épuré.
+- **Typographies** : Utilisation d'Inter pour le corps du texte, JetBrains Mono pour les données structurées et de la police géométrique **Outfit** (chargée via Google Fonts) pour l'identité principale.
+- **Animations** : Défilement dynamique fluide (`scroll-behavior: smooth`), apparitions progressives au défilement via `IntersectionObserver` (`ScrollReveal`) avec des transitions et effets de survol interactifs (légère translation, mise en valeur des bordures, zoom d'images subtils).
 
-## Avant mise en ligne
+## Déploiement et Production
 
-- Remplacer `contact@exemple.com` (page d'accueil) par tes vraies coordonnées
-- Ajuster ou compléter le contenu des fichiers `.mdx` d'exemple
-- Déployer sur Vercel (gratuit pour un usage perso) : `vercel deploy`
+Le portfolio est optimisé pour être déployé sur **Vercel** avec un nom de domaine géré sur **Cloudflare** (`samensteeve.com`).
+- **Configuration DNS** : Pointage CNAME principal vers Vercel avec proxy Cloudflare activé (mode SSL *Complet (strict)* obligatoire). Redirection automatique du sous-domaine `www` vers le domaine racine gérée par Vercel.
+- **Emails Professionnels** : Configuration de l'adresse de contact `contact@samensteeve.com` redirigée ou hébergée avec les protocoles SPF, DKIM et DMARC configurés dans Cloudflare pour éviter toute usurpation d'identité.
+
+## Commandes utiles
+
+```bash
+npm run dev      # serveur de développement local
+npm run build    # compilation de production statique (génère aussi le sitemap et les routes MDX)
+npm run lint     # vérification syntaxique et linter ESLint
+```
+
