@@ -90,17 +90,8 @@ export default async function HomePage({ params }: PageProps) {
           {t.hero.bio}
         </p>
         <div
-          className="fade-up mt-8 inline-flex items-center gap-3 rounded-full border border-line bg-paper-raised/60 px-4 py-1.5 shadow-sm backdrop-blur"
-          style={{ animationDelay: "240ms" }}
-        >
-          <StatusDot status="in-progress" />
-          <span className="font-mono text-[11px] uppercase tracking-wider text-ink-soft">
-            {t.hero.status}
-          </span>
-        </div>
-        <div
           className="fade-up mt-10 flex gap-4"
-          style={{ animationDelay: "320ms" }}
+          style={{ animationDelay: "240ms" }}
         >
           <Link
             href={`/${lang}/writing`}

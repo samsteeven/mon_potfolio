@@ -7,8 +7,7 @@ export const translations = {
     },
     hero: {
       location: "Open to remote opportunities",
-      bio: "Full-Stack Developer & Tech Lead. I design systems that hold up in real-world conditions — currently at Tribunejustice, a legaltech platform.",
-      status: "AI Agents — MCP · LangGraph · CrewAI",
+      bio: "Software Engineer, Security Researcher, and AI Automation Specialist. I build resilient, high-performance systems, audit and secure digital infrastructures, and orchestrate autonomous AI agent workflows to solve complex operational challenges.",
       readPosts: "Read all posts",
       scheduleMeeting: "Schedule a meeting",
     },
@@ -19,7 +18,7 @@ export const translations = {
     about: {
       title: "About",
       q1: "What are you working on?",
-      a1: "Tech Lead & Project Manager at Tribunejustice, a legaltech platform. In parallel, I integrate AI agents directly into this production stack.",
+      a1: "I design and audit secure web applications, build robust backend systems, and specialize in integrating autonomous AI agents (MCP, LangGraph) into production workflows to automate business processes.",
       q2: "Education & Background",
       a2: "Master EADL at IUC (Douala), currently applying for Master II programs in France.",
       q3: "My Mission & Vision",
@@ -45,7 +44,7 @@ export const translations = {
     },
     footer: {
       location: "Open to remote opportunities",
-      specialty: "Full-Stack Developer & Tech Lead",
+      specialty: "Software Engineer · Security Researcher · AI Automation",
       rights: "All rights reserved",
       bookCall: "Book a 30-min call",
     },
@@ -69,15 +68,14 @@ export const translations = {
     },
     hero: {
       location: "Disponible pour le travail en remote",
-      bio: "Développeur full-stack & Tech Lead. Je conçois des systèmes qui tiennent en conditions réelles — actuellement sur Tribunejustice, une plateforme legaltech.",
-      status: "Agents IA — MCP · LangGraph · CrewAI",
+      bio: "Ingénieur Logiciel, Chercheur en Sécurité et Spécialiste en Automatisation IA. Je conçois des systèmes web résilients et performants, j'audite et sécurise les infrastructures numériques, et j'orchestre des flux d'agents IA autonomes pour simplifier les processus complexes.",
       readPosts: "Lire les articles",
       scheduleMeeting: "Planifier une réunion",
     },
     about: {
       title: "À propos",
       q1: "Sur quoi tu travailles ?",
-      a1: "Tech Lead & Chef de projet sur Tribunejustice, une plateforme legaltech. En parallèle, j'intègre des agents IA directement dans cette stack de production.",
+      a1: "Je conçois et audite des applications web sécurisées, développe des architectures backend robustes, et me spécialise dans l'intégration d'agents IA autonomes (MCP, LangGraph) au sein de flux de production.",
       q2: "Formation & Études",
       a2: "Master EADL à l'IUC (Douala), avec des candidatures en cours pour un Master II en France.",
       q3: "Ma Mission & Vision",
@@ -107,7 +105,7 @@ export const translations = {
     },
     footer: {
       location: "Disponible pour le travail en remote",
-      specialty: "Développeur Full-Stack & Tech Lead",
+      specialty: "Software Engineer · Security Researcher · AI Automation",
       rights: "Tous droits réservés",
       bookCall: "Planifier un appel",
     },
