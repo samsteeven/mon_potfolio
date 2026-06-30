@@ -1,0 +1,83 @@
+---
+title: "Inertia.js : le chaînon manquant entre Laravel et React"
+description: "Ni API REST, ni rendu serveur classique. Inertia.js occupe un espace architectural que peu de développeurs exploitent — et c'est dommage."
+date: "2026-06-28"
+tags: ["Inertia.js", "Laravel", "React", "Architecture"]
+published: true
+lang: "fr"
+---
+
+Quand on parle d'intégrer React à un backend Laravel, la réponse automatique est souvent : "tu construis une API REST". Inertia.js propose une troisième voie — et elle mérite qu'on s'y attarde.
+
+## Le problème qu'Inertia résout
+
+Imagine un formulaire de création de projet. En mode API classique, voilà ce qui se passe :
+
+1. Le frontend soumet les données en JSON
+2. Le backend valide et retourne les erreurs ou un objet créé
+3. Le frontend intercepte la réponse, met à jour le state, gère les erreurs de validation champ par champ, redirige si succès
+
+Ça fonctionne. Mais c'est du code que tu dois écrire, maintenir et tester des deux côtés — souvent pour reproduire quelque chose que Laravel fait nativement.
+
+Inertia résout ça en gardant le backend comme source unique de vérité pour les données et la navigation, tout en laissant React gérer le rendu de l'interface.
+
+## Comment ça fonctionne concrètement
+
+Inertia intercepte les clics sur les liens et les soumissions de formulaires. Au lieu de recharger la page, il envoie une requête XHR avec un header spécial. Le serveur reconnaît cet header et retourne uniquement les données du composant, pas le HTML complet.
+
+Le client reçoit ces données et re-rend uniquement le composant concerné. Visuellement, c'est une SPA. Techniquement, c'est du rendu serveur classique sans les compromis.
+
+```tsx
+// Formulaire Inertia côté React
+import { useForm } from '@inertiajs/react';
+
+export default function CreateProject() {
+  const { data, setData, post, processing, errors } = useForm({
+    name: '',
+    description: '',
+  });
+
+  const submit = (e: React.FormEvent) => {
+    e.preventDefault();
+    post('/projects'); // Inertia gère la requête et les erreurs
+  };
+
+  return (
+    <form onSubmit={submit}>
+      <input
+        value={data.name}
+        onChange={e => setData('name', e.target.value)}
+      />
+      {errors.name && <p className="error">{errors.name}</p>}
+      {/* Les erreurs Laravel arrivent automatiquement */}
+      <button disabled={processing}>Créer</button>
+    </form>
+  );
+}
+```
+
+Les erreurs de validation Laravel arrivent directement dans `errors`, sans mapping manuel. La redirection côté serveur (`return Redirect::route('projects.index')`) est respectée côté client. Le state local (scroll position, modals ouverts) est préservé entre les navigations.
+
+## Ce qu'on gagne réellement
+
+**Une seule source d'authentification.** Plus de tokens JWT à gérer côté frontend, plus de synchronisation entre les sessions. Laravel Sanctum + cookies, et tout fonctionne.
+
+**Les Form Requests Laravel restent centraux.** Ta validation est dans un seul endroit. Les règles complexes — vérifier qu'un utilisateur n'a pas déjà atteint sa limite de projets, valider une combinaison de champs — restent côté serveur où elles ont accès à la base de données.
+
+**Moins de code total.** Sur un projet de taille moyenne, supprimer la couche API élimine facilement 30 à 40% du code de plomberie — les controllers API, les ressources JSON, les types TypeScript qui dupliquent les modèles Eloquent.
+
+## Ce qu'on perd
+
+Il faut être honnête sur les compromis.
+
+**Pas d'API publique par défaut.** Si ton projet doit exposer ses données à des applications mobiles ou des partenaires tiers, tu devras quand même construire des endpoints séparés.
+
+**SSR plus complexe.** Le Server-Side Rendering avec Inertia existe (`@inertiajs/react` + `@inertiajs/server`) mais demande une configuration supplémentaire par rapport à Next.js.
+
+**Couplage fort.** Le frontend et le backend vivent dans le même dépôt, souvent dans le même projet. Pour des équipes qui souhaitent une séparation stricte des responsabilités, ça peut poser des problèmes organisationnels.
+
+## Mon verdict
+
+Inertia est le meilleur choix pour les produits web développés par une équipe resserrée, où la même personne ou la même équipe touche au backend et au frontend. Il élimine une catégorie entière de problèmes sans introduire de contraintes techniques majeures.
+
+Si tu construis un SaaS, un outil interne, ou une application métier avec Laravel et React, Inertia mérite sérieusement ta considération.

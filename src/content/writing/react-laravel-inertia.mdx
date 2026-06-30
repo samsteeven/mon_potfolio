@@ -1,0 +1,81 @@
+---
+title: "React + Laravel + Inertia.js : pourquoi cette stack est redoutablement efficace"
+description: "Trois technologies qui fonctionnent chacune très bien seules. Ensemble, elles forment une stack monolithique moderne qui élimine la friction sans sacrifier la puissance."
+date: "2026-06-15"
+tags: ["React", "Laravel", "Inertia.js", "Architecture"]
+published: true
+lang: "fr"
+---
+
+J'aurais pu partir sur une API REST + Next.js comme tout le monde. J'ai choisi autre chose — et je ne l'ai pas regretté.
+
+## Le problème avec le modèle API-first classique
+
+Un backend Laravel qui expose une API JSON, un frontend Next.js qui la consomme : ça a l'air propre sur le papier. En pratique, ça crée une friction constante.
+
+Chaque nouveau champ dans la base de données déclenche une chaîne : migration → contrôleur → ressource API → type TypeScript côté frontend → composant → test. Pour un projet en mouvement, c'est épuisant.
+
+Et ce n'est pas le seul problème. Il faut gérer l'authentification en double, synchroniser les erreurs de validation, maintenir deux dépôts (ou un monorepo à configurer), et s'assurer que les deux applications se déploient dans le bon ordre.
+
+## Ce qu'Inertia.js change vraiment
+
+Inertia n'est pas un framework. C'est un protocole de communication entre un backend server-side et un frontend JavaScript — sans construire d'API.
+
+Le contrôleur Laravel passe des données directement au composant React, comme s'il retournait une vue Blade. Côté React, tu reçois ces données comme des props normales. Pas de `fetch`, pas de state management pour les données serveur, pas de loading states à gérer.
+
+```php
+// Contrôleur Laravel
+public function index(): Response
+{
+    return Inertia::render('Dashboard', [
+        'projects' => Project::with('client')->latest()->get(),
+        'stats'    => $this->statsService->forUser(auth()->user()),
+    ]);
+}
+```
+
+```tsx
+// Composant React — les données arrivent comme des props
+export default function Dashboard({ projects, stats }: PageProps) {
+  return (
+    <main>
+      <StatsGrid stats={stats} />
+      <ProjectList projects={projects} />
+    </main>
+  );
+}
+```
+
+Pas de `useEffect`, pas d'appel API, pas de spinner. Les données sont là au premier rendu.
+
+## Ce que Laravel apporte que Node.js n'apporte pas aussi simplement
+
+Laravel n'est pas juste un framework HTTP. C'est un écosystème mature avec des solutions clé en main pour les vrais problèmes de production.
+
+- **Eloquent ORM** avec des relations expressives et des scopes réutilisables
+- **Form Requests** pour une validation centralisée et typée
+- **Policies** pour les autorisations au niveau de la ressource
+- **Jobs & Queues** pour les tâches lourdes en arrière-plan
+- **Sanctum / Fortify** pour l'authentification sans friction
+
+Ce que je préfère : les règles métier complexes restent dans des Services et des Actions dédiées. Le contrôleur ne fait que router — il reçoit la requête, appelle le service, retourne la réponse Inertia.
+
+## React comme couche de présentation, rien de plus
+
+Dans cette stack, React fait ce qu'il fait de mieux : gérer l'interface utilisateur de façon réactive. Pas de gestion d'état serveur compliquée, pas de cache à invalider manuellement.
+
+Les formulaires utilisent `useForm` d'Inertia qui gère les erreurs de validation Laravel automatiquement. La navigation utilise le router Inertia qui préserve le state local. Le tout se comporte comme une SPA, mais sans les compromis habituels sur le SEO ou le chargement initial.
+
+## Quand cette stack ne convient pas
+
+Soyons honnêtes. Si ton projet a besoin d'une API publique consommée par des clients mobiles ou des tiers, tu as besoin d'une API REST ou GraphQL exposée séparément. Inertia ne répond pas à ce besoin.
+
+Si ton équipe frontend et ton équipe backend travaillent complètement indépendamment dans des fuseaux horaires différents, la séparation en deux dépôts peut être préférable.
+
+Mais pour un produit web développé par une équipe resserrée, où la vitesse d'itération compte plus que la flexibilité architecturale maximale, cette stack est difficile à battre.
+
+## Ce que j'en retiens
+
+La meilleure architecture n'est pas celle qui ressemble à un schéma de conférence. C'est celle qui te permet de livrer des fonctionnalités rapidement sans accumuler de dette technique invisible.
+
+React + Laravel + Inertia.js, c'est ce compromis-là pour moi.
