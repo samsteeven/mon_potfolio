@@ -6,7 +6,7 @@ export const translations = {
       writing: "Writing",
     },
     hero: {
-      location: "Available for remote",
+      location: "Open to remote opportunities",
       bio: "Full-Stack Developer & Tech Lead. I design systems that hold up in real-world conditions — currently at Tribunejustice, a legaltech platform.",
       status: "AI Agents — MCP · LangGraph · CrewAI",
       readPosts: "Read all posts",
@@ -44,7 +44,7 @@ export const translations = {
       postInFr: "Post in French",
     },
     footer: {
-      location: "Available for remote",
+      location: "Open to remote opportunities",
       specialty: "Full-Stack Developer & Tech Lead",
       rights: "All rights reserved",
       bookCall: "Book a 30-min call",
@@ -68,7 +68,7 @@ export const translations = {
       writing: "Écrits",
     },
     hero: {
-      location: "Disponible en remote",
+      location: "Disponible pour le travail en remote",
       bio: "Développeur full-stack & Tech Lead. Je conçois des systèmes qui tiennent en conditions réelles — actuellement sur Tribunejustice, une plateforme legaltech.",
       status: "Agents IA — MCP · LangGraph · CrewAI",
       readPosts: "Lire les articles",
@@ -106,7 +106,7 @@ export const translations = {
       postInFr: "Post in French",
     },
     footer: {
-      location: "Disponible en remote",
+      location: "Disponible pour le travail en remote",
       specialty: "Développeur Full-Stack & Tech Lead",
       rights: "Tous droits réservés",
       bookCall: "Planifier un appel",
