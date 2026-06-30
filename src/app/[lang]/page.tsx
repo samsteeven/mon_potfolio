@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { ArrowUpRight, Mail } from "lucide-react";
+import { ArrowUpRight, Mail, Code2, ShieldCheck, Bot, CalendarDays } from "lucide-react";
 import { workSource, writingSource } from "@/lib/source";
 import { StatusDot } from "@/components/status-dot";
 import { translations, type Language } from "@/lib/translations";
@@ -162,71 +162,96 @@ export default async function HomePage({ params }: PageProps) {
           <h2 className="font-display text-2xl font-semibold">{t.about.title}</h2>
         </ScrollReveal>
         <div className="mt-8 grid grid-cols-1 gap-6 md:grid-cols-2">
+
+          {/* Cards informatives : Qui je suis + Stack */}
           {[
             { q: t.about.q1, a: t.about.a1 },
             { q: t.about.q2, a: t.about.a2 },
-            { q: t.about.q3, a: t.about.a3 },
-            { q: t.about.q4, a: t.about.a4 },
           ].map((item, i) => (
             <ScrollReveal key={item.q} delay={i * 80} className="h-full">
-              <div
-                className="flex flex-col justify-between h-full rounded-2xl border border-line bg-paper-raised/40 p-6 shadow-sm transition-all duration-300 ease-out hover:-translate-y-1.5 hover:border-accent/35 hover:bg-paper-raised hover:shadow-md hover:shadow-accent/[0.01]"
-              >
-                <div>
-                  <p className="font-mono text-xs uppercase tracking-wider text-accent font-semibold">
-                    {item.q}
-                  </p>
-                  {i === 3 ? (
-                    <p className="mt-4 text-sm leading-relaxed text-ink-soft">
-                      {lang === "en" ? (
-                        <>
-                          Have a project or a security challenge? Let&apos;s collaborate. You can{" "}
-                          <a
-                            href="https://cal.com/samen-steeve/30min"
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="text-ink font-medium underline decoration-line hover:decoration-accent hover:text-accent transition-all duration-200"
-                          >
-                            schedule a brief call
-                          </a>{" "}
-                          or write to me at{" "}
-                          <a
-                            href="mailto:contact@samensteeve.com"
-                            className="text-ink font-medium underline decoration-line hover:decoration-accent hover:text-accent transition-all duration-200"
-                          >
-                            contact@samensteeve.com
-                          </a>{" "}
-                          to discuss how we can build, secure, or automate your workflows.
-                        </>
-                      ) : (
-                        <>
-                          Un projet ou un défi de sécurité à relever ? Collaborons.{" "}
-                          <a
-                            href="https://cal.com/samen-steeve/30min"
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="text-ink font-medium underline decoration-line hover:decoration-accent hover:text-accent transition-all duration-200"
-                          >
-                            Planifiez un court échange
-                          </a>{" "}
-                          ou écrivez-moi à{" "}
-                          <a
-                            href="mailto:contact@samensteeve.com"
-                            className="text-ink font-medium underline decoration-line hover:decoration-accent hover:text-accent transition-all duration-200"
-                          >
-                            contact@samensteeve.com
-                          </a>{" "}
-                          pour discuter de la façon de concevoir, sécuriser ou automatiser vos flux.
-                        </>
-                      )}
-                    </p>
-                  ) : (
-                    <p className="mt-4 text-sm leading-relaxed text-ink-soft">{item.a}</p>
-                  )}
-                </div>
+              <div className="flex flex-col h-full rounded-2xl border border-line bg-paper-raised/40 p-6 shadow-sm transition-all duration-300 ease-out hover:-translate-y-1.5 hover:border-accent/35 hover:bg-paper-raised hover:shadow-md">
+                <p className="font-mono text-xs uppercase tracking-wider text-accent font-semibold">
+                  {item.q}
+                </p>
+                <p className="mt-4 text-sm leading-relaxed text-ink-soft">{item.a}</p>
               </div>
             </ScrollReveal>
           ))}
+
+          {/* Card Services — accent tinted, contenu en liste avec icônes */}
+          <ScrollReveal delay={160} className="h-full">
+            <div className="flex flex-col h-full rounded-2xl border border-accent/25 bg-accent/[0.06] p-6 shadow-sm transition-all duration-300 ease-out hover:-translate-y-1.5 hover:border-accent/40 hover:bg-accent/10 hover:shadow-md hover:shadow-accent/[0.07]">
+              <p className="font-mono text-xs uppercase tracking-wider text-accent font-semibold">
+                {t.about.q3}
+              </p>
+              <ul className="mt-5 flex flex-col gap-4">
+                <li className="flex items-start gap-3">
+                  <Code2 className="mt-0.5 h-4 w-4 shrink-0 text-accent" />
+                  <span className="text-sm leading-relaxed text-ink-soft">
+                    {lang === "en"
+                      ? "Custom full-stack web applications (React · Laravel · Inertia.js)"
+                      : "Applications web full-stack sur mesure (React · Laravel · Inertia.js)"}
+                  </span>
+                </li>
+                <li className="flex items-start gap-3">
+                  <ShieldCheck className="mt-0.5 h-4 w-4 shrink-0 text-accent" />
+                  <span className="text-sm leading-relaxed text-ink-soft">
+                    {lang === "en"
+                      ? "Security research — vulnerability analysis, threat modeling & securing application logic"
+                      : "Recherche en sécurité — analyse de vulnérabilités, modélisation des menaces et sécurisation applicative"}
+                  </span>
+                </li>
+                <li className="flex items-start gap-3">
+                  <Bot className="mt-0.5 h-4 w-4 shrink-0 text-accent" />
+                  <span className="text-sm leading-relaxed text-ink-soft">
+                    {lang === "en"
+                      ? "AI automation — tailored agent workflows to help companies adopt AI in their business processes"
+                      : "Automatisation IA — workflows d'agents sur mesure pour aider les entreprises à adopter l'IA dans leurs processus métier"}
+                  </span>
+                </li>
+              </ul>
+            </div>
+          </ScrollReveal>
+
+          {/* Card CTA — fond sombre premium, vrais boutons cliquables */}
+          <ScrollReveal delay={240} className="h-full">
+            <div className="flex flex-col justify-between h-full rounded-2xl bg-ink px-6 py-7 shadow-lg">
+              <div>
+                <p className="font-mono text-xs uppercase tracking-wider text-paper/45 font-semibold">
+                  {t.about.q4}
+                </p>
+                <p className="mt-4 text-base font-semibold leading-snug text-paper">
+                  {lang === "en"
+                    ? "Have a project or a security challenge?"
+                    : "Un projet ou un défi de sécurité ?"}
+                </p>
+                <p className="mt-2 text-sm leading-relaxed text-paper/60">
+                  {lang === "en"
+                    ? "Let's talk. I'll get back to you with a concrete proposal."
+                    : "Parlons-en. Je vous répondrai avec une proposition concrète."}
+                </p>
+              </div>
+              <div className="mt-8 flex flex-col gap-3">
+                <a
+                  href="https://cal.com/samen-steeve/30min"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center justify-center gap-2 rounded-xl bg-accent px-4 py-2.5 font-mono text-xs uppercase tracking-wider text-white shadow transition-all duration-200 hover:opacity-90 hover:shadow-md hover:shadow-accent/30 active:scale-95"
+                >
+                  <CalendarDays className="h-3.5 w-3.5" />
+                  {lang === "en" ? "Book a 30-min call" : "Réserver un appel de 30 min"}
+                </a>
+                <a
+                  href="mailto:contact@samensteeve.com"
+                  className="inline-flex items-center justify-center gap-2 rounded-xl border border-paper/20 px-4 py-2.5 font-mono text-xs uppercase tracking-wider text-paper/75 transition-all duration-200 hover:border-paper/40 hover:text-paper hover:bg-paper/5 active:scale-95"
+                >
+                  <Mail className="h-3.5 w-3.5" />
+                  contact@samensteeve.com
+                </a>
+              </div>
+            </div>
+          </ScrollReveal>
+
         </div>
       </section>
 
