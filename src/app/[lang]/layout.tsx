@@ -12,6 +12,16 @@ export const metadata: Metadata = {
   metadataBase: new URL(
     process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000"
   ),
+  openGraph: {
+    images: [
+      {
+        url: "/profil.png",
+        width: 800,
+        height: 800,
+        alt: "Samen Steeve",
+      },
+    ],
+  },
 };
 
 // Generates static paths for both languages

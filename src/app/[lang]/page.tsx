@@ -67,7 +67,7 @@ export default async function HomePage({ params }: PageProps) {
           <img
             src="/profil.png"
             alt="Samen Steeve"
-            className="h-20 w-20 sm:h-24 sm:w-24 rounded-full border-2 border-line object-cover shadow-md ring-4 ring-paper"
+            className="h-20 w-20 sm:h-24 sm:w-24 rounded-full border-2 border-line object-cover object-[center_15%] shadow-md ring-4 ring-paper"
           />
         </div>
 

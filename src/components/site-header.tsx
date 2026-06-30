@@ -40,7 +40,7 @@ export function SiteHeader({ lang }: { lang: Language }) {
             <img
               src="/profil.png"
               alt="Samen Steeve"
-              className="h-full w-full object-cover"
+              className="h-full w-full object-cover object-[center_15%]"
             />
           </div>
           {/* Nom - Masqué sur mobile, visible sur tablette et plus (sm+) */}
