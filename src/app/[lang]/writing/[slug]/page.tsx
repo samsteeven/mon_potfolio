@@ -2,11 +2,14 @@ import { notFound } from "next/navigation";
 import Link from "next/link";
 import type { Metadata } from "next";
 import { ArrowLeft } from "lucide-react";
+import { readFileSync } from "fs";
+import { join } from "path";
 import { writingSource } from "@/lib/source";
 import { getMDXComponents } from "@/components/mdx/mdx-components";
 import { translations, type Language } from "@/lib/translations";
 import { TableOfContents, type TocItem } from "@/components/table-of-contents";
 import { LanguageFlag } from "@/components/language-flag";
+import { CopyButtons } from "@/components/copy-buttons";
 
 interface PageProps {
   params: Promise<{ lang: Language; slug: string }>;
@@ -71,6 +74,33 @@ export default async function WritingPage({ params }: PageProps) {
   const t = translations[lang] || translations.en;
   const MDX = page.data.body;
 
+  // Build canonical URL and shareable text (full post content) for copy buttons
+  const canonicalUrl = `${BASE_URL}/${lang}/writing/${slug}`;
+  
+  let bodyText = "";
+  try {
+    const filePath = join(process.cwd(), "src/content/writing", `${slug}.mdx`);
+    const rawMdx = readFileSync(filePath, "utf-8");
+    const parts = rawMdx.split("---");
+    bodyText = parts.length > 2 ? parts.slice(2).join("---").trim() : rawMdx.trim();
+  } catch (error) {
+    console.error("Failed to read raw MDX content for sharing:", error);
+    bodyText = page.data.description; // fallback if file reading fails
+  }
+
+  const shareText = [
+    page.data.title,
+    "",
+    bodyText,
+    "",
+    page.data.tags.map((t: string) => `#${t}`).join(" "),
+    "",
+    lang === "en" ? `Read online:` : `Lire en ligne :`,
+    canonicalUrl,
+  ]
+    .join("\n")
+    .trim();
+
   const postLangLabel =
     page.data.lang === "en"
       ? lang === "en"
@@ -130,15 +160,22 @@ export default async function WritingPage({ params }: PageProps) {
         <p className="mt-4 text-base leading-relaxed text-ink-soft">
           {page.data.description}
         </p>
-        <div className="mt-6 flex flex-wrap gap-2">
-          {page.data.tags.map((tag: string) => (
-            <span
-              key={tag}
-              className="rounded border border-line bg-paper-raised/80 px-2.5 py-0.5 font-mono text-[10px] text-ink-soft"
-            >
-              #{tag}
-            </span>
-          ))}
+        <div className="mt-6 flex flex-wrap items-center justify-between gap-3">
+          <div className="flex flex-wrap gap-2">
+            {page.data.tags.map((tag: string) => (
+              <span
+                key={tag}
+                className="rounded border border-line bg-paper-raised/80 px-2.5 py-0.5 font-mono text-[10px] text-ink-soft"
+              >
+                #{tag}
+              </span>
+            ))}
+          </div>
+          <CopyButtons
+            url={canonicalUrl}
+            shareText={shareText}
+            lang={lang}
+          />
         </div>
       </header>
 
