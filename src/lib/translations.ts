@@ -3,7 +3,6 @@ export const translations = {
     nav: {
       work: "Work",
       about: "About",
-      stack: "Stack",
       writing: "Writing",
     },
     hero: {
@@ -72,7 +71,6 @@ export const translations = {
     nav: {
       work: "Travail",
       about: "À propos",
-      stack: "Stack",
       writing: "Écrits",
     },
     hero: {

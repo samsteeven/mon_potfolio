@@ -33,7 +33,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 
   const canonicalUrl = `${BASE_URL}/${lang}/work/${slug}`;
   const altLang = lang === "fr" ? "en" : "fr";
-  const ogImage = page.data.cover || `${BASE_URL}/og-cover.png`;
+  const ogImage = page.data.cover || "/profil.png";
 
   return {
     title: `${page.data.title} — Samen Steeve`,

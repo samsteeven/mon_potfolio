@@ -22,7 +22,6 @@ export function SiteHeader({ lang }: { lang: Language }) {
   const navLinks = [
     { href: `/${lang}/#work`, label: t.nav.work },
     { href: `/${lang}/#about`, label: t.nav.about },
-    { href: `/${lang}/#stack`, label: t.nav.stack },
     { href: `/${lang}/writing`, label: t.nav.writing },
   ];
 
