@@ -59,17 +59,17 @@ export default async function HomePage({ params }: PageProps) {
       {/* ---------- HERO ---------- */}
       <section className="py-24 sm:py-36">
         {/* Avatar */}
-        {/*<div*/}
-        {/*  className="fade-up mb-8"*/}
-        {/*  style={{ animationDelay: "0ms" }}*/}
-        {/*>*/}
-        {/*  /!* eslint-disable-next-line @next/next/no-img-element *!/*/}
-        {/*  <img*/}
-        {/*    src="/avatar.png"*/}
-        {/*    alt="Samen Steeve"*/}
-        {/*    className="h-24 w-24 sm:h-28 sm:w-28 rounded-full border-2 border-line object-cover shadow-md"*/}
-        {/*  />*/}
-        {/*</div>*/}
+        <div
+          className="fade-up mb-8"
+          style={{ animationDelay: "0ms" }}
+        >
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src="/profil.png"
+            alt="Samen Steeve"
+            className="h-20 w-20 sm:h-24 sm:w-24 rounded-full border-2 border-line object-cover shadow-md ring-4 ring-paper"
+          />
+        </div>
 
         <p
           className="fade-up font-mono text-xs uppercase tracking-widest text-ink-soft"

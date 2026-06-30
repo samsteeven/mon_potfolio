@@ -38,7 +38,7 @@ export function SiteHeader({ lang }: { lang: Language }) {
           <div className="relative h-8 w-8 overflow-hidden rounded-full border border-line bg-paper-raised/80 shadow-sm transition-all duration-300 group-hover:border-accent/40 group-hover:scale-105">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
-              src="/avatar.png"
+              src="/profil.png"
               alt="Samen Steeve"
               className="h-full w-full object-cover"
             />
