@@ -4,12 +4,12 @@ import { workSource, writingSource } from "@/lib/source";
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://samensteeve.com";
 
-  // Base routes for both languages
   const langs = ["en", "fr"];
-  const routes = ["", "/writing"];
+  const staticRoutes = ["", "/writing"];
 
+  // Static pages (home + writing index) — one URL per lang
   const staticEntries = langs.flatMap((lang) =>
-    routes.map((route) => ({
+    staticRoutes.map((route) => ({
       url: `${baseUrl}/${lang}${route}`,
       lastModified: new Date(),
       changeFrequency: "weekly" as const,
@@ -17,8 +17,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     }))
   );
 
-  // Dynamic writing pages
-  const writings = writingSource.getPages();
+  // All writing articles (published only) — one URL per lang
+  const writings = writingSource.getPages().filter((p) => p.data.published);
   const writingEntries = langs.flatMap((lang) =>
     writings.map((page) => ({
       url: `${baseUrl}/${lang}${page.url}`,
@@ -28,16 +28,17 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     }))
   );
 
-  // Dynamic work pages (featured case studies like TribuneJustice)
-  const works = workSource.getPages().filter((page) => page.data.featured);
+  // ALL work pages (featured and non-featured) — one URL per lang
+  const works = workSource.getPages();
   const workEntries = langs.flatMap((lang) =>
     works.map((page) => ({
       url: `${baseUrl}/${lang}${page.url}`,
       lastModified: page.data.date ? new Date(page.data.date) : new Date(),
       changeFrequency: "monthly" as const,
-      priority: 0.7,
+      priority: page.data.featured ? 0.9 : 0.7,
     }))
   );
 
   return [...staticEntries, ...writingEntries, ...workEntries];
 }
+

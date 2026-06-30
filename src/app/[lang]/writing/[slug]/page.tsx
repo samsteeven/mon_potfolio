@@ -22,19 +22,46 @@ export function generateStaticParams() {
   return params;
 }
 
+const BASE_URL =
+  process.env.NEXT_PUBLIC_SITE_URL || "https://samensteeve.com";
+
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
-  const { slug } = await params;
+  const { lang, slug } = await params;
   const page = writingSource.getPage([slug]);
   if (!page) return {};
 
+  const canonicalUrl = `${BASE_URL}/${lang}/writing/${slug}`;
+  const altLang = lang === "fr" ? "en" : "fr";
+  const ogImage = page.data.cover || "/profil.png";
+
   return {
-    title: page.data.title,
+    title: `${page.data.title} — Samen Steeve`,
     description: page.data.description,
-    openGraph: page.data.cover
-      ? { images: [{ url: page.data.cover }] }
-      : undefined,
+    alternates: {
+      canonical: canonicalUrl,
+      languages: {
+        [lang]: canonicalUrl,
+        [altLang]: `${BASE_URL}/${altLang}/writing/${slug}`,
+        "x-default": `${BASE_URL}/en/writing/${slug}`,
+      },
+    },
+    openGraph: {
+      type: "article",
+      title: page.data.title,
+      description: page.data.description,
+      url: canonicalUrl,
+      siteName: "Samen Steeve",
+      images: [{ url: ogImage }],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: page.data.title,
+      description: page.data.description,
+      images: [ogImage],
+    },
   };
 }
+
 
 export default async function WritingPage({ params }: PageProps) {
   const { lang, slug } = await params;

@@ -5,24 +5,55 @@ import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
 import type { Language } from "@/lib/translations";
 
-export const metadata: Metadata = {
-  title: "Samen Steeve — Full-Stack Developer & Tech Lead",
-  description:
-    "Full-Stack Developer & Tech Lead, building robust systems and autonomous AI agents.",
-  metadataBase: new URL(
-    process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000"
-  ),
-  openGraph: {
-    images: [
-      {
-        url: "/profil.png",
-        width: 800,
-        height: 800,
-        alt: "Samen Steeve",
+const BASE_URL =
+  process.env.NEXT_PUBLIC_SITE_URL || "https://samensteeve.com";
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ lang: string }>;
+}): Promise<Metadata> {
+  const { lang: rawLang } = await params;
+  const lang = rawLang === "fr" ? "fr" : "en";
+  const altLang = lang === "fr" ? "en" : "fr";
+
+  return {
+    title: "Samen Steeve — Full-Stack Developer & Tech Lead",
+    description:
+      "Full-Stack Developer & Tech Lead, building robust systems and autonomous AI agents.",
+    metadataBase: new URL(BASE_URL),
+    alternates: {
+      canonical: `${BASE_URL}/${lang}`,
+      languages: {
+        "en": `${BASE_URL}/en`,
+        "fr": `${BASE_URL}/fr`,
+        "x-default": `${BASE_URL}/en`,
       },
-    ],
-  },
-};
+    },
+    openGraph: {
+      type: "website",
+      locale: lang === "fr" ? "fr_FR" : "en_US",
+      alternateLocale: altLang === "fr" ? "fr_FR" : "en_US",
+      siteName: "Samen Steeve",
+      images: [
+        {
+          url: "/profil.png",
+          width: 800,
+          height: 800,
+          alt: "Samen Steeve — Full-Stack Developer & Tech Lead",
+        },
+      ],
+    },
+    twitter: {
+      card: "summary",
+      title: "Samen Steeve — Full-Stack Developer & Tech Lead",
+      description:
+        "Full-Stack Developer & Tech Lead, building robust systems and autonomous AI agents.",
+      images: ["/profil.png"],
+    },
+  };
+}
+
 
 // Generates static paths for both languages
 export function generateStaticParams() {

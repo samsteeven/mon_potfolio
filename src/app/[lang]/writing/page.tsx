@@ -9,14 +9,28 @@ interface PageProps {
   params: Promise<{ lang: Language }>;
 }
 
+const BASE_URL =
+  process.env.NEXT_PUBLIC_SITE_URL || "https://samensteeve.com";
+
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { lang } = await params;
   const t = translations[lang] || translations.en;
+  const altLang = lang === "fr" ? "en" : "fr";
+
   return {
     title: `${t.writing.title} — Samen Steeve`,
     description: t.writing.title,
+    alternates: {
+      canonical: `${BASE_URL}/${lang}/writing`,
+      languages: {
+        [lang]: `${BASE_URL}/${lang}/writing`,
+        [altLang]: `${BASE_URL}/${altLang}/writing`,
+        "x-default": `${BASE_URL}/en/writing`,
+      },
+    },
   };
 }
+
 
 export default async function WritingIndexPage({ params }: PageProps) {
   const { lang } = await params;
