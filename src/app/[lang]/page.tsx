@@ -51,13 +51,14 @@ export default async function HomePage({ params }: PageProps) {
 
   const allWriting = writingSource
     .getPages()
+    .filter((page) => page.data.published)
     .sort((a, b) => (a.data.date < b.data.date ? 1 : -1));
   const writing = allWriting.slice(0, 5);
 
   return (
     <main className="mx-auto max-w-3xl px-6 pb-24">
       {/* ---------- HERO ---------- */}
-      <section className="py-24 sm:py-36">
+      <section className="pt-10 pb-24 sm:pt-18 sm:pb-36">
         {/* Avatar */}
         {/*<div*/}
         {/*  className="fade-up mb-8"*/}
@@ -222,8 +223,8 @@ export default async function HomePage({ params }: PageProps) {
                 </p>
                 <p className="mt-4 text-base font-semibold leading-snug text-paper">
                   {lang === "en"
-                    ? "Have a project or a security challenge?"
-                    : "Un projet ou un défi de sécurité ?"}
+                    ? "Have a project, a security challenge or a collaboration in mind?"
+                    : "Un projet, un défi de sécurité ou une collaboration ?"}  
                 </p>
                 <p className="mt-2 text-sm leading-relaxed text-paper/60">
                   {lang === "en"
@@ -282,15 +283,17 @@ export default async function HomePage({ params }: PageProps) {
                 </div>
 
                 {/* Flèche cliquable */}
-                <a
-                  href={item.url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="shrink-0 p-2 -mr-2 rounded-lg text-ink-soft/30 hover:text-accent hover:bg-accent/5 transition-all duration-200"
-                  aria-label={`Visit ${item.name}`}
-                >
-                  <ArrowUpRight className="h-4 w-4 transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
-                </a>
+                {item.url && (
+                  <a
+                    href={item.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="shrink-0 p-2 -mr-2 rounded-lg text-ink-soft/30 hover:text-accent hover:bg-accent/5 transition-all duration-200"
+                    aria-label={`Visit ${item.name}`}
+                  >
+                    <ArrowUpRight className="h-4 w-4 transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
+                  </a>
+                )}
               </div>
             </ScrollReveal>
           ))}
@@ -332,7 +335,20 @@ export default async function HomePage({ params }: PageProps) {
                         </span>
                       ))}
                     </div>
-                    {page.data.featured && (
+                    <div className="flex items-center gap-3">
+                      {page.data.url && (
+                        <a
+                          href={page.data.url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="inline-flex items-center gap-1.5 font-mono text-[11px] uppercase tracking-wide text-accent/80 hover:text-accent transition-all duration-200 hover:gap-2 shrink-0"
+                        >
+                          {page.data.url.startsWith("https://github.com")
+                            ? (lang === "en" ? "View repository" : "Voir le dépôt")
+                            : (lang === "en" ? "Visit site" : "Voir le site")}
+                          <ArrowUpRight className="h-3.5 w-3.5" />
+                        </a>
+                      )}
                       <Link
                         href={`/${lang}${page.url}`}
                         className="inline-flex items-center gap-1.5 font-mono text-[11px] uppercase tracking-wide text-accent/80 hover:text-accent transition-all duration-200 hover:gap-2 shrink-0"
@@ -340,7 +356,7 @@ export default async function HomePage({ params }: PageProps) {
                         {t.work.caseStudy}
                         <ArrowUpRight className="h-3.5 w-3.5" />
                       </Link>
-                    )}
+                    </div>
                   </div>
                 </div>
               </ScrollReveal>

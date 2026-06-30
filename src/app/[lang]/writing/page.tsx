@@ -38,6 +38,7 @@ export default async function WritingIndexPage({ params }: PageProps) {
 
   const items = writingSource
     .getPages()
+    .filter((page) => page.data.published)
     .sort((a, b) => (a.data.date < b.data.date ? 1 : -1))
     .map((page) => ({
       url: page.url,
