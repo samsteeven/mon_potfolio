@@ -90,8 +90,17 @@ export default async function HomePage({ params }: PageProps) {
           {t.hero.bio}
         </p>
         <div
-          className="fade-up mt-10 flex gap-4"
+          className="fade-up mt-8 inline-flex items-center gap-2.5 rounded-full border border-line bg-paper-raised/60 px-4 py-1.5 shadow-sm backdrop-blur"
           style={{ animationDelay: "240ms" }}
+        >
+          <span className="h-1.5 w-1.5 rounded-full bg-accent animate-pulse" />
+          <span className="font-mono text-[10px] uppercase tracking-wider text-ink-soft">
+            {t.hero.status}
+          </span>
+        </div>
+        <div
+          className="fade-up mt-10 flex gap-4"
+          style={{ animationDelay: "320ms" }}
         >
           <Link
             href={`/${lang}/writing`}
@@ -152,13 +161,14 @@ export default async function HomePage({ params }: PageProps) {
         <ScrollReveal>
           <h2 className="font-display text-2xl font-semibold">{t.about.title}</h2>
         </ScrollReveal>
-        <div className="mt-8 grid grid-cols-1 gap-6 md:grid-cols-3">
+        <div className="mt-8 grid grid-cols-1 gap-6 md:grid-cols-2">
           {[
             { q: t.about.q1, a: t.about.a1 },
             { q: t.about.q2, a: t.about.a2 },
             { q: t.about.q3, a: t.about.a3 },
+            { q: t.about.q4, a: t.about.a4 },
           ].map((item, i) => (
-            <ScrollReveal key={item.q} delay={i * 100} className="h-full">
+            <ScrollReveal key={item.q} delay={i * 80} className="h-full">
               <div
                 className="flex flex-col justify-between h-full rounded-2xl border border-line bg-paper-raised/40 p-6 shadow-sm transition-all duration-300 ease-out hover:-translate-y-1.5 hover:border-accent/35 hover:bg-paper-raised hover:shadow-md hover:shadow-accent/[0.01]"
               >
