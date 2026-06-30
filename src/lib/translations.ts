@@ -23,9 +23,9 @@ export const translations = {
       q2: "My favorite stack",
       a2: "I build modern web systems using React for the frontend, Laravel for the backend, and Inertia.js as the seamless bridge between them. For automation, I develop custom workflows using autonomous AI agents.",
       q3: "Services I offer",
-      a3: "I design custom full-stack web applications, conduct security research (codebase audits, vulnerability hunting, and infrastructure securing), and build systems that automate processes to help companies adopt AI in their business workflows.",
+      a3: "I design custom full-stack web applications, conduct security research (vulnerability analysis, threat modeling, and securing application logic), and build systems that automate processes to help companies adopt AI in their business workflows.",
       q4: "How to get started",
-      a4: "Ready to launch? Book a 30-minute call using my Cal.com link, or send me an email detailing your needs. I'll get back to you with a tailormade proposal.",
+      a4: "Have a project or a security challenge? Let's collaborate. You can schedule a brief call via Cal.com or write to me at contact@samensteeve.com to discuss how we can build, secure, or automate your workflows.",
     },
     writing: {
       title: "Writing",
@@ -83,9 +83,9 @@ export const translations = {
       q2: "Ma stack préférée",
       a2: "Ma stack de prédilection associe React pour le frontend, Laravel pour le backend et Inertia.js comme pont fluide entre les deux. Pour l'automatisation, je développe des flux sur mesure via des agents IA autonomes.",
       q3: "Services que j'offre",
-      a3: "Je conçois des applications web full-stack sur mesure, réalise des travaux de recherche en sécurité (audit de code, détection de vulnérabilités et sécurisation d'infrastructures) et développe des solutions automatisées pour aider les entreprises à adopter l'IA dans leurs processus métier.",
+      a3: "Je conçois des applications web full-stack sur mesure, réalise des travaux de recherche en sécurité (analyse de vulnérabilités, modélisation des menaces et sécurisation de la logique applicative) et développe des solutions automatisées pour aider les entreprises à adopter l'IA dans leurs processus métier.",
       q4: "Comment démarrer",
-      a4: "Prêt à démarrer ? Planifiez un appel de 30 minutes via Cal.com ou envoyez-moi un e-mail décrivant votre besoin. Je vous répondrai avec une proposition technique sous 24h.",
+      a4: "Un projet ou un défi de sécurité à relever ? Collaborons. Planifiez un court échange via Cal.com ou écrivez-moi à contact@samensteeve.com pour discuter de la façon de concevoir, sécuriser ou automatiser vos flux.",
     },
     work: {
       title: "Travail",
