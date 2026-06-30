@@ -176,7 +176,53 @@ export default async function HomePage({ params }: PageProps) {
                   <p className="font-mono text-xs uppercase tracking-wider text-accent font-semibold">
                     {item.q}
                   </p>
-                  <p className="mt-4 text-sm leading-relaxed text-ink-soft">{item.a}</p>
+                  {i === 3 ? (
+                    <p className="mt-4 text-sm leading-relaxed text-ink-soft">
+                      {lang === "en" ? (
+                        <>
+                          Have a project or a security challenge? Let&apos;s collaborate. You can{" "}
+                          <a
+                            href="https://cal.com/samen-steeve/30min"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-ink font-medium underline decoration-line hover:decoration-accent hover:text-accent transition-all duration-200"
+                          >
+                            schedule a brief call
+                          </a>{" "}
+                          or write to me at{" "}
+                          <a
+                            href="mailto:contact@samensteeve.com"
+                            className="text-ink font-medium underline decoration-line hover:decoration-accent hover:text-accent transition-all duration-200"
+                          >
+                            contact@samensteeve.com
+                          </a>{" "}
+                          to discuss how we can build, secure, or automate your workflows.
+                        </>
+                      ) : (
+                        <>
+                          Un projet ou un défi de sécurité à relever ? Collaborons.{" "}
+                          <a
+                            href="https://cal.com/samen-steeve/30min"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-ink font-medium underline decoration-line hover:decoration-accent hover:text-accent transition-all duration-200"
+                          >
+                            Planifiez un court échange
+                          </a>{" "}
+                          ou écrivez-moi à{" "}
+                          <a
+                            href="mailto:contact@samensteeve.com"
+                            className="text-ink font-medium underline decoration-line hover:decoration-accent hover:text-accent transition-all duration-200"
+                          >
+                            contact@samensteeve.com
+                          </a>{" "}
+                          pour discuter de la façon de concevoir, sécuriser ou automatiser vos flux.
+                        </>
+                      )}
+                    </p>
+                  ) : (
+                    <p className="mt-4 text-sm leading-relaxed text-ink-soft">{item.a}</p>
+                  )}
                 </div>
               </div>
             </ScrollReveal>
