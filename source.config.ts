@@ -20,6 +20,7 @@ export const work = defineCollections({
     stack: z.array(z.string()).default([]),
     status: z.enum(["shipped", "in-progress"]).default("shipped"),
     featured: z.boolean().default(false),
+    url: z.string().optional(),
   }),
 });
 

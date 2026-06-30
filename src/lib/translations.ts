@@ -3,6 +3,7 @@ export const translations = {
     nav: {
       work: "Work",
       about: "About",
+      stack: "Stack",
       writing: "Writing",
     },
     hero: {
@@ -54,12 +55,16 @@ export const translations = {
     stack: {
       title: "Tech Stack",
       items: [
-        { name: "Next.js / React", url: "https://nextjs.org", desc: "My go-to framework for building high-performance, SEO-friendly web applications." },
-        { name: "TypeScript", url: "https://www.typescriptlang.org", desc: "Type safety and clarity for building robust and bug-free codebases." },
-        { name: "Node.js", url: "https://nodejs.org", desc: "The engine behind my fast and asynchronous API services." },
-        { name: "AI Agents (MCP / LangGraph)", url: "https://langchain-ai.github.io/langgraph/", desc: "My emerging expertise in orchestrating production-connected autonomous workflows." },
-        { name: "Laravel", url: "https://laravel.com", desc: "The ideal tool to rapidly scaffold robust and secure backends with elegance." },
-        { name: "Tailwind CSS", url: "https://tailwindcss.com", desc: "The absolute standard for crafting sleek, modern, and responsive UIs at speed." },
+        { name: "Next.js / React", url: "https://nextjs.org", desc: "My go-to for building high-performance, SEO-friendly web applications with a modern developer experience." },
+        { name: "Angular", url: "https://angular.dev", desc: "Enterprise-grade frontend framework I use daily to build structured, scalable, and maintainable SPAs." },
+        { name: "TypeScript", url: "https://www.typescriptlang.org", desc: "Type safety across the entire stack — from backend APIs to frontend UIs and AI agent orchestration." },
+        { name: "InertiaJS", url: "https://inertiajs.com", desc: "The glue that connects Laravel backends to modern frontends without building a separate API layer." },
+        { name: "Laravel", url: "https://laravel.com", desc: "My backbone for building secure, robust backends at speed — from REST APIs to real-time WebSocket servers." },
+        { name: "AdonisJS", url: "https://adonisjs.com", desc: "A structured Node.js framework for building type-safe backends with the same elegance as Laravel." },
+        { name: "Redis", url: "https://redis.io", desc: "Powering cache, queues, real-time messaging, and session management across my production stacks." },
+        { name: "PostgreSQL", url: "https://postgresql.org", desc: "My go-to relational database for data integrity, complex queries, and production-grade reliability." },
+        { name: "Tailwind CSS", url: "https://tailwindcss.com", desc: "The fastest way to craft sleek, responsive UIs — from admin dashboards to public-facing pages." },
+        { name: "AI Agents", url: "", desc: "Designing and deploying autonomous AI agents that connect directly to production workflows." },
       ]
     },
   },
@@ -67,6 +72,7 @@ export const translations = {
     nav: {
       work: "Travail",
       about: "À propos",
+      stack: "Stack",
       writing: "Écrits",
     },
     hero: {
@@ -113,17 +119,21 @@ export const translations = {
       location: "Disponible pour le travail en remote",
       specialty: "Software Engineer · Security Researcher · AI Automation",
       rights: "Tous droits réservés",
-      bookCall: "Planifier un appel",
+      bookCall: "Réserver un appel de 30 min",
     },
     stack: {
       title: "Stack technique",
       items: [
-        { name: "Next.js / React", url: "https://nextjs.org", desc: "Mon framework de prédilection pour bâtir des applications web performantes et optimisées pour le SEO." },
-        { name: "TypeScript", url: "https://www.typescriptlang.org", desc: "La sécurité et la clarté du typage statique pour des bases de code robustes et sans bugs." },
-        { name: "Node.js", url: "https://nodejs.org", desc: "Le moteur de mes APIs et serveurs, optimisé pour les entrées/sorties asynchrones rapides." },
-        { name: "Agents IA (MCP / LangGraph)", url: "https://langchain-ai.github.io/langgraph/", desc: "Mon expertise émergente pour orchestrer des workflows autonomes connectés à la production." },
-        { name: "Laravel", url: "https://laravel.com", desc: "L'outil idéal pour structurer rapidement des backends robustes et sécurisés avec élégance." },
-        { name: "Tailwind CSS", url: "https://tailwindcss.com", desc: "L'évidence pour designer des interfaces fluides, propres et responsives à la vitesse de la lumière." },
+        { name: "Next.js / React", url: "https://nextjs.org", desc: "Mon choix principal pour des apps web performantes et optimisées SEO, avec une expérience développeur moderne." },
+        { name: "Angular", url: "https://angular.dev", desc: "Framework frontend d'entreprise que j'utilise quotidiennement pour des SPA structurées, scalables et maintenables." },
+        { name: "TypeScript", url: "https://www.typescriptlang.org", desc: "La sécurité du typage sur toute la stack — des APIs backend aux IAs frontend et à l'orchestration d'agents IA." },
+        { name: "InertiaJS", url: "https://inertiajs.com", desc: "La colle qui relie Laravel aux frontends modernes sans construire de couche API séparée." },
+        { name: "Laravel", url: "https://laravel.com", desc: "Mon socle pour des backends sécurisés et robustes, livrés rapidement — des APIs REST aux serveurs WebSocket temps réel." },
+        { name: "AdonisJS", url: "https://adonisjs.com", desc: "Un framework Node.js structuré pour construire des backends typés avec la même élégance que Laravel." },
+        { name: "Redis", url: "https://redis.io", desc: "Au cœur du cache, des files d'attente, de la messagerie temps réel et de la gestion de sessions en production." },
+        { name: "PostgreSQL", url: "https://postgresql.org", desc: "Ma base relationnelle de référence pour l'intégrité des données, les requêtes complexes et la fiabilité en production." },
+        { name: "Tailwind CSS", url: "https://tailwindcss.com", desc: "Le moyen le plus rapide de concevoir des UI fluides et responsives — des dashboards admin aux pages publiques." },
+        { name: "Agents IA", url: "", desc: "Conception et déploiement d'agents IA autonomes connectés directement aux flux de production." },
       ]
     },
   },

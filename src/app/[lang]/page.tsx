@@ -5,37 +5,7 @@ import { StatusDot } from "@/components/status-dot";
 import { translations, type Language } from "@/lib/translations";
 import { LanguageFlag } from "@/components/language-flag";
 import { ScrollReveal } from "@/components/scroll-reveal";
-
-const LinkedinIcon = (props: React.SVGProps<SVGSVGElement>) => (
-  <svg
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth="2"
-    strokeLinecap="round"
-    strokeLinejoin="round"
-    {...props}
-  >
-    <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z" />
-    <rect x="2" y="9" width="4" height="12" />
-    <circle cx="4" cy="4" r="2" />
-  </svg>
-);
-
-const GithubIcon = (props: React.SVGProps<SVGSVGElement>) => (
-  <svg
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth="2"
-    strokeLinecap="round"
-    strokeLinejoin="round"
-    {...props}
-  >
-    <path d="M15 22v-4a4.8 4.8 0 0 0-1-3.5c3 0 6-2 6-5.5.08-1.25-.27-2.48-1-3.5.28-1.15.28-2.35 0-3.5 0 0-1 0-3 1.5-2.64-.5-5.36-.5-8 0C6 2 5 2 5 2c-.3 1.15-.3 2.35 0 3.5A5.403 5.403 0 0 0 4 9c0 3.5 3 5.5 6 5.5-.39.49-.68 1.05-.85 1.65-.17.6-.22 1.23-.15 1.85v4" />
-    <path d="M9 18c-4.51 2-5-2-7-2" />
-  </svg>
-);
+import { LinkedinIcon, GithubIcon } from "@/components/icons";
 
 interface PageProps {
   params: Promise<{ lang: Language }>;
@@ -47,7 +17,12 @@ export default async function HomePage({ params }: PageProps) {
 
   const work = workSource
     .getPages()
-    .sort((a, b) => Number(b.data.featured) - Number(a.data.featured));
+    .sort((a, b) => {
+      if (b.data.featured !== a.data.featured) {
+        return Number(b.data.featured) - Number(a.data.featured);
+      }
+      return new Date(b.data.date).getTime() - new Date(a.data.date).getTime();
+    });
 
   const allWriting = writingSource
     .getPages()
@@ -138,7 +113,7 @@ export default async function HomePage({ params }: PageProps) {
             <a
               href="https://linkedin.com/in/samsteeven"
               target="_blank"
-              rel="noopener noreferrer"
+              rel="noopener noreferrer me"
               className="transition-all duration-200 hover:text-accent hover:scale-110"
               aria-label="LinkedIn"
             >
@@ -147,7 +122,7 @@ export default async function HomePage({ params }: PageProps) {
             <a
               href="https://github.com/samsteeven"
               target="_blank"
-              rel="noopener noreferrer"
+              rel="noopener noreferrer me"
               className="transition-all duration-200 hover:text-accent hover:scale-110"
               aria-label="GitHub"
             >
@@ -224,7 +199,7 @@ export default async function HomePage({ params }: PageProps) {
                 <p className="mt-4 text-base font-semibold leading-snug text-paper">
                   {lang === "en"
                     ? "Have a project, a security challenge or a collaboration in mind?"
-                    : "Un projet, un défi de sécurité ou une collaboration ?"}  
+                    : "Un projet, un défi de sécurité ou une collaboration ?"}
                 </p>
                 <p className="mt-2 text-sm leading-relaxed text-paper/60">
                   {lang === "en"
@@ -366,6 +341,7 @@ export default async function HomePage({ params }: PageProps) {
       </section>
 
       {/* ---------- WRITING ---------- */}
+      {writing.length > 0 && (
       <section id="writing" className="border-t border-line py-28 sm:py-36">
         <ScrollReveal>
           <div className="flex items-end justify-between mb-10">
@@ -384,6 +360,11 @@ export default async function HomePage({ params }: PageProps) {
             const pageLangLabel = page.data.lang === "en"
               ? (lang === "en" ? "English" : "Anglais")
               : (lang === "en" ? "French" : "Français");
+
+            // Estimated reading time (200 words/min)
+            const wordCount = page.data.description.split(/\s+/).length;
+            const readTime = Math.max(1, Math.ceil(wordCount / 200));
+            const readLabel = lang === "en" ? `${readTime} min read` : `${readTime} min de lecture`;
 
             return (
               <ScrollReveal key={page.url} delay={i * 70}>
@@ -409,9 +390,11 @@ export default async function HomePage({ params }: PageProps) {
 
                   {/* Contenu à droite */}
                   <div className="flex-1 min-w-0">
-                    {/* Date + badge langue */}
-                    <div className="flex items-center gap-2 mb-1.5">
+                    {/* Date + temps de lecture + badge langue */}
+                    <div className="flex items-center gap-2 mb-1.5 flex-wrap">
                       <span className="font-mono text-xs text-ink-soft/60">{page.data.date}</span>
+                      <span className="font-mono text-[10px] text-ink-soft/40">·</span>
+                      <span className="font-mono text-[10px] text-ink-soft/50">{readLabel}</span>
                       <span className="inline-flex items-center gap-1 font-mono text-[9px] text-accent/70 border border-accent/20 bg-accent/5 rounded px-1.5 py-0.5">
                         {pageLangLabel}
                         <LanguageFlag lang={(page.data.lang as Language) || "fr"} />
@@ -448,6 +431,7 @@ export default async function HomePage({ params }: PageProps) {
           })}
         </div>
       </section>
+      )}
     </main>
   );
 }

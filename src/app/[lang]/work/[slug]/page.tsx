@@ -1,7 +1,7 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import type { Metadata } from "next";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, ArrowUpRight } from "lucide-react";
 import { workSource } from "@/lib/source";
 import { getMDXComponents } from "@/components/mdx/mdx-components";
 import { StatusDot } from "@/components/status-dot";
@@ -33,7 +33,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 
   const canonicalUrl = `${BASE_URL}/${lang}/work/${slug}`;
   const altLang = lang === "fr" ? "en" : "fr";
-  const ogImage = page.data.cover || "/profil.png";
+  const ogImage = page.data.cover || `${BASE_URL}/og-cover.png`;
 
   return {
     title: `${page.data.title} — Samen Steeve`,
@@ -142,6 +142,20 @@ export default async function WorkPage({ params }: PageProps) {
             ))}
           </div>
         </div>
+
+        {page.data.url && (
+          <a
+            href={page.data.url}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="mt-6 inline-flex items-center gap-2 rounded-full border border-accent/30 bg-accent/5 px-5 py-2.5 font-mono text-xs uppercase tracking-wide text-accent transition-all duration-300 hover:scale-105 hover:bg-accent hover:text-white hover:shadow-lg hover:shadow-accent/15 active:scale-95"
+          >
+            {page.data.url.startsWith("https://github.com")
+              ? (lang === "en" ? "View repository" : "Voir le dépôt")
+              : (lang === "en" ? "Visit the site" : "Voir le site")}
+            <ArrowUpRight className="h-3.5 w-3.5" />
+          </a>
+        )}
       </header>
 
       {/* Layout relatif pour le TOC absolu à droite */}

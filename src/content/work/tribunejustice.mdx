@@ -1,29 +1,56 @@
 ---
 title: "Tribunejustice"
-description: "Plateforme legaltech avec paiements en séquestre, communication temps réel et chiffrement des données sensibles."
+description: "Plateforme legaltech complète : mise en relation clients-avocats, paiements sécurisés, communication temps réel, et automation IA."
 date: "2026-01-15"
 role: "Tech Lead & Chef de projet"
-stack: ["Laravel 11", "Angular", "Next.js", "Docker", "Redis", "Laravel Reverb"]
+stack: ["Laravel", "Angular", "Next.js", "Redis", "Docker", "Laravel Reverb"]
 status: "in-progress"
 featured: true
+url: "https://tribunejustice.com"
 lang: "fr"
 ---
 
 ## Le contexte
 
-Tribunejustice est une plateforme de services juridiques qui doit gérer des données sensibles, des paiements en séquestre entre clients et avocats, et de la communication en temps réel — tout en restant utilisable par des gens qui ne sont pas familiers avec la tech.
+Tribunejustice met en relation des clients avec des avocats et experts juridiques. La plateforme doit gérer des données sensibles, des paiements en séquestre, de la communication en temps réel, et orchestrer tout un cycle de vie de dossier — le tout en respectant des contraintes de sécurité élevées.
 
-## Les décisions techniques
+## Architecture & décisions techniques
 
-- **Authentification** : SSO via JWT, pensé pour supporter plusieurs applications clientes (Angular + Next.js) sur la même base d'identité.
-- **Paiements** : séquestre (escrow) via Laravel Wallet, pour sécuriser les transactions entre les parties jusqu'à la résolution d'un dossier.
-- **Données sensibles** : chiffrement AES-256-CBC au niveau applicatif, en complément du chiffrement at-rest classique.
-- **Réseau** : durcissement via Cloudflare (WAF + DNSSEC) pour limiter l'exposition d'une plateforme qui traite des informations juridiques.
+**Backend modulaire (Laravel)** : Le système est organisé autour du concept de *Service Request* — l'entité centrale qui porte le cycle de vie complet : création, assignment à un expert, suivi, paiement, résolution. Une machine à états (`ServiceRequestStatusMachine`) garantit l'intégrité des transitions.
 
-## Ce que j'ai appris
+**Sécurité — approche defense-in-depth** : La plateforme manipule des données juridiques sensibles. Plusieurs couches de protection ont été mises en place :
+- RBAC granulaire avec séparation stricte Admin / Super Admin pour les opérations critiques (gestion des rôles, permissions, paramètres)
+- Mode sudo (password confirmation) requis pour les actions sensibles : activation 2FA, changement de mot de passe, export de données, actions admin lourdes
+- Protection SSRF sur le proxy d'images du blog via une allowlist stricte
+- Durcissement des observers CRM pour éviter les fuites de données entre modules
+- Validation `current_password` inline sur les endpoints critiques (email, 2FA)
+- Cache driver Redis avec TTL pour les sessions sudo (10 minutes)
 
-Piloter à la fois l'architecture et l'équipe sur un projet à enjeux (données juridiques, argent en jeu) m'a forcé à arbitrer en permanence entre rapidité de livraison et rigueur — typiquement sur la validation des formulaires et la cohérence des clés i18n entre les modules.
+**Frontend évolutif (Angular)** : Le frontend a subi une migration architecturale majeure — le monolithic `AuthService` (594 lignes, 87 consommateurs) a été découpé en quatre services spécialisés (`AuthStateService`, `AuthApiService`, `TokenService`, `PermissionService`), tous basés sur les signaux Angular pour un état réactif prévisible. L'`ApiClient` centralise la résolution d'URL, la normalisation des réponses Laravel, le retry avec backoff exponentiel, l'idempotency, et la gestion typée des erreurs (7 sous-classes d'`ApiError`).
+
+**Temps réel (Laravel Reverb)** : La messagerie entre clients et experts utilise WebSocket via Reverb, avec un système de files d'attente (Horizon) pour le traitement asynchrone des notifications et des envois d'emails.
+
+**Search & découverte** : L'indexation des profils experts passe par Typesense, avec des facettes et filtres combinés en temps réel.
+
+**Blog multiformat** : Le blog (Next.js) gère deux types d'articles — éditoriaux et sponsorisés — avec un mixage personnalisé (1 sponsorisé tous les 4 articles) et une reconstruction manuelle du paginateur Laravel. Les auteurs sont chargés depuis une base de données cross-DB (blog → main). Un cache Redis de 5 minutes par combinaison de paramètres évite de tout recalculer à chaque visite.
+
+**Intégration CRM** : Un module CRM complet suit les contacts, leurs lifecycle stages, le scoring de leads, et l'automatisation des campagnes — le tout connecté au domaine principal via des observers et des événements.
+
+**Performance** : Cache Redis sur une dizaine d'endpoints, 4 index composite ajoutés, élimination de requêtes N+1, et mise en cache des listings blog et search experts (5 min / 2 min).
+
+## Sécurité — les audits réalisés
+
+- **17 vulnérabilités blog corrigées** : proxy SSRF, GET→POST logout, middleware auth manquant, open redirect
+- **14 failles RBAC** : séparation Admin/Super Admin, permissions critiques protégées (roles, permissions, settings)
+- **10 correctifs frontend** : XSS via isomorphic-dompurify, open redirect via `isSafeRedirectUrl()`, guards fail-closed
+- **Audit sudo mode** : routes 2FA enable/confirm sans protection, change-password sans sudo, route admin verify-email cassée
+
+## Ce que cette expérience m'a appris
+
+Architecturer une plateforme legaltech m'a forcé à penser sécurité dès la conception — pas après. Chaque feature devait répondre à la question : *"est-ce que cette donnée peut fuiter ?"* et *"est-ce que ce workflow peut être détourné ?"*.
+
+J'ai aussi appris à arbitrer entre qualité et vitesse : livrer des correctifs de sécurité sans casser l'expérience utilisateur, migrer une codebase Angular sans arrêter la production, et surtout — documenter les décisions d'architecture pour que l'équipe puisse avancer sans moi sur chaque détail.
 
 ## La suite
 
-Le projet sert actuellement de terrain d'expérimentation pour l'intégration d'agents IA (MCP, LangGraph, CrewAI) directement dans la stack de production.
+Le projet sert actuellement de terrain pour l'intégration d'agents IA directement dans la stack de production — automatisation des réponses, analyse de documents juridiques, et orchestration de workflows complexes.

@@ -1,0 +1,72 @@
+---
+title: "DIGITRANS-CM"
+description: "Architecture microservices cloud-native pour AGROCAM S.A. : ERP, CRM, Supply Chain offline-first, BI, infrastructure AWS hybride, et blockchain Hyperledger Fabric."
+date: "2026-05-01"
+role: "Architecte solution & Développeur full-stack"
+stack: ["Node.js", "Express", "FastAPI", "PostgreSQL", "Redis", "Docker", "Kubernetes", "Terraform", "AWS", "Azure", "Hyperledger Fabric", "GitHub Actions"]
+status: "shipped"
+featured: false
+url: "https://github.com/samsteeven/digitram-cm-microservices"
+lang: "fr"
+---
+
+## Le contexte
+
+Projet d'examen EADL 4 (BC04/EC04 — Optimiser le SI par le Cloud Computing) pour CAMTECH SOLUTIONS S.A. L'objectif : concevoir et déployer un système d'information moderne en microservices pour AGROCAM S.A., une entreprise agro-industrielle camerounaise, en remplacement de son SI monolithique existant.
+
+## Architecture & décisions techniques
+
+**API Gateway comme point d'entrée unique** : L'Auth Gateway (Express, port 3000) centralise JWT/OAuth2, le rate limiting (500 req/15min global, 20 req/15min auth), et agit comme reverse proxy. Elle injecte `X-User-Id`, `X-User-Role`, `X-User-Email` dans les requêtes en aval — les services métier ne valident jamais le JWT directement, ils font confiance aux en-têtes du gateway. Swagger UI intégré sur chaque service pour la documentation des endpoints.
+
+**Cinq bases PostgreSQL isolées** : Chaque service possède sa propre base (`erp_db`, `crm_db`, `supply_db`, `bi_db`) avec un schéma dédié et 17 index de performance couvrant les filtres de dates, les statuts, les clés étrangères et les identifiants offline. Les contraintes CHECK et les colonnes GENERATED (`order_items.subtotal`) garantissent l'intégrité des données au niveau base.
+
+**RBAC granulaire (5 rôles)** : `admin`, `manager`, `comptable`, `agent_terrain`, `analyste` — chaque rôle a une matrice d'accès précise. Par exemple, `comptable` ne voit que l'ERP, `agent_terrain` ne voit que CRM + Supply Chain. Les middlewares `extractUserFromHeaders` et `requireRole` sont partagés entre tous les services Node.js pour une implémentation cohérente.
+
+**ERP Service (Node.js, port 3001)** : Gère les employés (CRUD avec soft delete), la comptabilité (écritures avec types debit/credit/adjustment, exercices fiscaux), et les bons de commande (statuts pending → approved → delivered / cancelled) — validation Joi sur tous les endpoints.
+
+**CRM Service (Node.js, port 3002)** : Gère les clients (segments VIP/premium/standard, points de fidélité, historique des commandes via JOIN) et les commandes (items en transaction, statuts pending → confirmed → preparing → ready → delivered, stats par restaurant sur 30 jours).
+
+**Supply Chain — offline-first (Node.js, port 3003)** : Conçu pour les agents en zone de faible connectivité. Un endpoint `POST /sync/push` accepte un tableau d'opérations (INSERT, UPDATE, DELETE) avec `offline_id` pour la déduplication côté serveur. Un worker Redis traite la queue toutes les 30 secondes avec mécanisme de retry et dead-letter. La file d'attente est scalable horizontalement.
+
+**Blockchain — traçabilité immuable (Hyperledger Fabric)** : Le chaincode `supply-chain-contract.js` (147 lignes) enregistre chaque expédition et checkpoint sur la blockchain Fabric avec `getHistoryForKey()` pour l'audit complet. Une fonction `verifyChainIntegrity()` permet de vérifier l'intégrité de toute la chaîne d'approvisionnement — chaque checkpoint est lié au précédent via un index composite.
+
+**BI Service (Python / FastAPI, port 3004)** : Implémenté en Python avec asyncpg et Redis asynchrone. Agrège les KPIs depuis les autres services via HTTP, met en cache 5 minutes, et expose des endpoints de snapshots, tendances, et tableaux de bord. Démarrage/arrêt propres avec connexion PostgreSQL et Redis.
+
+**Database-per-service avec orchestration complète** : Le script `scripts/init-db.sql` (197 lignes) initialise les 4 bases avec leurs schémas, index, et contraintes. Le fichier `docker-compose.yml` (190 lignes) orchestre toute la stack locale (PostgreSQL 15, Redis 7, 5 services, healthchecks, volumes persistants, réseau bridge dédié).
+
+## Infrastructure cloud hybride
+
+Le projet déploie une architecture multi-cloud et on-premise :
+
+- **AWS af-south-1** (Cape Town) : ECS Fargate (5 services avec HPA), RDS PostgreSQL (Multi-AZ en prod), ElastiCache Redis, S3 (documents), ALB avec HTTPS, Route53
+- **Azure South Africa North** : Azure AD (authentification entreprise), Azure Monitor (logs centralisés)
+- **On-premise Douala** : données RH/financières (conformité loi camerounaise n°2010/012)
+
+**Infrastructure as Code — Terraform** : Le déploiement est entièrement automatisé via Terraform avec 8 modules (VPC, Security Groups, IAM, S3, RDS, ElastiCache, ALB, ECS) en multi-providers AWS + Azure, gestion des secrets via AWS Secrets Manager (rotation 90 jours), budgets AWS ($1200/mois prod, alarme >$500/6h), et monitoring CloudWatch + GuardDuty + AWS Config.
+
+**Kubernetes — Kustomize** : Une alternative de déploiement via EKS avec 5 Deployments + Services, Ingress ALB, HPA (CPU 70%, scales 2→10), ConfigMap, Secret template.
+
+**CI/CD — GitHub Actions (5 jobs)** : Lint (ESLint) → Tests (Jest, PostgreSQL + Redis services) → Python lint (Ruff) → Build & push Docker (ECR, multi-stage) → Deploy ECS (main → prod, develop → staging). Trois jeux de variables d'environnement (`.env.dev`, `.env.test`, `.env.prod.example`).
+
+## Monitoring & Observabilité
+
+- **Prometheus** : Scrape CloudWatch exporter, endpoints health des 5 services, Redis exporter, PostgreSQL exporter, nœuds Kubernetes
+- **Grafana** : Dashboard avec 7 panneaux (statut services, CPU/mémoire, Redis hit ratio, connexions PG, erreurs 5xx, logs d'erreur récents)
+- **CloudWatch Dashboard** : 10 widgets (ECS CPU, RDS connections/IOPS, ALB request count/latency/p99, Redis hit/miss, coûts estimés)
+- **Alerting** : 7 règles Prometheus (ServiceDown, HighErrorRate, HighLatency, HighCPUUsage, PGConnectionsHigh, RedisCacheMissHigh, DiskSpaceLow)
+- **Multi-env** : Production + staging isolés, DRP documenté (RTO 5-60 min selon le service, RPO 5 min pour PostgreSQL via WAL)
+
+## Ce que ça montre
+
+- Conception complète d'architecture microservices avec Auth Gateway, RBAC, et pas de point-à-point entre services
+- Résilience terrain avec offline-first (Redis queue, retry, dead-letter, déduplication par offline_id)
+- Traçabilité blockchain avec Hyperledger Fabric pour l'audit supply chain
+- Cloud hybride multi-régions (AWS + Azure + on-premise) avec IaC complet et CI/CD automatisé
+- Stack hétérogène cohérente (Node.js + Python/FastAPI dans la même architecture)
+- Documentation technique complète : architecture, monitoring, coûts ($465/mo estimé), DRP, sécurité, performances
+
+## Ce que cette expérience m'a appris
+
+Architecturer un microservices pour une entreprise agro-industrielle m'a confronté à des contraintes réseau réelles — agents terrain sans connexion, régulation camerounaise sur les données RH, et besoin de traçabilité légale de la chaîne d'approvisionnement. Chaque compromis technique (base par service vs. base partagée, sync synchrone vs. queue asynchrone, Fabric vs. simple base de données) était dicté par le métier, pas par la techno.
+
+J'ai aussi appris à concevoir un système qui peut être déployé de trois façons différentes (Docker Compose, Kubernetes, ECS Fargate) sans changer une ligne de code métier — une contrainte académique qui s'est révélée formatrice pour penser infrastructure et application comme un tout cohérent.

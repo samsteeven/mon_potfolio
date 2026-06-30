@@ -31,11 +31,11 @@ const BASE_URL =
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { lang, slug } = await params;
   const page = writingSource.getPage([slug]);
-  if (!page) return {};
+  if (!page || !page.data.published) return {};
 
   const canonicalUrl = `${BASE_URL}/${lang}/writing/${slug}`;
   const altLang = lang === "fr" ? "en" : "fr";
-  const ogImage = page.data.cover || "/profil.png";
+  const ogImage = page.data.cover || `${BASE_URL}/og-cover.png`;
 
   return {
     title: `${page.data.title} — Samen Steeve`,
@@ -69,7 +69,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 export default async function WritingPage({ params }: PageProps) {
   const { lang, slug } = await params;
   const page = writingSource.getPage([slug]);
-  if (!page) notFound();
+  if (!page || !page.data.published) notFound();
 
   const t = translations[lang] || translations.en;
   const MDX = page.data.body;

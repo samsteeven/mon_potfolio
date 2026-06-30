@@ -17,10 +17,21 @@ export async function generateMetadata({
   const lang = rawLang === "fr" ? "fr" : "en";
   const altLang = lang === "fr" ? "en" : "fr";
 
+  const title =
+    lang === "fr"
+      ? "Samen Steeve — Ingénieur Logiciel & Chercheur en Sécurité"
+      : "Samen Steeve — Software Engineer & Security Researcher";
+
+  const description =
+    lang === "fr"
+      ? "Ingénieur Logiciel, Chercheur en Sécurité et Spécialiste en Automatisation IA. Je conçois des systèmes résilients et sécurise la logique applicative."
+      : "Software Engineer, Security Researcher, and AI Automation Specialist. I build resilient systems and secure application logic.";
+
+  const ogImage = `${BASE_URL}/og-cover.png`;
+
   return {
-    title: "Samen Steeve — Full-Stack Developer & Tech Lead",
-    description:
-      "Full-Stack Developer & Tech Lead, building robust systems and autonomous AI agents.",
+    title,
+    description,
     metadataBase: new URL(BASE_URL),
     alternates: {
       canonical: `${BASE_URL}/${lang}`,
@@ -37,19 +48,18 @@ export async function generateMetadata({
       siteName: "Samen Steeve",
       images: [
         {
-          url: "/profil.png",
-          width: 800,
-          height: 800,
-          alt: "Samen Steeve — Full-Stack Developer & Tech Lead",
+          url: ogImage,
+          width: 1200,
+          height: 630,
+          alt: title,
         },
       ],
     },
     twitter: {
-      card: "summary",
-      title: "Samen Steeve — Full-Stack Developer & Tech Lead",
-      description:
-        "Full-Stack Developer & Tech Lead, building robust systems and autonomous AI agents.",
-      images: ["/profil.png"],
+      card: "summary_large_image",
+      title,
+      description,
+      images: [ogImage],
     },
   };
 }
