@@ -3,6 +3,7 @@ import Script from "next/script";
 import "../globals.css";
 import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
+import { ThemeWatcher } from "@/components/theme-watcher";
 import type { Language } from "@/lib/translations";
 
 const BASE_URL =
@@ -106,6 +107,7 @@ export default async function RootLayout({ children, params }: LayoutProps) {
         />
       </head>
       <body className="flex min-h-full flex-col bg-paper text-ink font-sans antialiased" suppressHydrationWarning>
+        <ThemeWatcher />
         <SiteHeader lang={lang} />
         <div className="flex-1">{children}</div>
         <SiteFooter lang={lang} />
