@@ -24,7 +24,15 @@
     "@types/react-dom": "^19",
     "eslint": "^9",
     "eslint-config-next": "16.2.9",
+    "postcss-preset-env": "^11.3.2",
     "tailwindcss": "^4",
     "typescript": "^5"
-  }
+  },
+  "browserslist": [
+    "> 0.2%",
+    "defaults",
+    "not dead",
+    "safari >= 9",
+    "ios_saf >= 9"
+  ]
 }
