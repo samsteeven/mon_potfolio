@@ -74,20 +74,18 @@ const themeScript = `
     try {
       var stored = localStorage.getItem('theme');
       var theme = stored || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
-      if (theme === 'dark') document.documentElement.classList.add('dark');
+      document.documentElement.setAttribute('data-theme', theme);
       
-      // Observer pour restaurer instantanément la classe dark si Next.js la retire lors d'une transition
+      // Observer pour restaurer instantanément data-theme si Next.js l'altère lors d'une transition
       var observer = new MutationObserver(function (mutations) {
         var storedTheme = localStorage.getItem('theme');
         var currentTheme = storedTheme || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
-        var hasDark = document.documentElement.classList.contains('dark');
-        if (currentTheme === 'dark' && !hasDark) {
-          document.documentElement.classList.add('dark');
-        } else if (currentTheme === 'light' && hasDark) {
-          document.documentElement.classList.remove('dark');
+        var attr = document.documentElement.getAttribute('data-theme');
+        if (attr !== currentTheme) {
+          document.documentElement.setAttribute('data-theme', currentTheme);
         }
       });
-      observer.observe(document.documentElement, { attributes: true, attributeFilter: ['class'] });
+      observer.observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
     } catch (e) {}
   })();
 `;

@@ -1,7 +1,7 @@
 @import "tailwindcss";
 
-/* Active le mode sombre par classe .dark plutôt que uniquement par préférence système */
-@custom-variant dark (&:where(.dark, .dark *));
+/* Active le mode sombre par attribut data-theme plutôt que uniquement par préférence système */
+@custom-variant dark (&:where([data-theme="dark"], [data-theme="dark"] *));
 
 :root {
   color-scheme: light;
@@ -13,7 +13,7 @@
   --accent: #4f46e5;
 }
 
-.dark {
+[data-theme="dark"] {
   color-scheme: dark;
   --paper: #09090b;
   --paper-raised: #18181b;
@@ -71,7 +71,7 @@ body {
   background-repeat: no-repeat;
 }
 
-.dark body {
+[data-theme="dark"] body {
   background-image: 
     radial-gradient(circle at 0% 30%, rgba(217, 119, 6, 0.07) 0%, transparent 60%),
     radial-gradient(circle at 100% 70%, rgba(99, 102, 241, 0.04) 0%, transparent 50%);

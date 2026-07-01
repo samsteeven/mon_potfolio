@@ -10,13 +10,13 @@ export function ThemeToggle() {
     // Lit l'état déjà posé sur <html> par le script anti-flash dans layout.tsx —
     // nécessaire pour éviter un mismatch d'hydratation SSR/client.
     // eslint-disable-next-line react-hooks/set-state-in-effect
-    setIsDark(document.documentElement.classList.contains("dark"));
+    setIsDark(document.documentElement.getAttribute("data-theme") === "dark");
   }, []);
 
   function toggle() {
     const next = !isDark;
     setIsDark(next);
-    document.documentElement.classList.toggle("dark", next);
+    document.documentElement.setAttribute("data-theme", next ? "dark" : "light");
     try {
       localStorage.setItem("theme", next ? "dark" : "light");
     } catch {
