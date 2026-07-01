@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { ThemeToggle } from "@/components/theme-toggle";
@@ -8,6 +9,10 @@ import { translations, type Language } from "@/lib/translations";
 export function SiteHeader({ lang }: { lang: Language }) {
   const pathname = usePathname();
   const t = translations[lang] || translations.en;
+
+  useEffect(() => {
+    document.documentElement.lang = lang;
+  }, [lang]);
 
   const getOppositeLangLink = () => {
     if (!pathname) return "/";
