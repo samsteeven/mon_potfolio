@@ -14,6 +14,18 @@ export function SiteHeader({ lang }: { lang: Language }) {
     const segments = pathname.split("/");
     const targetLang = lang === "en" ? "fr" : "en";
     segments[1] = targetLang;
+
+    // Si c'est un article de blog (/writing/[slug])
+    if (segments[2] === "writing" && segments[3]) {
+      let slug = segments[3];
+      if (targetLang === "en") {
+        if (!slug.endsWith("-en")) slug = `${slug}-en`;
+      } else {
+        if (slug.endsWith("-en")) slug = slug.slice(0, -3);
+      }
+      segments[3] = slug;
+    }
+
     return segments.join("/");
   };
 

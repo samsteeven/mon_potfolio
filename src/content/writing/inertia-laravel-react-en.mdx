@@ -1,0 +1,83 @@
+---
+title: "Inertia.js: the missing link between Laravel and React"
+description: "Neither a REST API nor classic server rendering. Inertia.js occupies an architectural space that few developers leverage — and that's a shame."
+date: "2026-06-28"
+tags: ["Inertia.js", "Laravel", "React", "Architecture"]
+published: true
+lang: "en"
+---
+
+When it comes to integrating React with a Laravel backend, the automatic answer is often: \"you build a REST API\". Inertia.js offers a third way — and it deserves a closer look.
+
+## The problem Inertia solves
+
+Imagine a project creation form. In classic API mode, here is what happens:
+
+1. The frontend submits the data in JSON format
+2. The backend validates and returns either validation errors or the created object
+3. The frontend intercepts the response, updates the state, manages validation errors field by field, and redirects on success
+
+It works. But that's code you have to write, maintain, and test on both sides — often just to replicate what Laravel does out of the box.
+
+Inertia solves this by keeping the backend as the single source of truth for data and navigation, while letting React handle rendering the user interface.
+
+## How it works in practice
+
+Inertia intercepts link clicks and form submissions. Instead of reloading the page, it sends an XHR request with a special header. The server recognizes this header and returns only the component's data (props), not the full HTML.
+
+The client receives this data and re-renders only the relevant component. Visually, it feels like an SPA. Under the hood, it's classic server-side routing without the trade-offs.
+
+```tsx
+// Inertia Form on the React side
+import { useForm } from '@inertiajs/react';
+
+export default function CreateProject() {
+  const { data, setData, post, processing, errors } = useForm({
+    name: '',
+    description: '',
+  });
+
+  const submit = (e: React.FormEvent) => {
+    e.preventDefault();
+    post('/projects'); // Inertia handles the request and errors
+  };
+
+  return (
+    <form onSubmit={submit}>
+      <input
+        value={data.name}
+        onChange={e => setData('name', e.target.value)}
+      />
+      {errors.name && <p className="error">{errors.name}</p>}
+      {/* Laravel validation errors arrive automatically */}
+      <button disabled={processing}>Create</button>
+    </form>
+  );
+}
+```
+
+Laravel validation errors are passed directly to `errors` without manual mapping. The server-side redirect (`return Redirect::route('projects.index')`) is respected on the client. Local state (scroll position, open modals) is preserved between page transitions.
+
+## What you actually gain
+
+**A single source of authentication.** No JWT tokens to manage on the frontend, no session synchronization. Laravel Sanctum + cookies, and everything just works.
+
+**Laravel Form Requests remain central.** Your validation logic lives in one place. Complex rules — like checking if a user has reached their project limit or validating a combination of fields — stay on the server where they have direct database access.
+
+**Less total code.** On a medium-sized project, removing the API layer easily cuts out 30% to 40% of boilerplate code — API controllers, JSON resources, and TypeScript types that duplicate Eloquent models.
+
+## What you lose
+
+We must be honest about the trade-offs.
+
+**No public API by default.** If your project needs to expose its data to mobile apps or third-party partners, you will still need to build separate endpoints.
+
+**More complex SSR.** Server-Side Rendering with Inertia exists (`@inertiajs/react` + `@inertiajs/server`) but requires extra setup compared to Next.js.
+
+**Tight coupling.** The frontend and backend live in the same repository, often in the same project. For teams that want a strict separation of concerns, this can create organizational friction.
+
+## My verdict
+
+Inertia is the best choice for web products built by a tight team, where developers work across both the backend and frontend. It eliminates an entire category of problems without introducing major technical constraints.
+
+If you are building a SaaS, an internal tool, or a business application with Laravel and React, Inertia is seriously worth considering.

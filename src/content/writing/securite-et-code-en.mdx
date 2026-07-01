@@ -1,0 +1,91 @@
+---
+title: "What security research taught me about writing code"
+description: "When you spend time looking for vulnerabilities in applications, you view your own code differently. Here is what that changes in practice."
+date: "2026-06-22"
+tags: ["Security", "Laravel", "Best Practices", "Architecture"]
+published: true
+lang: "en"
+---
+
+Most developers think of security as a stage — an audit to be done after a feature is coded. Security research teaches you that it's a way of thinking.
+
+## The shift in perspective
+
+When you develop, you think about what the code *should* do. When you look for vulnerabilities, you think about what the code *could* do if someone uses it differently from what you planned.
+
+These two postures radically change how you model problems.
+
+## The most common mistakes I see
+
+### Trusting user input too early
+
+```php
+// Dangerous — the ID comes from the request without verification of ownership
+public function destroy(Request $request): RedirectResponse
+{
+    Document::findOrFail($request->id)->delete();
+    return back();
+}
+```
+
+```php
+// Secure — verifying that the user owns the resource
+public function destroy(Document $document): RedirectResponse
+{
+    $this->authorize('delete', $document); // Laravel Policy
+    $document->delete();
+    return back();
+}
+```
+
+The first version works perfectly in development. In production, any authenticated user can delete another's document by manipulating the ID in the request — this is an IDOR (Insecure Direct Object Reference).
+
+### Forgotten mass assignments
+
+```php
+// Risky if the model doesn't have a properly defined $fillable array
+User::create($request->all());
+
+// Secure — explicitly defining what we accept
+User::create($request->only(['name', 'email', 'password']));
+```
+
+If someone adds `is_admin=1` to the request and you use `$request->all()`, the result is predictable.
+
+### Race conditions on critical resources
+
+```php
+// Race condition possible — two simultaneous requests can pass the check
+if ($wallet->balance >= $amount) {
+    $wallet->decrement('balance', $amount);
+}
+
+// Secure — pessimistic locking within a transaction
+DB::transaction(function () use ($wallet, $amount) {
+    $wallet->lockForUpdate()->find($wallet->id);
+
+    if ($wallet->balance < $amount) {
+        throw new InsufficientFundsException();
+    }
+
+    $wallet->decrement('balance', $amount);
+});
+```
+
+This type of bug is invisible in unit tests and difficult to reproduce manually. It is exactly the kind of vulnerability you discover when actively looking for it.
+
+## How this changes my daily approach
+
+**I model threats before coding.** For each feature, I ask myself: who can call this endpoint? What happens if two users perform the same action at the exact same time? What could a malicious user send?
+
+**I treat permissions as invariants, not selective checks.** Instead of sprinkling `if ($user->isAdmin())` everywhere, I use Laravel Policies that centralize authorization logic.
+
+**I validate state transitions.** A document doesn't go from `draft` to `published` without passing through `review`. These rules live in dedicated classes, not in controllers.
+
+**I don't trust data that comes from the database either.** If a value influences a critical decision — a role, a status, a balance — it is re-validated before being used.
+
+## Security as a design pattern, not a layer
+
+The conclusion I've drawn from these experiences: security isn't added after the fact. It is integrated into architectural decisions from the very beginning.
+
+A well-structured codebase, with clear layers of responsibility and centralized authorization policies, is naturally harder to compromise. Security and code quality are not two distinct goals — they converge in the same place.

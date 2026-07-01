@@ -1,6 +1,8 @@
 import Link from "next/link";
 import type { Metadata } from "next";
 import { ArrowLeft } from "lucide-react";
+import { readFileSync } from "fs";
+import { join } from "path";
 import { writingSource } from "@/lib/source";
 import { WritingList } from "@/components/writing-list";
 import { translations, type Language } from "@/lib/translations";
@@ -38,17 +40,33 @@ export default async function WritingIndexPage({ params }: PageProps) {
 
   const items = writingSource
     .getPages()
-    .filter((page) => page.data.published)
+    .filter((page) => page.data.published && (page.data.lang || "fr") === lang)
     .sort((a, b) => (a.data.date < b.data.date ? 1 : -1))
-    .map((page) => ({
-      url: page.url,
-      title: page.data.title,
-      description: page.data.description,
-      date: page.data.date,
-      tags: page.data.tags,
-      lang: page.data.lang || "fr",
-      cover: page.data.cover,
-    }));
+    .map((page) => {
+      let bodyText = "";
+      try {
+        const filePath = join(process.cwd(), "src/content/writing", `${page.slugs[0]}.mdx`);
+        const rawMdx = readFileSync(filePath, "utf-8");
+        const parts = rawMdx.split("---");
+        bodyText = parts.length > 2 ? parts.slice(2).join("---").trim() : rawMdx.trim();
+      } catch {
+        bodyText = page.data.description;
+      }
+      
+      const wordCount = bodyText.split(/\s+/).filter(Boolean).length || page.data.description.split(/\s+/).length;
+      const readTime = Math.max(1, Math.ceil(wordCount / 200));
+
+      return {
+        url: page.url,
+        title: page.data.title,
+        description: page.data.description,
+        date: page.data.date,
+        tags: page.data.tags,
+        lang: page.data.lang || "fr",
+        cover: page.data.cover,
+        readTime,
+      };
+    });
 
   return (
     <main className="mx-auto max-w-2xl px-6 py-20">

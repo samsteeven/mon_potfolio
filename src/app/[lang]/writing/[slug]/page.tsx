@@ -8,7 +8,6 @@ import { writingSource } from "@/lib/source";
 import { getMDXComponents } from "@/components/mdx/mdx-components";
 import { translations, type Language } from "@/lib/translations";
 import { TableOfContents, type TocItem } from "@/components/table-of-contents";
-import { LanguageFlag } from "@/components/language-flag";
 import { CopyButtons } from "@/components/copy-buttons";
 
 interface PageProps {
@@ -17,12 +16,10 @@ interface PageProps {
 
 export function generateStaticParams() {
   const pages = writingSource.getPages();
-  const params: { lang: string; slug: string }[] = [];
-  for (const page of pages) {
-    params.push({ lang: "en", slug: page.slugs[0] });
-    params.push({ lang: "fr", slug: page.slugs[0] });
-  }
-  return params;
+  return pages.map((page) => ({
+    lang: page.data.lang || "fr",
+    slug: page.slugs[0],
+  }));
 }
 
 const BASE_URL =
@@ -31,10 +28,12 @@ const BASE_URL =
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { lang, slug } = await params;
   const page = writingSource.getPage([slug]);
-  if (!page || !page.data.published) return {};
+  if (!page || !page.data.published || (page.data.lang || "fr") !== lang) return {};
 
   const canonicalUrl = `${BASE_URL}/${lang}/writing/${slug}`;
   const altLang = lang === "fr" ? "en" : "fr";
+  const altSlug = lang === "fr" ? `${slug}-en` : (slug.endsWith("-en") ? slug.slice(0, -3) : slug);
+  const altUrl = `${BASE_URL}/${altLang}/writing/${altSlug}`;
   const ogImage = page.data.cover || "/profil.png";
 
   return {
@@ -44,8 +43,8 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
       canonical: canonicalUrl,
       languages: {
         [lang]: canonicalUrl,
-        [altLang]: `${BASE_URL}/${altLang}/writing/${slug}`,
-        "x-default": `${BASE_URL}/en/writing/${slug}`,
+        [altLang]: altUrl,
+        "x-default": `${BASE_URL}/en/writing/${lang === "fr" ? `${slug}-en` : slug}`,
       },
     },
     openGraph: {
@@ -69,7 +68,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 export default async function WritingPage({ params }: PageProps) {
   const { lang, slug } = await params;
   const page = writingSource.getPage([slug]);
-  if (!page || !page.data.published) notFound();
+  if (!page || !page.data.published || (page.data.lang || "fr") !== lang) notFound();
 
   const t = translations[lang] || translations.en;
   const MDX = page.data.body;
@@ -101,14 +100,10 @@ export default async function WritingPage({ params }: PageProps) {
     .join("\n")
     .trim();
 
-  const postLangLabel =
-    page.data.lang === "en"
-      ? lang === "en"
-        ? "English"
-        : "Anglais"
-      : lang === "en"
-        ? "French"
-        : "Français";
+  // Calculated reading time based on body text
+  const wordCount = bodyText.split(/\s+/).filter(Boolean).length || page.data.description.split(/\s+/).length;
+  const readTime = Math.max(1, Math.ceil(wordCount / 200));
+  const readLabel = lang === "en" ? `${readTime} min read` : `${readTime} min de lecture`;
 
   // Extraction des headings depuis le TOC généré par Fumadocs
   const tocItems: TocItem[] = (page.data.toc ?? [])
@@ -143,16 +138,12 @@ export default async function WritingPage({ params }: PageProps) {
       )}
 
       <header className={`mb-12 border-b border-line pb-8 ${page.data.cover ? "mt-8" : "mt-8"}`}>
-        <div className="flex items-center gap-3">
-          <p className="font-mono text-xs uppercase tracking-wider text-accent font-medium">
+        <div className="flex items-center gap-3 font-mono text-xs text-ink-soft/60">
+          <p className="text-accent font-medium">
             {page.data.date}
           </p>
-          <span className="inline-flex items-center gap-1.5 font-mono text-[10px] text-accent/80 border border-accent/20 bg-accent/5 rounded px-1.5 py-0.5">
-            <span>
-              {lang === "en" ? `Post in ${postLangLabel}` : `Rédigé en ${postLangLabel}`}
-            </span>
-            <LanguageFlag lang={page.data.lang || "fr"} />
-          </span>
+          <span>·</span>
+          <span>{readLabel}</span>
         </div>
         <h1 className="mt-2 font-display text-3xl font-bold tracking-tight sm:text-4xl">
           {page.data.title}

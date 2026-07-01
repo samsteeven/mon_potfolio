@@ -1,9 +1,10 @@
 import Link from "next/link";
 import { ArrowUpRight, Mail, Code2, ShieldCheck, Bot, CalendarDays } from "lucide-react";
+import { readFileSync } from "fs";
+import { join } from "path";
 import { workSource, writingSource } from "@/lib/source";
 import { StatusDot } from "@/components/status-dot";
 import { translations, type Language } from "@/lib/translations";
-import { LanguageFlag } from "@/components/language-flag";
 import { ScrollReveal } from "@/components/scroll-reveal";
 import { LinkedinIcon, GithubIcon } from "@/components/icons";
 
@@ -26,7 +27,7 @@ export default async function HomePage({ params }: PageProps) {
 
   const allWriting = writingSource
     .getPages()
-    .filter((page) => page.data.published)
+    .filter((page) => page.data.published && (page.data.lang || "fr") === lang)
     .sort((a, b) => (a.data.date < b.data.date ? 1 : -1));
   const writing = allWriting.slice(0, 5);
 
@@ -357,12 +358,17 @@ export default async function HomePage({ params }: PageProps) {
 
         <div className="flex flex-col divide-y divide-line">
           {writing.map((page, i) => {
-            const pageLangLabel = page.data.lang === "en"
-              ? (lang === "en" ? "English" : "Anglais")
-              : (lang === "en" ? "French" : "Français");
+            let bodyText = "";
+            try {
+              const filePath = join(process.cwd(), "src/content/writing", `${page.slugs[0]}.mdx`);
+              const rawMdx = readFileSync(filePath, "utf-8");
+              const parts = rawMdx.split("---");
+              bodyText = parts.length > 2 ? parts.slice(2).join("---").trim() : rawMdx.trim();
+            } catch {
+              bodyText = page.data.description;
+            }
 
-            // Estimated reading time (200 words/min)
-            const wordCount = page.data.description.split(/\s+/).length;
+            const wordCount = bodyText.split(/\s+/).filter(Boolean).length || page.data.description.split(/\s+/).length;
             const readTime = Math.max(1, Math.ceil(wordCount / 200));
             const readLabel = lang === "en" ? `${readTime} min read` : `${readTime} min de lecture`;
 
@@ -390,15 +396,11 @@ export default async function HomePage({ params }: PageProps) {
 
                   {/* Contenu à droite */}
                   <div className="flex-1 min-w-0">
-                    {/* Date + temps de lecture + badge langue */}
-                    <div className="flex items-center gap-2 mb-1.5 flex-wrap">
-                      <span className="font-mono text-xs text-ink-soft/60">{page.data.date}</span>
-                      <span className="font-mono text-[10px] text-ink-soft/40">·</span>
-                      <span className="font-mono text-[10px] text-ink-soft/50">{readLabel}</span>
-                      <span className="inline-flex items-center gap-1 font-mono text-[9px] text-accent/70 border border-accent/20 bg-accent/5 rounded px-1.5 py-0.5">
-                        {pageLangLabel}
-                        <LanguageFlag lang={(page.data.lang as Language) || "fr"} />
-                      </span>
+                    {/* Date + temps de lecture */}
+                    <div className="flex items-center gap-2 mb-1.5 flex-wrap font-mono text-xs text-ink-soft/60">
+                      <span>{page.data.date}</span>
+                      <span>·</span>
+                      <span className="text-ink-soft/50">{readLabel}</span>
                     </div>
 
                     {/* Titre */}

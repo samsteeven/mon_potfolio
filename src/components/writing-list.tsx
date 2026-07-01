@@ -4,7 +4,6 @@ import { useMemo, useState } from "react";
 import Link from "next/link";
 import { Search, X } from "lucide-react";
 import { translations, type Language } from "@/lib/translations";
-import { LanguageFlag } from "@/components/language-flag";
 
 interface WritingItem {
   url: string;
@@ -14,6 +13,7 @@ interface WritingItem {
   tags: string[];
   lang: string;
   cover?: string;
+  readTime: number;
 }
 
 export function WritingList({ items, lang }: { items: WritingItem[]; lang: Language }) {
@@ -101,9 +101,7 @@ export function WritingList({ items, lang }: { items: WritingItem[]; lang: Langu
       {/* Liste des posts — image à gauche, contenu à droite */}
       <div className="flex flex-col divide-y divide-line">
         {filtered.map((item, i) => {
-          const pageLangLabel = item.lang === "en"
-            ? (lang === "en" ? "English" : "Anglais")
-            : (lang === "en" ? "French" : "Français");
+          const readLabel = lang === "en" ? `${item.readTime} min read` : `${item.readTime} min de lecture`;
 
           return (
             <Link
@@ -130,13 +128,11 @@ export function WritingList({ items, lang }: { items: WritingItem[]; lang: Langu
 
               {/* Contenu à droite */}
               <div className="flex-1 min-w-0">
-                {/* Date + badge langue */}
-                <div className="flex items-center gap-2 mb-1.5">
-                  <span className="font-mono text-xs text-ink-soft/60">{item.date}</span>
-                  <span className="inline-flex items-center gap-1 font-mono text-[9px] text-accent/70 border border-accent/20 bg-accent/5 rounded px-1.5 py-0.5">
-                    {pageLangLabel}
-                    <LanguageFlag lang={(item.lang as Language) || "fr"} />
-                  </span>
+                {/* Date + temps de lecture */}
+                <div className="flex items-center gap-2 mb-1.5 font-mono text-xs text-ink-soft/60">
+                  <span>{item.date}</span>
+                  <span>·</span>
+                  <span className="text-ink-soft/50">{readLabel}</span>
                 </div>
 
                 {/* Titre */}

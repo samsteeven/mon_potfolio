@@ -1,0 +1,81 @@
+---
+title: "React + Laravel + Inertia.js: why this stack is remarkably effective"
+description: "Three technologies that each work great on their own. Together, they form a modern monolith that eliminates friction without sacrificing power."
+date: "2026-06-15"
+tags: ["React", "Laravel", "Inertia.js", "Architecture"]
+published: true
+lang: "en"
+---
+
+I could have gone with a REST API + Next.js like everyone else. I chose something different — and I haven't regretted it.
+
+## The problem with the classic API-first model
+
+A Laravel backend exposing a JSON API, a Next.js frontend consuming it: it looks clean on paper. In practice, it creates constant friction.
+
+Every new database field triggers a chain: migration → controller → API resource → TypeScript type on the frontend → component → test. For a project in motion, that's exhausting.
+
+And that's not the only problem. You have to manage authentication twice, synchronize validation errors, maintain two repos (or configure a monorepo), and make sure both applications deploy in the right order.
+
+## What Inertia.js actually changes
+
+Inertia isn't a framework. It's a communication protocol between a server-side backend and a JavaScript frontend — without building an API.
+
+The Laravel controller passes data directly to the React component, as if it were returning a Blade view. On the React side, you receive that data as regular props. No `fetch`, no server state management, no loading states to handle.
+
+```php
+// Laravel controller
+public function index(): Response
+{
+    return Inertia::render('Dashboard', [
+        'projects' => Project::with('client')->latest()->get(),
+        'stats'    => $this->statsService->forUser(auth()->user()),
+    ]);
+}
+```
+
+```tsx
+// React component — data arrives as props
+export default function Dashboard({ projects, stats }: PageProps) {
+  return (
+    <main>
+      <StatsGrid stats={stats} />
+      <ProjectList projects={projects} />
+    </main>
+  );
+}
+```
+
+No `useEffect`, no API call, no spinner. The data is there on first render.
+
+## What Laravel brings that Node.js doesn't match as easily
+
+Laravel isn't just an HTTP framework. It's a mature ecosystem with ready-made solutions for real production problems.
+
+- **Eloquent ORM** with expressive relationships and reusable scopes
+- **Form Requests** for centralized, typed validation
+- **Policies** for resource-level authorization
+- **Jobs & Queues** for heavy background tasks
+- **Sanctum / Fortify** for frictionless authentication
+
+What I prefer most: complex business rules stay in dedicated Services and Actions. The controller just routes — receive the request, call the service, return the Inertia response.
+
+## React as a presentation layer, nothing more
+
+In this stack, React does what it does best: manage the UI reactively. No complex server state management, no manual cache invalidation.
+
+Forms use Inertia's `useForm` which automatically handles Laravel validation errors. Navigation uses the Inertia router which preserves local state. The whole thing behaves like an SPA, but without the usual SEO or initial load trade-offs.
+
+## When this stack doesn't fit
+
+Let's be honest. If your project needs a public API consumed by mobile clients or third-party integrations, you'll need separate REST or GraphQL endpoints. Inertia doesn't solve that.
+
+If your frontend and backend teams work completely independently across different time zones, separating into two repos might be preferable.
+
+But for a web product developed by a tight-knit team, where iteration speed matters more than maximum architectural flexibility, this stack is hard to beat.
+
+## My takeaway
+
+The best architecture isn't the one that looks impressive on a conference diagram. It's the one that lets you ship features quickly without accumulating invisible technical debt.
+
+React + Laravel + Inertia.js is that trade-off for me.
