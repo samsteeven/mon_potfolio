@@ -3,7 +3,6 @@ import Script from "next/script";
 import "../globals.css";
 import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
-import { ThemeWatcher } from "@/components/theme-watcher";
 import type { Language } from "@/lib/translations";
 
 const BASE_URL =
@@ -77,6 +76,19 @@ const themeScript = `
       var stored = localStorage.getItem('theme');
       var theme = stored || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
       if (theme === 'dark') document.documentElement.classList.add('dark');
+      
+      // Observer pour restaurer instantanément la classe dark si Next.js la retire lors d'une transition
+      var observer = new MutationObserver(function (mutations) {
+        var storedTheme = localStorage.getItem('theme');
+        var currentTheme = storedTheme || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+        var hasDark = document.documentElement.classList.contains('dark');
+        if (currentTheme === 'dark' && !hasDark) {
+          document.documentElement.classList.add('dark');
+        } else if (currentTheme === 'light' && hasDark) {
+          document.documentElement.classList.remove('dark');
+        }
+      });
+      observer.observe(document.documentElement, { attributes: true, attributeFilter: ['class'] });
     } catch (e) {}
   })();
 `;
@@ -107,7 +119,6 @@ export default async function RootLayout({ children, params }: LayoutProps) {
         />
       </head>
       <body className="flex min-h-full flex-col bg-paper text-ink font-sans antialiased" suppressHydrationWarning>
-        <ThemeWatcher />
         <SiteHeader lang={lang} />
         <div className="flex-1">{children}</div>
         <SiteFooter lang={lang} />
