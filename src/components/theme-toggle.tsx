@@ -16,12 +16,21 @@ export function ThemeToggle() {
   function toggle() {
     const next = !isDark;
     setIsDark(next);
+    
+    // Active temporairement les transitions
+    document.documentElement.classList.add("theme-transition");
     document.documentElement.setAttribute("data-theme", next ? "dark" : "light");
+    
     try {
       localStorage.setItem("theme", next ? "dark" : "light");
     } catch {
       // localStorage indisponible (mode privé, etc.) — on ignore silencieusement
     }
+
+    // Désactive les transitions après la fin de l'animation
+    setTimeout(() => {
+      document.documentElement.classList.remove("theme-transition");
+    }, 250);
   }
 
   return (
