@@ -11,6 +11,38 @@ const themeScript = `
   })();
 `;
 
+// Données structurées Schema.org — indique à Google qui est Samen Steeve,
+// ses coordonnées, ses profils et ses domaines d'expertise.
+// Source : https://schema.org/Person
+const personJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "Person",
+  name: "Samen Steeve",
+  alternateName: "samsteeven",
+  url: "https://samensteeve.com",
+  image: "https://samensteeve.com/profil.png",
+  sameAs: [
+    "https://github.com/samsteeven",
+    "https://linkedin.com/in/samensteeve",
+  ],
+  jobTitle: "Software Engineer & Security Researcher",
+  description:
+    "Software Engineer, Security Researcher, and AI Automation Specialist. Building resilient systems and securing application logic.",
+  knowsAbout: [
+    "Software Engineering",
+    "Web Security",
+    "Artificial Intelligence",
+    "Laravel",
+    "React",
+    "Next.js",
+      "Inertia js"
+  ],
+  mainEntityOfPage: {
+    "@type": "WebPage",
+    "@id": "https://samensteeve.com",
+  },
+};
+
 export const metadata: Metadata = {
   robots: {
     index: true,
@@ -28,9 +60,13 @@ export default function RootLayout({
       <head>
         {/* Anti-flash theme script */}
         <script dangerouslySetInnerHTML={{ __html: themeScript }} />
+        {/* JSON-LD Person schema pour Google Knowledge Panel */}
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(personJsonLd) }}
+        />
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-        {/* Custom fonts */}
         {/* eslint-disable-next-line @next/next/no-page-custom-font -- pattern valide en App Router pour des polices non gérées par next/font */}
         <link
           href="https://fonts.googleapis.com/css2?family=Outfit:wght@600;700;800&family=Instrument+Sans:wght@500;600&family=Inter:wght@400;500&family=JetBrains+Mono:wght@400;500&display=swap"

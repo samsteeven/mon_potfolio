@@ -1,7 +1,6 @@
 import Link from "next/link";
 import { ArrowUpRight, Mail, Code2, ShieldCheck, Bot, CalendarDays } from "lucide-react";
-import { readFileSync } from "fs";
-import { join } from "path";
+import { getReadingTime } from "@/lib/reading-time";
 import { workSource, writingSource } from "@/lib/source";
 import { StatusDot } from "@/components/status-dot";
 import { translations, type Language } from "@/lib/translations";
@@ -55,8 +54,8 @@ export default async function HomePage({ params }: PageProps) {
           {t.hero.location}
         </p>
         <h1
-          className="fade-up mt-4 text-5xl font-extrabold tracking-tight sm:text-6xl text-ink"
-          style={{ fontFamily: "'Outfit', sans-serif", animationDelay: "120ms" }}
+          className="fade-up font-display mt-4 text-5xl font-extrabold tracking-tight sm:text-6xl text-ink"
+          style={{ animationDelay: "120ms" }}
         >
           Samen Steeve
         </h1>
@@ -358,18 +357,7 @@ export default async function HomePage({ params }: PageProps) {
 
         <div className="flex flex-col divide-y divide-line">
           {writing.map((page, i) => {
-            let bodyText = "";
-            try {
-              const filePath = join(process.cwd(), "src/content/writing", `${page.slugs[0]}.mdx`);
-              const rawMdx = readFileSync(filePath, "utf-8");
-              const parts = rawMdx.split("---");
-              bodyText = parts.length > 2 ? parts.slice(2).join("---").trim() : rawMdx.trim();
-            } catch {
-              bodyText = page.data.description;
-            }
-
-            const wordCount = bodyText.split(/\s+/).filter(Boolean).length || page.data.description.split(/\s+/).length;
-            const readTime = Math.max(1, Math.ceil(wordCount / 200));
+            const readTime = getReadingTime(page.slugs[0], "writing", page.data.description);
             const readLabel = lang === "en" ? `${readTime} min read` : `${readTime} min de lecture`;
 
             return (

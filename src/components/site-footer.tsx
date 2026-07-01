@@ -14,8 +14,7 @@ export function SiteFooter({ lang }: { lang: Language }) {
           {/* Identité + copyright */}
           <div className="flex flex-col gap-1.5">
             <span
-              className="text-base font-extrabold tracking-tight text-ink"
-              style={{ fontFamily: "'Outfit', sans-serif" }}
+              className="font-display text-base font-extrabold tracking-tight text-ink"
             >
               Samen Steeve
             </span>

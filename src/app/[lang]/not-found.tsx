@@ -40,8 +40,7 @@ export default async function NotFound({
         <div className="relative inline-flex items-center justify-center mb-8">
           <div className="absolute inset-0 bg-accent/10 blur-xl rounded-full h-16 w-32 mx-auto"></div>
           <span
-            className="font-mono text-8xl font-black tracking-widest text-accent/20 select-none"
-            style={{ fontFamily: "'Outfit', sans-serif" }}
+            className="font-display font-mono text-8xl font-black tracking-widest text-accent/20 select-none"
           >
             404
           </span>
@@ -49,8 +48,7 @@ export default async function NotFound({
 
         {/* Titres */}
         <h1
-          className="text-4xl font-extrabold tracking-tight sm:text-5xl text-ink"
-          style={{ fontFamily: "'Outfit', sans-serif" }}
+          className="font-display text-4xl font-extrabold tracking-tight sm:text-5xl text-ink"
         >
           {t.notFound.title}
         </h1>

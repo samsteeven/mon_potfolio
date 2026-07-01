@@ -1,6 +1,6 @@
 # AGENTS.md — Contexte pour les agents de code
 
-Ce projet est le portfolio personnel de Steeven Djiaha. Avant toute modification,
+Ce projet est le portfolio personnel de Samen Steeve (alias samsteeven). Avant toute modification,
 lire ce fichier en entier. Il existe pour éviter que chaque tâche réinvente des
 conventions différentes — build et lint doivent rester propres après chaque
 intervention (voir "Definition of done" en bas).
@@ -13,6 +13,7 @@ intervention (voir "Definition of done" en bas).
 - Fumadocs MDX — gestion de contenu par fichiers, sans base de données ni CMS
 - lucide-react — icônes
 - TypeScript strict
+- postcss-preset-env — compatibilité CSS pour navigateurs anciens (iOS Safari ≥ 9)
 
 ## Commandes
 
@@ -31,13 +32,42 @@ polices). Ils sont exposés comme utilitaires Tailwind via `@theme inline` :
   `text-accent` / `bg-accent`. **Ne jamais** utiliser une couleur Tailwind par défaut
   (`bg-neutral-100`, `text-gray-500`...) ni une couleur hexadécimale en dur — ça casse
   le mode sombre. Toujours passer par ces tokens.
-- Polices : `font-display` (Instrument Sans — titres uniquement), `font-sans` (Inter —
+- Polices : `font-display` (Outfit — titres uniquement), `font-sans` (Inter —
   texte par défaut, pas besoin de la préciser), `font-mono` (JetBrains Mono — labels,
   dates, tags, statuts, code).
-- Mode sombre : géré par une classe `.dark` sur `<html>`, basculée par
-  `src/components/theme-toggle.tsx` et persistée dans `localStorage` (clé `theme`).
-  Le script anti-flash dans `src/app/layout.tsx` (`<head>`) applique la classe avant le
+  **Ne jamais** utiliser `style={{ fontFamily: "..." }}` en dur — toujours passer
+  par les classes Tailwind `font-display`, `font-sans`, `font-mono`.
+- Mode sombre : géré par l'attribut `data-theme="dark"` sur `<html>`, basculé par
+  `src/components/theme-toggle.tsx` et persisté dans `localStorage` (clé `theme`).
+  Le script anti-flash dans `src/app/layout.tsx` (`<head>`) applique l'attribut avant le
   premier rendu — ne pas le retirer, ça causerait un flash de la mauvaise couleur.
+
+## Architecture du thème (important)
+
+- `src/app/layout.tsx` — Root layout **persistant** : contient `<html>`, `<head>`, `<body>`,
+  le script anti-flash et le JSON-LD Schema.org. Ce composant n'est **jamais** démonté
+  lors des changements de route ou de langue. Ne pas y déplacer de logique de page.
+- `src/app/[lang]/layout.tsx` — Sub-layout bilingue : contient uniquement `SiteHeader`,
+  `SiteFooter` et `{children}`. Pas de `<html>/<body>` ici.
+- L'attribut `data-theme` sur `<html>` est utilisé à la place de la classe `.dark`
+  pour éviter que React n'efface l'état lors des transitions de route.
+
+## Routing et internationalisation
+
+- Le site est bilingue `/en` et `/fr`. Les routes sont sous `src/app/[lang]/`.
+- `src/proxy.ts` — Fichier proxy Next.js 16+ (équivalent de l'ancien `middleware.ts`
+  de Next.js ≤ 15). **Important** : dans Next.js 16, la convention a changé — le fichier
+  s'appelle `proxy.ts` et l'export s'appelle `export function proxy(...)`.
+  Ne pas le renommer en `middleware.ts`, ça déprécierait la convention.
+- La redirection `/` → `/en` est gérée par ce proxy.
+
+## Utilitaires partagés
+
+- `src/lib/reading-time.ts` — Fonctions `getReadingTime()` et `getMdxBody()` pour calculer
+  le temps de lecture et extraire le corps d'un fichier MDX. **Source unique de vérité** —
+  ne pas dupliquer cette logique dans les pages, toujours importer depuis ce module.
+- `src/lib/source.ts` — Connecte les collections de contenu aux routes (via
+  `toFumadocsSource` + `loader` de `fumadocs-core/source`, pas `fumadocs-ui`).
 
 ## Mouvement
 
@@ -58,7 +88,7 @@ de frontmatter est défini et validé (Zod) dans `source.config.ts`.
 - `src/content/work/*.mdx` — études de cas projets
   (`title`, `description`, `date`, `role`, `stack[]`, `status: "shipped" | "in-progress"`, `featured`)
 - `src/content/writing/*.mdx` — articles
-  (`title`, `description`, `date`, `tags[]`, `published`)
+  (`title`, `description`, `date`, `tags[]`, `published`, `lang`, `cover?`)
 
 Pour publier un nouveau projet ou article : créer le fichier `.mdx` correspondant,
 respecter le schéma existant, c'est tout — aucune migration, aucune interface admin.
@@ -68,13 +98,19 @@ des projets : ne pas le détourner pour autre chose, son rôle est précis (livr
 
 ## Pages
 
-- `src/app/page.tsx` — accueil à sections ancrées (Hero, À propos, Travail, Écrits)
-- `src/app/work/[slug]/page.tsx` — détail d'un projet
-- `src/app/writing/page.tsx` — listing complet des écrits, avec filtre par tag
+- `src/app/[lang]/page.tsx` — accueil à sections ancrées (Hero, À propos, Travail, Écrits)
+- `src/app/[lang]/work/[slug]/page.tsx` — détail d'un projet
+- `src/app/[lang]/writing/page.tsx` — listing complet des écrits, avec filtre par tag
   (`src/components/writing-list.tsx`)
-- `src/app/writing/[slug]/page.tsx` — détail d'un article
-- `src/lib/source.ts` — connecte les collections de contenu aux routes (via
-  `toFumadocsSource` + `loader` de `fumadocs-core/source`, pas `fumadocs-ui`)
+- `src/app/[lang]/writing/[slug]/page.tsx` — détail d'un article
+- `src/app/[lang]/[...catchAll]/page.tsx` — page 404 pour routes inconnues
+
+## SEO
+
+- `src/app/layout.tsx` contient un JSON-LD `schema.org/Person` pour le Knowledge Panel Google.
+- Chaque page a ses propres balises `<title>` et `<meta description>` via `generateMetadata`.
+- Le sitemap est auto-généré à `/sitemap.xml` par Next.js au build.
+- Les images OG sont définies dans les métadonnées de chaque page.
 
 ## Ce qu'il ne faut pas faire
 
@@ -83,16 +119,20 @@ des projets : ne pas le détourner pour autre chose, son rôle est précis (livr
 - Ne pas réintroduire `fumadocs-ui` — le rendu MDX est volontairement custom
   (`src/components/mdx/mdx-components.tsx`) pour garder un contrôle total du design.
 - Ne pas casser le mode sombre en ajoutant des couleurs hors tokens.
-- Ne pas remplacer le système de thème actuel (classe + localStorage) par une
+- Ne pas remplacer le système de thème actuel (`data-theme` + localStorage) par une
   librairie (`next-themes`, etc.) sans raison concrète — ça fonctionne déjà.
-- Le site est en français, dans un ton direct et professionnel (pas de marketing
+- Ne pas mettre `<html>/<body>` dans `src/app/[lang]/layout.tsx` — ils appartiennent
+  au root layout `src/app/layout.tsx`.
+- Ne pas renommer `src/proxy.ts` en `middleware.ts` — convention Next.js 16+.
+- Ne pas dupliquer la logique de temps de lecture — utiliser `src/lib/reading-time.ts`.
+- Le site est bilingue (fr/en), dans un ton direct et professionnel (pas de marketing
   ronflant). Garder cette voix dans tout nouveau contenu généré.
 
 ## Definition of done
 
 Avant de considérer une tâche terminée :
 
-1. `npm run build` passe sans erreur
+1. `npm run build` passe sans erreur ni warning
 2. `npm run lint` passe sans erreur ni warning
 3. Le rendu reste cohérent en mode clair ET sombre
 4. Si du contenu a été ajouté/modifié, le frontmatter respecte le schéma de

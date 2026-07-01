@@ -63,7 +63,6 @@ export function SiteHeader({ lang }: { lang: Language }) {
           {/* Nom - Masqué sur mobile, visible sur tablette et plus (sm+) */}
           <span
             className="hidden sm:inline font-display text-sm font-extrabold tracking-tight text-ink"
-            style={{ fontFamily: "'Outfit', sans-serif" }}
           >
             SAMEN STEEVE<span className="text-accent">.</span>
           </span>

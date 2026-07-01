@@ -1,8 +1,7 @@
 import Link from "next/link";
 import type { Metadata } from "next";
 import { ArrowLeft } from "lucide-react";
-import { readFileSync } from "fs";
-import { join } from "path";
+import { getReadingTime } from "@/lib/reading-time";
 import { writingSource } from "@/lib/source";
 import { WritingList } from "@/components/writing-list";
 import { translations, type Language } from "@/lib/translations";
@@ -43,18 +42,7 @@ export default async function WritingIndexPage({ params }: PageProps) {
     .filter((page) => page.data.published && (page.data.lang || "fr") === lang)
     .sort((a, b) => (a.data.date < b.data.date ? 1 : -1))
     .map((page) => {
-      let bodyText = "";
-      try {
-        const filePath = join(process.cwd(), "src/content/writing", `${page.slugs[0]}.mdx`);
-        const rawMdx = readFileSync(filePath, "utf-8");
-        const parts = rawMdx.split("---");
-        bodyText = parts.length > 2 ? parts.slice(2).join("---").trim() : rawMdx.trim();
-      } catch {
-        bodyText = page.data.description;
-      }
-      
-      const wordCount = bodyText.split(/\s+/).filter(Boolean).length || page.data.description.split(/\s+/).length;
-      const readTime = Math.max(1, Math.ceil(wordCount / 200));
+      const readTime = getReadingTime(page.slugs[0], "writing", page.data.description);
 
       return {
         url: page.url,

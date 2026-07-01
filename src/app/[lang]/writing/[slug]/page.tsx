@@ -2,8 +2,7 @@ import { notFound } from "next/navigation";
 import Link from "next/link";
 import type { Metadata } from "next";
 import { ArrowLeft } from "lucide-react";
-import { readFileSync } from "fs";
-import { join } from "path";
+import { getMdxBody, getReadingTime } from "@/lib/reading-time";
 import { writingSource } from "@/lib/source";
 import { getMDXComponents } from "@/components/mdx/mdx-components";
 import { translations, type Language } from "@/lib/translations";
@@ -76,16 +75,7 @@ export default async function WritingPage({ params }: PageProps) {
   // Build canonical URL and shareable text (full post content) for copy buttons
   const canonicalUrl = `${BASE_URL}/${lang}/writing/${slug}`;
   
-  let bodyText = "";
-  try {
-    const filePath = join(process.cwd(), "src/content/writing", `${slug}.mdx`);
-    const rawMdx = readFileSync(filePath, "utf-8");
-    const parts = rawMdx.split("---");
-    bodyText = parts.length > 2 ? parts.slice(2).join("---").trim() : rawMdx.trim();
-  } catch (error) {
-    console.error("Failed to read raw MDX content for sharing:", error);
-    bodyText = page.data.description; // fallback if file reading fails
-  }
+  const bodyText = getMdxBody(slug, "writing", page.data.description);
 
   const shareText = [
     page.data.title,
@@ -100,9 +90,7 @@ export default async function WritingPage({ params }: PageProps) {
     .join("\n")
     .trim();
 
-  // Calculated reading time based on body text
-  const wordCount = bodyText.split(/\s+/).filter(Boolean).length || page.data.description.split(/\s+/).length;
-  const readTime = Math.max(1, Math.ceil(wordCount / 200));
+  const readTime = getReadingTime(slug, "writing", page.data.description);
   const readLabel = lang === "en" ? `${readTime} min read` : `${readTime} min de lecture`;
 
   // Extraction des headings depuis le TOC généré par Fumadocs
