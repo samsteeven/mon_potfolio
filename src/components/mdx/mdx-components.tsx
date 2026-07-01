@@ -63,13 +63,13 @@ export function getMDXComponents(components?: MDXComponents): MDXComponents {
     li: (props) => <li className="mb-1" {...props} />,
     code: (props) => (
       <code
-        className="rounded border border-line bg-paper-raised px-1.5 py-0.5 font-mono text-sm"
+        className="font-mono text-sm"
         {...props}
       />
     ),
     pre: (props) => (
       <pre
-        className="mb-6 overflow-x-auto rounded-lg border border-line bg-paper-raised p-4 font-mono text-sm"
+        className="mb-6 w-full max-w-full overflow-x-auto rounded-lg border border-line bg-paper-raised p-4 font-mono text-sm"
         {...props}
       />
     ),

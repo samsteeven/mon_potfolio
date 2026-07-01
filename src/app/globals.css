@@ -110,3 +110,23 @@ body {
 .fade-up {
   animation: fade-up 0.6s ease-out both;
 }
+
+/* Styles pour le code en ligne (uniquement hors bloc pre) */
+code:not(pre code) {
+  background-color: var(--paper-raised);
+  border: 1px solid var(--line);
+  border-radius: 0.375rem;
+  padding: 0.125rem 0.375rem;
+  font-size: 0.875rem;
+}
+
+/* Empêcher l'overflow et forcer le scroll horizontal dans les blocs de code */
+pre code {
+  display: block;
+  width: max-content;
+  min-width: 100%;
+  white-space: pre;
+  word-spacing: normal;
+  word-break: normal;
+  word-wrap: normal;
+}

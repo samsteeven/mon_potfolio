@@ -172,7 +172,7 @@ export default async function WritingPage({ params }: PageProps) {
 
       {/* Layout relatif pour le TOC absolu à droite */}
       <div className="relative">
-        <article className="prose-headings:font-display prose-a:text-accent">
+        <article className="prose-headings:font-display prose-a:text-accent w-full max-w-full overflow-hidden">
           <MDX components={getMDXComponents()} />
         </article>
         <TableOfContents items={tocItems} lang={lang} />

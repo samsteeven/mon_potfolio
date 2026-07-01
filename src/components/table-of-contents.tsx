@@ -71,11 +71,11 @@ export function TableOfContents({ items, lang }: TableOfContentsProps) {
                     <a
                       href={`#${item.id}`}
                       className={[
-                        "block rounded py-0.5 font-sans text-[13px] leading-snug transition-all duration-200",
+                        "block rounded py-0.5 pl-3 font-sans text-[13px] leading-snug transition-all duration-200 border-l-2",
                         indent,
                         isActive
-                          ? "text-accent font-medium"
-                          : "text-ink-soft hover:text-ink",
+                          ? "text-accent font-medium border-accent"
+                          : "text-ink-soft hover:text-ink border-transparent",
                       ].join(" ")}
                       onClick={(e) => {
                         e.preventDefault();
@@ -84,9 +84,6 @@ export function TableOfContents({ items, lang }: TableOfContentsProps) {
                         setActiveId(item.id);
                       }}
                     >
-                      {isActive && (
-                        <span className="mr-1.5 inline-block h-1.5 w-1.5 rounded-full bg-accent align-middle" />
-                      )}
                       {item.title}
                     </a>
                   </li>
