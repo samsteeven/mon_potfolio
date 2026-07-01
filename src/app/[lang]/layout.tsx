@@ -90,7 +90,7 @@ export default async function RootLayout({ children, params }: LayoutProps) {
   const lang = (rawLang === "fr" ? "fr" : "en") as Language;
 
   return (
-    <html lang={lang} className="h-full antialiased" suppressHydrationWarning>
+    <html lang={lang} className="h-full antialiased" data-scroll-behavior="smooth" suppressHydrationWarning>
       <head>
         <Script
           id="theme-initializer"
