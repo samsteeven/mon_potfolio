@@ -64,18 +64,17 @@ export function TableOfContents({ items, lang }: TableOfContentsProps) {
             <ul className="space-y-1.5">
               {items.map((item) => {
                 const isActive = activeId === item.id;
-                const indent = item.depth === 3 ? "pl-4" : "pl-0";
+                const indent = item.depth === 3 ? "pl-3" : "pl-0";
 
                 return (
                   <li key={item.id}>
                     <a
                       href={`#${item.id}`}
                       className={[
-                        "block rounded py-0.5 pl-3 font-sans text-[13px] leading-snug transition-all duration-200 border-l-2",
-                        indent,
+                        "block rounded-md py-1 px-3 mx-1.5 font-sans text-[13px] leading-snug transition-all duration-200",
                         isActive
-                          ? "text-accent font-medium border-accent"
-                          : "text-ink-soft hover:text-ink border-transparent",
+                          ? "text-accent font-semibold bg-accent/5"
+                          : "text-ink-soft hover:bg-paper-raised/40 hover:text-ink",
                       ].join(" ")}
                       onClick={(e) => {
                         e.preventDefault();
@@ -84,7 +83,9 @@ export function TableOfContents({ items, lang }: TableOfContentsProps) {
                         setActiveId(item.id);
                       }}
                     >
-                      {item.title}
+                      <span className={`block ${indent}`}>
+                        {item.title}
+                      </span>
                     </a>
                   </li>
                 );
