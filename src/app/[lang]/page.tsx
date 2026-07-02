@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { ArrowUpRight, Mail, Code2, ShieldCheck, Bot, CalendarDays } from "lucide-react";
 import { getReadingTime } from "@/lib/reading-time";
@@ -9,6 +10,42 @@ import { LinkedinIcon, GithubIcon } from "@/components/icons";
 
 interface PageProps {
   params: Promise<{ lang: Language }>;
+}
+
+const BASE_URL =
+  process.env.NEXT_PUBLIC_SITE_URL || "https://samensteeve.com";
+
+export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
+  const { lang } = await params;
+  const t = translations[lang] || translations.en;
+  const altLang = lang === "fr" ? "en" : "fr";
+
+  return {
+    title: `Samen Steeve — ${t.hero.status}`,
+    description: t.hero.bio,
+    alternates: {
+      canonical: `${BASE_URL}/${lang}`,
+      languages: {
+        [lang]: `${BASE_URL}/${lang}`,
+        [altLang]: `${BASE_URL}/${altLang}`,
+        "x-default": `${BASE_URL}/en`,
+      },
+    },
+    openGraph: {
+      type: "website",
+      title: `Samen Steeve — ${t.hero.status}`,
+      description: t.hero.bio,
+      url: `${BASE_URL}/${lang}`,
+      siteName: "Samen Steeve",
+      images: [{ url: "/profil.png" }],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: `Samen Steeve — ${t.hero.status}`,
+      description: t.hero.bio,
+      images: ["/profil.png"],
+    },
+  };
 }
 
 export default async function HomePage({ params }: PageProps) {

@@ -20,7 +20,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 
   return {
     title: `${t.writing.title} — Samen Steeve`,
-    description: t.writing.title,
+    description: t.writing.seoDescription,
     alternates: {
       canonical: `${BASE_URL}/${lang}/writing`,
       languages: {

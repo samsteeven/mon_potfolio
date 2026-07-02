@@ -90,8 +90,28 @@ export default async function WorkPage({ params }: PageProps) {
       depth: item.depth,
     }));
 
+  const canonicalUrl = `${BASE_URL}/${lang}/work/${slug}`;
+  const projectJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "CreativeWork",
+    name: page.data.title,
+    description: page.data.description,
+    image: page.data.cover ? `${BASE_URL}${page.data.cover}` : `${BASE_URL}/profil.png`,
+    author: {
+      "@type": "Person",
+      name: "Samen Steeve",
+      url: BASE_URL,
+    },
+    url: canonicalUrl,
+  };
+
   return (
     <main className="mx-auto max-w-2xl px-6 py-20">
+      {/* JSON-LD CreativeWork Schema pour Google Rich Snippets */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(projectJsonLd) }}
+      />
       <Link
         href={`/${lang}/#work`}
         className="inline-flex items-center gap-2 font-mono text-xs uppercase tracking-wider text-ink-soft transition-all duration-200 hover:text-accent hover:-translate-x-0.5"

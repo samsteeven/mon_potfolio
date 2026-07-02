@@ -29,6 +29,7 @@ export const translations = {
     },
     writing: {
       title: "Writing",
+      seoDescription: "Articles and reflections by Samen Steeve on software engineering, security research, and AI automation.",
       seeAll: "See all posts",
       all: "All",
       empty: "No posts found for this filter.",
@@ -97,6 +98,7 @@ export const translations = {
     },
     writing: {
       title: "Écrits",
+      seoDescription: "Articles et réflexions de Samen Steeve sur le génie logiciel, la recherche en sécurité et l'automatisation IA.",
       seeAll: "Voir tous les écrits",
       all: "Tous",
       empty: "Aucun écrit pour ce filtre.",

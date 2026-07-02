@@ -102,8 +102,39 @@ export default async function WritingPage({ params }: PageProps) {
       depth: item.depth,
     }));
 
+  const articleJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "BlogPosting",
+    headline: page.data.title,
+    description: page.data.description,
+    image: page.data.cover ? `${BASE_URL}${page.data.cover}` : `${BASE_URL}/profil.png`,
+    datePublished: page.data.date,
+    author: {
+      "@type": "Person",
+      name: "Samen Steeve",
+      url: BASE_URL,
+    },
+    publisher: {
+      "@type": "Organization",
+      name: "Samen Steeve",
+      logo: {
+        "@type": "ImageObject",
+        url: `${BASE_URL}/profil.png`,
+      },
+    },
+    mainEntityOfPage: {
+      "@type": "WebPage",
+      "@id": canonicalUrl,
+    },
+  };
+
   return (
     <main className="mx-auto max-w-2xl px-6 py-20">
+      {/* JSON-LD Article Schema pour Google Rich Snippets */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(articleJsonLd) }}
+      />
       <Link
         href={`/${lang}/writing`}
         className="inline-flex items-center gap-2 font-mono text-xs uppercase tracking-wider text-ink-soft transition-all duration-200 hover:text-accent hover:-translate-x-0.5"
