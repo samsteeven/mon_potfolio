@@ -2,6 +2,7 @@
 
 import { useEffect } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { translations, type Language } from "@/lib/translations";
@@ -53,11 +54,13 @@ export function SiteHeader({ lang }: { lang: Language }) {
         >
           {/* Photo de profil (Avatar) */}
           <div className="relative h-8 w-8 overflow-hidden rounded-full border border-line bg-paper-raised/80 shadow-sm transition-all duration-300 group-hover:border-accent/40 group-hover:scale-105">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
+            <Image
               src="/profil.png"
               alt="Samen Steeve"
+              width={32}
+              height={32}
               className="h-full w-full object-cover object-[center_15%]"
+              priority
             />
           </div>
           {/* Nom - Masqué sur mobile, visible sur tablette et plus (sm+) */}
