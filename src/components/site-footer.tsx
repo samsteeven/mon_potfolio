@@ -1,9 +1,9 @@
 import { Calendar, Mail } from "lucide-react";
-import { translations, type Language } from "@/lib/translations";
+import { getT, type Language } from "@/lib/translations";
 import { LinkedinIcon, GithubIcon } from "@/components/icons";
 
 export function SiteFooter({ lang }: { lang: Language }) {
-  const t = translations[lang] || translations.en;
+  const t = getT(lang);
   const year = new Date().getFullYear();
 
   return (

@@ -3,10 +3,11 @@ import Link from "next/link";
 import type { Metadata } from "next";
 import Image from "next/image";
 import { ArrowLeft } from "lucide-react";
-import { getMdxBody, getReadingTime } from "@/lib/reading-time";
-import { writingSource, leafSlug } from "@/lib/source";
+import { writingSource, getWritingPageContent } from "@/lib/source";
+import { leafSlug } from "@/lib/slug";
 import { getMDXComponents } from "@/components/mdx/mdx-components";
-import { translations, type Language } from "@/lib/translations";
+import { getT, type Language } from "@/lib/translations";
+import { createPageMetadata } from "@/lib/metadata";
 import { TableOfContents, type TocItem } from "@/components/table-of-contents";
 import { CopyButtons } from "@/components/copy-buttons";
 
@@ -29,62 +30,32 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   const { lang, slug } = await params;
   const page = writingSource.getPage([lang, slug]);
   if (!page || !page.data.published || (page.data.lang || "fr") !== lang) return {};
-
-  const canonicalUrl = `${BASE_URL}/${lang}/writing/${slug}`;
-  const altLang = lang === "fr" ? "en" : "fr";
-  // Avec les sous-dossiers content/writing/{en,fr}/, le slug "feuille" est
-  // identique dans les deux langues : pas de manipulation de suffixe -en.
-  const altUrl = `${BASE_URL}/${altLang}/writing/${slug}`;
-  const ogImage = page.data.cover || "/profil.png";
-
-  return {
-    title: `${page.data.title} — Samen Steeve`,
+  return createPageMetadata({
+    lang,
+    title: page.data.title,
     description: page.data.description,
-    alternates: {
-      canonical: canonicalUrl,
-      languages: {
-        [lang]: canonicalUrl,
-        [altLang]: altUrl,
-        "x-default": `${BASE_URL}/en/writing/${slug}`,
-      },
-    },
-    openGraph: {
-      type: "article",
-      title: page.data.title,
-      description: page.data.description,
-      url: canonicalUrl,
-      siteName: "Samen Steeve",
-      images: [{ url: ogImage }],
-    },
-    twitter: {
-      card: "summary_large_image",
-      title: page.data.title,
-      description: page.data.description,
-      images: [ogImage],
-    },
-  };
+    path: `/writing/${slug}`,
+    image: page.data.cover || "/profil.png",
+    type: "article",
+  });
 }
 
 
 export default async function WritingPage({ params }: PageProps) {
   const { lang, slug } = await params;
-  const page = writingSource.getPage([lang, slug]);
-  if (!page || !page.data.published || (page.data.lang || "fr") !== lang) notFound();
+  const content = getWritingPageContent(lang, slug);
+  if (!content) notFound();
 
-  const t = translations[lang] || translations.en;
-  const MDX = page.data.body;
+  const t = getT(lang);
 
-  // Build canonical URL and shareable text (full post content) for copy buttons
   const canonicalUrl = `${BASE_URL}/${lang}/writing/${slug}`;
-  
-  const bodyText = getMdxBody(slug, `writing/${lang}`, page.data.description);
 
   const shareText = [
-    page.data.title,
+    content.title,
     "",
-    bodyText,
+    content.bodyText,
     "",
-    page.data.tags.map((t: string) => `#${t}`).join(" "),
+    content.tags.map((t: string) => `#${t}`).join(" "),
     "",
     lang === "en" ? `Read online:` : `Lire en ligne :`,
     canonicalUrl,
@@ -92,11 +63,9 @@ export default async function WritingPage({ params }: PageProps) {
     .join("\n")
     .trim();
 
-  const readTime = getReadingTime(slug, `writing/${lang}`, page.data.description);
-  const readLabel = lang === "en" ? `${readTime} min read` : `${readTime} min de lecture`;
+  const readLabel = lang === "en" ? `${content.readTime} min read` : `${content.readTime} min de lecture`;
 
-  // Extraction des headings depuis le TOC généré par Fumadocs
-  const tocItems: TocItem[] = (page.data.toc ?? [])
+  const tocItems: TocItem[] = (content.toc ?? [])
     .filter((item) => item.depth === 2 || item.depth === 3)
     .map((item) => ({
       id: item.url.replace(/^#/, ""),
@@ -107,32 +76,21 @@ export default async function WritingPage({ params }: PageProps) {
   const articleJsonLd = {
     "@context": "https://schema.org",
     "@type": "BlogPosting",
-    headline: page.data.title,
-    description: page.data.description,
-    image: page.data.cover ? `${BASE_URL}${page.data.cover}` : `${BASE_URL}/profil.png`,
-    datePublished: page.data.date,
-    author: {
-      "@type": "Person",
-      name: "Samen Steeve",
-      url: BASE_URL,
-    },
+    headline: content.title,
+    description: content.description,
+    image: content.cover ? `${BASE_URL}${content.cover}` : `${BASE_URL}/profil.png`,
+    datePublished: content.date,
+    author: { "@type": "Person", name: "Samen Steeve", url: BASE_URL },
     publisher: {
       "@type": "Organization",
       name: "Samen Steeve",
-      logo: {
-        "@type": "ImageObject",
-        url: `${BASE_URL}/profil.png`,
-      },
+      logo: { "@type": "ImageObject", url: `${BASE_URL}/profil.png` },
     },
-    mainEntityOfPage: {
-      "@type": "WebPage",
-      "@id": canonicalUrl,
-    },
+    mainEntityOfPage: { "@type": "WebPage", "@id": canonicalUrl },
   };
 
   return (
     <main className="mx-auto max-w-2xl px-6 py-20">
-      {/* JSON-LD Article Schema pour Google Rich Snippets */}
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(articleJsonLd) }}
@@ -145,12 +103,11 @@ export default async function WritingPage({ params }: PageProps) {
         {t.details.back}
       </Link>
 
-      {/* Image de couverture optionnelle */}
-      {page.data.cover && (
+      {content.cover && (
         <div className="relative mt-8 h-64 w-full overflow-hidden rounded-2xl sm:h-80">
           <Image
-            src={page.data.cover}
-            alt={page.data.title}
+            src={content.cover}
+            alt={content.title}
             fill
             sizes="(max-width: 768px) 100vw, 672px"
             className="object-cover"
@@ -160,23 +117,21 @@ export default async function WritingPage({ params }: PageProps) {
         </div>
       )}
 
-      <header className={`mb-12 border-b border-line pb-8 ${page.data.cover ? "mt-8" : "mt-8"}`}>
+      <header className={`mb-12 border-b border-line pb-8 ${content.cover ? "mt-8" : "mt-8"}`}>
         <div className="flex items-center gap-3 font-mono text-xs text-ink-soft/60">
-          <p className="text-accent font-medium">
-            {page.data.date}
-          </p>
+          <p className="text-accent font-medium">{content.date}</p>
           <span>·</span>
           <span>{readLabel}</span>
         </div>
         <h1 className="mt-2 font-display text-3xl font-bold tracking-tight sm:text-4xl">
-          {page.data.title}
+          {content.title}
         </h1>
         <p className="mt-4 text-base leading-relaxed text-ink-soft">
-          {page.data.description}
+          {content.description}
         </p>
         <div className="mt-6 flex flex-wrap items-center justify-between gap-3">
           <div className="flex flex-wrap gap-2">
-            {page.data.tags.map((tag: string) => (
+            {content.tags.map((tag: string) => (
               <span
                 key={tag}
                 className="rounded border border-line bg-paper-raised/80 px-2.5 py-0.5 font-mono text-[10px] text-ink-soft"
@@ -185,19 +140,14 @@ export default async function WritingPage({ params }: PageProps) {
               </span>
             ))}
           </div>
-          <CopyButtons
-            url={canonicalUrl}
-            shareText={shareText}
-            lang={lang}
-          />
+          <CopyButtons url={canonicalUrl} shareText={shareText} lang={lang} />
         </div>
       </header>
 
-      {/* Layout relatif pour le TOC absolu à droite */}
       <div className="relative">
         <TableOfContents items={tocItems} lang={lang} />
         <article className="prose-headings:font-display prose-a:text-accent w-full max-w-full overflow-hidden">
-          <MDX components={getMDXComponents()} />
+          <content.MDX components={getMDXComponents()} />
         </article>
       </div>
     </main>

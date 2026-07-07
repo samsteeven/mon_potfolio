@@ -2,24 +2,9 @@ import { readFileSync } from "fs";
 import { join } from "path";
 
 /**
- * Extrait le corps d'un fichier MDX (après le second séparateur ---),
- * puis calcule un temps de lecture estimé à 200 mots/minute.
- *
- * @param slug  - Le slug du fichier (sans extension), ex: "mon-article"
- * @param collection - Le sous-dossier dans src/content/, ex: "writing"
- * @param fallbackText - Texte de repli pour le comptage si le fichier ne peut pas être lu
- * @returns Le nombre de minutes de lecture (minimum 1)
+ * Calcule le temps de lecture à partir d'un texte brut.
+ * Fonction pure — pas d'I/O, testable sans mock.
  */
-export function getReadingTime(
-  slug: string,
-  collection: string,
-  fallbackText: string
-): number {
-  const bodyText = readMdxBodyCached(slug, collection) ?? fallbackText;
-  return computeReadingTime(bodyText, fallbackText);
-}
-
-/** Calcule le temps de lecture à partir d'un texte brut. Fonction pure, testable sans mock. */
 export function computeReadingTime(bodyText: string, fallbackText: string): number {
   const wordCount =
     bodyText.split(/\s+/).filter(Boolean).length ||
@@ -27,60 +12,77 @@ export function computeReadingTime(bodyText: string, fallbackText: string): numb
   return Math.max(1, Math.ceil(wordCount / 200));
 }
 
-/** Vide le cache interne (utile en test). */
-export function __resetBodyCache(): void {
-  bodyCache.clear();
+/**
+ * Retourne le corps + temps de lecture en une seule lecture fichier.
+ * Remplace les appels séparés à getReadingTime + getMdxBody.
+ */
+export function getPageContent(
+  slug: string,
+  collection: string,
+  fallback: string,
+): { body: string; readTime: number } {
+  const raw = readMdxBodyCached(slug, collection);
+  const body = raw ?? fallback;
+  return { body, readTime: computeReadingTime(body, fallback) };
+}
+
+/**
+ * Extrait le corps (après frontmatter) + temps de lecture, avec fallback.
+ * @deprecated Utilise getPageContent à la place — une seule lecture fichier.
+ */
+export function getReadingTime(
+  slug: string,
+  collection: string,
+  fallbackText: string,
+): number {
+  const body = readMdxBodyCached(slug, collection) ?? fallbackText;
+  return computeReadingTime(body, fallbackText);
 }
 
 /**
  * Extrait le corps brut d'un fichier MDX (texte après le frontmatter).
- * Retourne undefined si le fichier n'est pas lisible.
- *
- * @param slug       - Le slug du fichier (sans extension)
- * @param collection - Le sous-dossier dans src/content/, ex: "writing"
- * @param fallback   - Texte retourné en cas d'erreur de lecture
- * @returns Le corps brut du fichier MDX
+ * @deprecated Utilise getPageContent à la place.
  */
 export function getMdxBody(
   slug: string,
   collection: string,
-  fallback: string
+  fallback: string,
 ): string {
   return readMdxBodyCached(slug, collection) ?? fallback;
 }
 
-// Cache module-level avec TTL 30s. Évite de relire le disque à chaque requête
-// dans le même processus (dev HMR / builds successifs). Se purge
-// automatiquement si le contenu change côté dev.
+// --- Interne ---
+
 const bodyCache = new Map<string, { value: string | null; ts: number }>();
 const CACHE_TTL_MS = 30_000;
 
-function readMdxBodyCached(
-  slug: string,
-  collection: string,
-): string | null {
+/**
+ * Lit un fichier MDX sur le disque et extrait le corps après le frontmatter YAML.
+ * Interface publique pour les tests (__resetBodyCache) et pour caller via getPageContent.
+ */
+function readMdxBody(slug: string, collection: string): string | null {
+  try {
+    const filePath = join(process.cwd(), "src/content", collection, `${slug}.mdx`);
+    const rawMdx = readFileSync(filePath, "utf-8");
+    const parts = rawMdx.split("---");
+    return parts.length > 2 ? parts.slice(2).join("---").trim() : rawMdx.trim();
+  } catch {
+    return null;
+  }
+}
+
+function readMdxBodyCached(slug: string, collection: string): string | null {
   const key = `${collection}/${slug}`;
   const cached = bodyCache.get(key);
   if (cached !== undefined && Date.now() - cached.ts < CACHE_TTL_MS) {
     return cached.value;
   }
+  const value = readMdxBody(slug, collection);
+  bodyCache.set(key, { value, ts: Date.now() });
+  return value;
+}
 
-  let result: string | null = null;
-  try {
-    const filePath = join(
-      process.cwd(),
-      "src/content",
-      collection,
-      `${slug}.mdx`
-    );
-    const rawMdx = readFileSync(filePath, "utf-8");
-    const parts = rawMdx.split("---");
-    result =
-      parts.length > 2 ? parts.slice(2).join("---").trim() : rawMdx.trim();
-  } catch {
-    result = null;
-  }
-
-  bodyCache.set(key, { value: result, ts: Date.now() });
-  return result;
+/** Vide le cache interne (utile en test). */
+export function __resetBodyCache(): void {
+  bodyCache.clear();
 }

@@ -1,64 +1,32 @@
 import Link from "next/link";
 import type { Metadata } from "next";
 import { ArrowLeft } from "lucide-react";
-import { getReadingTime } from "@/lib/reading-time";
-import { writingSource, leafSlug } from "@/lib/source";
+import { getWritingPages } from "@/lib/source";
 import { WritingList } from "@/components/writing-list";
-import { translations, type Language } from "@/lib/translations";
+import { getT, type Language } from "@/lib/translations";
+import { createPageMetadata } from "@/lib/metadata";
 
 interface PageProps {
   params: Promise<{ lang: Language }>;
 }
 
-const BASE_URL =
-  process.env.NEXT_PUBLIC_SITE_URL || "https://samensteeve.com";
-
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { lang } = await params;
-  const t = translations[lang] || translations.en;
-  const altLang = lang === "fr" ? "en" : "fr";
-
-  return {
-    title: `${t.writing.title} — Samen Steeve`,
+  const t = getT(lang);
+  return createPageMetadata({
+    lang,
+    title: t.writing.title,
     description: t.writing.seoDescription,
-    alternates: {
-      canonical: `${BASE_URL}/${lang}/writing`,
-      languages: {
-        [lang]: `${BASE_URL}/${lang}/writing`,
-        [altLang]: `${BASE_URL}/${altLang}/writing`,
-        "x-default": `${BASE_URL}/en/writing`,
-      },
-    },
-  };
+    path: "/writing",
+  });
 }
 
 
 export default async function WritingIndexPage({ params }: PageProps) {
   const { lang } = await params;
-  const t = translations[lang] || translations.en;
+  const t = getT(lang);
 
-  const items = writingSource
-    .getPages()
-    .filter((page) => page.data.published && (page.data.lang || "fr") === lang)
-    .sort((a, b) => (a.data.date < b.data.date ? 1 : -1))
-    .map((page) => {
-      const readTime = getReadingTime(
-        leafSlug(page.slugs),
-        `writing/${page.data.lang || "fr"}`,
-        page.data.description
-      );
-
-      return {
-        url: `/writing/${leafSlug(page.slugs)}`,
-        title: page.data.title,
-        description: page.data.description,
-        date: page.data.date,
-        tags: page.data.tags,
-        lang: page.data.lang || "fr",
-        cover: page.data.cover,
-        readTime,
-      };
-    });
+  const items = getWritingPages(lang);
 
   return (
     <main className="mx-auto max-w-2xl px-6 py-20">

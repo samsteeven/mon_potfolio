@@ -1,1 +1,1 @@
-export { translations, type Language } from "./i18n";
+export { translations, getT, type Language, type Translation } from "./i18n";

@@ -6,7 +6,8 @@ import { ArrowLeft, ArrowUpRight } from "lucide-react";
 import { workSource } from "@/lib/source";
 import { getMDXComponents } from "@/components/mdx/mdx-components";
 import { StatusDot } from "@/components/status-dot";
-import { translations, type Language } from "@/lib/translations";
+import { getT, type Language } from "@/lib/translations";
+import { createPageMetadata } from "@/lib/metadata";
 import { TableOfContents, type TocItem } from "@/components/table-of-contents";
 import { LanguageFlag } from "@/components/language-flag";
 
@@ -24,44 +25,20 @@ export function generateStaticParams() {
   return params;
 }
 
-const BASE_URL =
-  process.env.NEXT_PUBLIC_SITE_URL || "https://samensteeve.com";
+const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://samensteeve.com";
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { lang, slug } = await params;
   const page = workSource.getPage([slug]);
   if (!page) return {};
-
-  const canonicalUrl = `${BASE_URL}/${lang}/work/${slug}`;
-  const altLang = lang === "fr" ? "en" : "fr";
-  const ogImage = page.data.cover || "/profil.png";
-
-  return {
-    title: `${page.data.title} — Samen Steeve`,
+  return createPageMetadata({
+    lang,
+    title: page.data.title,
     description: page.data.description,
-    alternates: {
-      canonical: canonicalUrl,
-      languages: {
-        [lang]: canonicalUrl,
-        [altLang]: `${BASE_URL}/${altLang}/work/${slug}`,
-        "x-default": `${BASE_URL}/en/work/${slug}`,
-      },
-    },
-    openGraph: {
-      type: "article",
-      title: page.data.title,
-      description: page.data.description,
-      url: canonicalUrl,
-      siteName: "Samen Steeve",
-      images: [{ url: ogImage }],
-    },
-    twitter: {
-      card: "summary_large_image",
-      title: page.data.title,
-      description: page.data.description,
-      images: [ogImage],
-    },
-  };
+    path: `/work/${slug}`,
+    image: page.data.cover || "/profil.png",
+    type: "article",
+  });
 }
 
 
@@ -70,7 +47,7 @@ export default async function WorkPage({ params }: PageProps) {
   const page = workSource.getPage([slug]);
   if (!page) notFound();
 
-  const t = translations[lang] || translations.en;
+  const t = getT(lang);
   const MDX = page.data.body;
 
   const postLangLabel =

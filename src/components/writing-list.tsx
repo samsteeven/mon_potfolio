@@ -4,7 +4,7 @@ import { useMemo, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { Search, X } from "lucide-react";
-import { translations, type Language } from "@/lib/translations";
+import { getT, type Language } from "@/lib/translations";
 
 interface WritingItem {
   url: string;
@@ -18,7 +18,7 @@ interface WritingItem {
 }
 
 export function WritingList({ items, lang }: { items: WritingItem[]; lang: Language }) {
-  const t = translations[lang] || translations.en;
+  const t = getT(lang);
 
   const tags = useMemo(() => {
     const set = new Set<string>();

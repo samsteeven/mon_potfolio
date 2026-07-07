@@ -4,46 +4,30 @@ import { ArrowLeft, ArrowUpRight } from "lucide-react";
 import { workSource } from "@/lib/source";
 import { StatusDot } from "@/components/status-dot";
 import { ScrollReveal } from "@/components/scroll-reveal";
-import { translations, type Language } from "@/lib/translations";
+import { getT, type Language } from "@/lib/translations";
+import { createPageMetadata } from "@/lib/metadata";
+import { sortByFeaturedAndDate } from "@/components/project-card";
 
 interface PageProps {
   params: Promise<{ lang: Language }>;
 }
 
-const BASE_URL =
-  process.env.NEXT_PUBLIC_SITE_URL || "https://samensteeve.com";
-
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { lang } = await params;
-  const t = translations[lang] || translations.en;
-  const altLang = lang === "fr" ? "en" : "fr";
-
-  return {
-    title: `${t.work.title} — Samen Steeve`,
+  const t = getT(lang);
+  return createPageMetadata({
+    lang,
+    title: t.work.title,
     description: t.work.seoDescription,
-    alternates: {
-      canonical: `${BASE_URL}/${lang}/work`,
-      languages: {
-        [lang]: `${BASE_URL}/${lang}/work`,
-        [altLang]: `${BASE_URL}/${altLang}/work`,
-        "x-default": `${BASE_URL}/en/work`,
-      },
-    },
-  };
+    path: "/work",
+  });
 }
 
 export default async function WorkIndexPage({ params }: PageProps) {
   const { lang } = await params;
-  const t = translations[lang] || translations.en;
+  const t = getT(lang);
 
-  const projects = workSource
-    .getPages()
-    .sort((a, b) => {
-      if (b.data.featured !== a.data.featured) {
-        return Number(b.data.featured) - Number(a.data.featured);
-      }
-      return new Date(b.data.date).getTime() - new Date(a.data.date).getTime();
-    });
+  const projects = workSource.getPages().sort(sortByFeaturedAndDate);
 
   return (
     <main className="mx-auto max-w-2xl px-6 py-20">

@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { ArrowLeft, ArrowUpRight, FileText, Home, Layers } from "lucide-react";
-import { translations, type Language } from "@/lib/translations";
+import { getT, type Language } from "@/lib/translations";
 import { ScrollReveal } from "@/components/scroll-reveal";
 
 export default async function NotFound({
@@ -10,7 +10,7 @@ export default async function NotFound({
 }) {
   const resolved = params ? await params : null;
   const lang: Language = resolved?.lang ?? "en";
-  const t = translations[lang] || translations.en;
+  const t = getT(lang);
 
   const quickLinks = [
     {

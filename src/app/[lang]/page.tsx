@@ -2,10 +2,10 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import Image from "next/image";
 import { ArrowUpRight, Mail, Code2, ShieldCheck, Bot, CalendarDays } from "lucide-react";
-import { getReadingTime } from "@/lib/reading-time";
-import { workSource, writingSource, leafSlug } from "@/lib/source";
-import { StatusDot } from "@/components/status-dot";
-import { translations, type Language } from "@/lib/translations";
+import { workSource, getWritingPages } from "@/lib/source";
+import { ProjectCard, sortByFeaturedAndDate } from "@/components/project-card";
+import { getT, type Language } from "@/lib/translations";
+import { createPageMetadata } from "@/lib/metadata";
 import { ScrollReveal } from "@/components/scroll-reveal";
 import { LinkedinIcon, GithubIcon } from "@/components/icons";
 
@@ -13,60 +13,24 @@ interface PageProps {
   params: Promise<{ lang: Language }>;
 }
 
-const BASE_URL =
-  process.env.NEXT_PUBLIC_SITE_URL || "https://samensteeve.com";
-
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { lang } = await params;
-  const t = translations[lang] || translations.en;
-  const altLang = lang === "fr" ? "en" : "fr";
-
-  return {
-    title: `Samen Steeve — ${t.hero.status}`,
+  const t = getT(lang);
+  return createPageMetadata({
+    lang,
+    title: t.hero.status,
     description: t.hero.bio,
-    alternates: {
-      canonical: `${BASE_URL}/${lang}`,
-      languages: {
-        [lang]: `${BASE_URL}/${lang}`,
-        [altLang]: `${BASE_URL}/${altLang}`,
-        "x-default": `${BASE_URL}/en`,
-      },
-    },
-    openGraph: {
-      type: "website",
-      title: `Samen Steeve — ${t.hero.status}`,
-      description: t.hero.bio,
-      url: `${BASE_URL}/${lang}`,
-      siteName: "Samen Steeve",
-      images: [{ url: "/profil.png" }],
-    },
-    twitter: {
-      card: "summary_large_image",
-      title: `Samen Steeve — ${t.hero.status}`,
-      description: t.hero.bio,
-      images: ["/profil.png"],
-    },
-  };
+    path: "",
+  });
 }
 
 export default async function HomePage({ params }: PageProps) {
   const { lang } = await params;
-  const t = translations[lang] || translations.en;
+  const t = getT(lang);
 
-  const work = workSource
-    .getPages()
-    .sort((a, b) => {
-      if (b.data.featured !== a.data.featured) {
-        return Number(b.data.featured) - Number(a.data.featured);
-      }
-      return new Date(b.data.date).getTime() - new Date(a.data.date).getTime();
-    });
+  const work = workSource.getPages().sort(sortByFeaturedAndDate);
 
-  const allWriting = writingSource
-    .getPages()
-    .filter((page) => page.data.published && (page.data.lang || "fr") === lang)
-    .sort((a, b) => (a.data.date < b.data.date ? 1 : -1));
-  const writing = allWriting.slice(0, 5);
+  const writing = getWritingPages(lang).slice(0, 5);
 
   return (
     <main className="mx-auto max-w-3xl px-6 pb-24">
@@ -319,62 +283,23 @@ export default async function HomePage({ params }: PageProps) {
           <h2 className="font-display text-2xl font-semibold">{t.work.title}</h2>
         </ScrollReveal>
         <div className="mt-8 flex flex-col gap-4">
-          {work.map((page, i) => {
-            return (
+          {work.map((page, i) => (
               <ScrollReveal key={page.url} delay={i * 80}>
-                <div
-                  className="flex flex-col gap-4 rounded-2xl border border-line bg-paper-raised/20 p-6 transition-all duration-300 ease-out hover:-translate-y-1.5 hover:border-accent/20 hover:bg-paper-raised hover:shadow-md hover:shadow-accent/[0.01]"
-                >
-                  <div className="flex flex-col gap-1.5 sm:flex-row sm:items-center sm:justify-between">
-                    <div className="flex items-center gap-3">
-                      <h3 className="font-display text-lg font-semibold text-ink">
-                        {page.data.title}
-                      </h3>
-                      <StatusDot status={page.data.status} lang={lang} />
-                    </div>
-                    <span className="font-mono text-[11px] text-ink-soft/70">
-                      {page.data.role} · {page.data.date}
-                    </span>
-                  </div>
-                  <p className="text-sm leading-relaxed text-ink-soft">{page.data.description}</p>
-                  <div className="flex flex-wrap items-center justify-between gap-3 pt-3 border-t border-line/40">
-                    <div className="flex flex-wrap items-center gap-2">
-                      {page.data.stack.map((tech) => (
-                        <span
-                          key={tech}
-                          className="rounded-full border border-line bg-paper-raised/60 px-2.5 py-0.5 font-mono text-[9px] text-ink-soft transition duration-300"
-                        >
-                          {tech}
-                        </span>
-                      ))}
-                    </div>
-                    <div className="flex items-center gap-3">
-                      {page.data.url && (
-                        <a
-                          href={page.data.url}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="inline-flex items-center gap-1.5 font-mono text-[11px] uppercase tracking-wide text-accent/80 hover:text-accent transition-all duration-200 hover:gap-2 shrink-0"
-                        >
-                          {page.data.url.startsWith("https://github.com")
-                            ? (lang === "en" ? "View repository" : "Voir le dépôt")
-                            : (lang === "en" ? "Visit site" : "Voir le site")}
-                          <ArrowUpRight className="h-3.5 w-3.5" />
-                        </a>
-                      )}
-                      <Link
-                        href={`/${lang}${page.url}`}
-                        className="inline-flex items-center gap-1.5 font-mono text-[11px] uppercase tracking-wide text-accent/80 hover:text-accent transition-all duration-200 hover:gap-2 shrink-0"
-                      >
-                        {t.work.caseStudy}
-                        <ArrowUpRight className="h-3.5 w-3.5" />
-                      </Link>
-                    </div>
-                  </div>
-                </div>
+                <ProjectCard
+                  project={{
+                    title: page.data.title,
+                    description: page.data.description,
+                    date: page.data.date,
+                    role: page.data.role,
+                    stack: page.data.stack,
+                    status: page.data.status,
+                    url: page.data.url,
+                    slug: page.slugs[page.slugs.length - 1],
+                  }}
+                  lang={lang}
+                />
               </ScrollReveal>
-            );
-          })}
+            ))}
         </div>
       </section>
 
@@ -394,26 +319,21 @@ export default async function HomePage({ params }: PageProps) {
         </ScrollReveal>
 
         <div className="flex flex-col divide-y divide-line">
-          {writing.map((page, i) => {
-            const readTime = getReadingTime(
-              leafSlug(page.slugs),
-              `writing/${page.data.lang || "fr"}`,
-              page.data.description
-            );
-            const readLabel = lang === "en" ? `${readTime} min read` : `${readTime} min de lecture`;
+          {writing.map((item, i) => {
+            const readLabel = lang === "en" ? `${item.readTime} min read` : `${item.readTime} min de lecture`;
 
             return (
-              <ScrollReveal key={`${page.data.lang}-${leafSlug(page.slugs)}`} delay={i * 70}>
+              <ScrollReveal key={`${item.lang}-${item.url}`} delay={i * 70}>
                 <Link
-                  href={`/${lang}/writing/${leafSlug(page.slugs)}`}
+                  href={`/${lang}${item.url}`}
                   className="group flex items-start gap-5 py-6 transition-all duration-300 ease-out -mx-4 px-4 rounded-2xl hover:bg-paper-raised/60 hover:shadow-sm hover:shadow-accent/[0.01] hover:-translate-y-0.5"
                 >
                   {/* Miniature à gauche */}
                   <div className="relative shrink-0 w-32 h-24 sm:w-40 sm:h-28 rounded-xl overflow-hidden border border-line bg-paper-raised">
-                    {page.data.cover ? (
+{item.cover ? (
                       <Image
-                        src={page.data.cover}
-                        alt={page.data.title}
+                        src={item.cover}
+                        alt={item.title}
                         fill
                         sizes="160px"
                         className="object-cover transition-transform duration-500 group-hover:scale-103"
@@ -428,26 +348,26 @@ export default async function HomePage({ params }: PageProps) {
                   {/* Contenu à droite */}
                   <div className="flex-1 min-w-0">
                     {/* Date + temps de lecture */}
-                    <div className="flex items-center gap-2 mb-1.5 flex-wrap font-mono text-xs text-ink-soft/60">
-                      <span>{page.data.date}</span>
+                    <div className="flex items-center gap-2 mb-1.5 font-mono text-xs text-ink-soft/60">
+                      <span>{item.date}</span>
                       <span>·</span>
                       <span className="text-ink-soft/50">{readLabel}</span>
                     </div>
 
                     {/* Titre */}
                     <h3 className="font-display text-lg font-semibold text-ink group-hover:text-accent transition-colors leading-snug">
-                      {page.data.title}
+                      {item.title}
                     </h3>
 
                     {/* Description */}
                     <p className="mt-1.5 text-sm text-ink-soft line-clamp-2">
-                      {page.data.description}
+                      {item.description}
                     </p>
 
                     {/* Tags */}
-                    {page.data.tags.length > 0 && (
+                    {item.tags.length > 0 && (
                       <div className="mt-3 flex flex-wrap gap-1.5">
-                        {page.data.tags.map((tag: string) => (
+                        {item.tags.map((tag: string) => (
                           <span
                             key={tag}
                             className="rounded-full border border-line bg-paper-raised/60 px-2.5 py-0.5 font-mono text-[10px] text-ink-soft group-hover:border-accent/20 group-hover:text-accent/70 transition-colors"

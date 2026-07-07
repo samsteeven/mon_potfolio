@@ -1,5 +1,6 @@
 import type { MetadataRoute } from "next";
-import { workSource, writingSource, leafSlug } from "@/lib/source";
+import { workSource, writingSource } from "@/lib/source";
+import { leafSlug } from "@/lib/slug";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://samensteeve.com";
