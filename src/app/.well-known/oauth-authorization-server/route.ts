@@ -14,12 +14,14 @@ export function GET() {
     service_documentation: "https://samensteeve.com/en",
     agent_auth: {
       skill: "https://samensteeve.com/auth.md",
+      register_uri: "https://samensteeve.com/auth.md",
       identity_endpoint: "",
       claim_endpoint: "",
       events_endpoint: "",
       identity_types_supported: ["anonymous"],
       anonymous: {
         credential_types_supported: [],
+        claim_uri: "",
       },
       events_supported: [],
     },
