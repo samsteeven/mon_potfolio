@@ -1,13 +1,17 @@
-# Portfolio — starter Next.js 16 + Fumadocs MDX
+# Portfolio — Next.js 16 + Fumadocs MDX
 
-Scaffold minimal pour un portfolio "une page + études de cas", sans base de données ni CMS — le contenu vit dans des fichiers `.mdx` versionnés avec Git (approche décrite par Daryl Ngako sur lyrad.dev).
+Portfolio bilingue (fr/en) de **Samen Steeve** (samsteeven). Contenu dans des fichiers `.mdx` versionnés avec Git — pas de base de données ni CMS.
 
 ## Stack
 
 - **Next.js 16** (App Router, Turbopack)
-- **Fumadocs MDX** pour la gestion de contenu (frontmatter typé avec Zod, routing basé sur les fichiers)
-- **Tailwind CSS v4**
-- Aucune UI Fumadocs (`fumadocs-ui`) — tout le rendu MDX est custom dans `src/components/mdx/mdx-components.tsx`, pour garder un contrôle total sur le design.
+- **React 19**
+- **Fumadocs MDX** — frontmatter typé (Zod), routing basé sur les fichiers
+- **Tailwind CSS v4** (CSS-first, pas de `tailwind.config.js`)
+- **lucide-react** — icônes
+- **TypeScript strict**
+- **postcss-preset-env** — compatibilité navigateurs anciens
+- **Vitest** + **Playwright** — tests
 
 ## Démarrer
 
@@ -18,57 +22,93 @@ npm run dev
 
 Ouvre [http://localhost:3000](http://localhost:3000).
 
+## Internationalisation
+
+Le site est bilingue `/en` et `/fr`. La racine `/` redirige vers `/en` via `src/proxy.ts` (Next.js 16+ — fichier `proxy.ts`, export `function proxy`). Les traductions sont dans `src/lib/i18n/` avec un helper `getT(lang)`.
+
+## Thème
+
+Mode clair/sombre géré par l'attribut `data-theme` sur `<html>`, persisté dans `localStorage` (clé `theme`). Le script anti-flash dans `src/app/layout.tsx` applique le thème avant le premier rendu React. Pas de librairie externe.
+
 ## Structure du contenu
 
 ```
 src/content/
-├── work/        → études de cas projets (TribuneJustice, MèmeForge...)
-└── writing/     → articles de blog
+├── work/          → études de cas projets
+│   ├── tribunejustice.mdx
+│   └── digitram.mdx
+└── writing/       → articles de blog
+    ├── en/
+    │   └── *.mdx
+    └── fr/
+        └── *.mdx
 ```
 
-Chaque fichier `.mdx` a un frontmatter typé (validé par Zod dans `source.config.ts`) :
+Chaque fichier `.mdx` a un frontmatter typé (Zod dans `source.config.ts`).
 
-```md
----
-title: "Nom du projet"
-description: "Une phrase de résumé."
-date: "2026-01-15"
-role: "Tech Lead & Chef de projet"
-stack: ["Laravel 11", "Next.js"]
-status: "in-progress"
-featured: true
----
+**Workflow** : créer le fichier `.mdx` → `git push`. Tout est statique au build.
 
-Contenu de l'étude de cas en Markdown/MDX...
+## Routes
+
+```
+src/app/
+├── layout.tsx              # Root layout (html, head, script anti-flash, JSON-LD)
+├── globals.css             # Tokens Tailwind, animations, mode sombre
+├── proxy.ts                # Redirection 308 / → /en
+├── sitemap.ts              # Sitemap auto-généré
+├── robots.ts               # Robots.txt
+└── [lang]/
+    ├── layout.tsx          # SiteHeader + SiteFooter
+    ├── page.tsx            # Accueil (Hero, À propos, Travail, Écrits)
+    ├── not-found.tsx       # 404
+    ├── [...catchAll]/
+    │   └── page.tsx
+    ├── work/
+    │   ├── page.tsx        # Liste des projets
+    │   └── [slug]/
+    │       └── page.tsx    # Détail d'un projet (MDX + TOC + JSON-LD)
+    └── writing/
+        ├── page.tsx        # Liste des articles (filtre par tag)
+        └── [slug]/
+            └── page.tsx    # Détail d'un article (MDX + TOC + CopyButtons)
 ```
 
-**Workflow pour publier** : créer le fichier `.mdx` → écrire le contenu → `git push`. Aucune interface d'admin, aucune requête réseau au runtime — tout est généré en statique au build.
+## Design
 
-## Où sont les pages
+- **Palette** : Tokens CSS `bg-paper`, `text-ink`, `border-line`, `text-accent` — pas de couleurs Tailwind par défaut.
+- **Polices** : `font-display` (Instrument Sans), `font-sans` (Inter), `font-mono` (JetBrains Mono) — auto-hébergées via `@fontsource`.
+- **Animations** : Une seule classe `.fade-up` dans `globals.css` ; composant `ScrollReveal` pour apparitions au défilement. `prefers-reduced-motion` neutralisé.
 
-- `src/app/page.tsx` — page d'accueil à sections (Hero / À propos / Projets / Articles)
-- `src/app/work/[slug]/page.tsx` — page de détail d'un projet
-- `src/app/writing/[slug]/page.tsx` — page de détail d'un article
-- `src/lib/source.ts` — connecte les collections de contenu aux routes Next.js
+## Composants principaux
 
-## État du design
+- `site-header.tsx` — Navigation
+- `site-footer.tsx` — Pied de page avec contact
+- `theme-toggle.tsx` — Bascule clair/sombre
+- `project-card.tsx` — Carte de projet
+- `status-dot.tsx` — Indicateur shipped/in-progress
+- `writing-list.tsx` — Liste d'articles avec filtre par tag
+- `scroll-reveal.tsx` — Animation d'entrée au scroll
+- `copy-buttons.tsx` — Partage d'article
+- `table-of-contents.tsx` — Table des matières latérale
+- `mdx/mdx-components.tsx` — Rendu MDX custom
 
-Ce portfolio est entièrement **designé et personnalisé** avec une esthétique premium et moderne :
-- **Palette de couleurs** : Mode sombre haut de gamme basé sur un ton *Zinc mat* très profond (`#09090b` / `#18181b`) avec de discrets halos de lumière colorés (glow radial), et un mode clair épuré.
-- **Typographies** : Utilisation d'Inter pour le corps du texte, JetBrains Mono pour les données structurées et de la police géométrique **Outfit** (chargée via Google Fonts) pour l'identité principale.
-- **Animations** : Défilement dynamique fluide (`scroll-behavior: smooth`), apparitions progressives au défilement via `IntersectionObserver` (`ScrollReveal`) avec des transitions et effets de survol interactifs (légère translation, mise en valeur des bordures, zoom d'images subtils).
+## SEO
 
-## Déploiement et Production
+- JSON-LD `schema.org/Person` dans le root layout
+- `createPageMetadata()` dans `src/lib/metadata.ts` — canonical, hreflang, OpenGraph, Twitter cards
+- Sitemap auto-généré
+- `x-default` pointé vers `/fr`
 
-Le portfolio est optimisé pour être déployé sur **Vercel** avec un nom de domaine géré sur **Cloudflare** (`samensteeve.com`).
-- **Configuration DNS** : Pointage CNAME principal vers Vercel avec proxy Cloudflare activé (mode SSL *Complet (strict)* obligatoire). Redirection automatique du sous-domaine `www` vers le domaine racine gérée par Vercel.
-- **Emails Professionnels** : Configuration de l'adresse de contact `contact@samensteeve.com` redirigée ou hébergée avec les protocoles SPF, DKIM et DMARC configurés dans Cloudflare pour éviter toute usurpation d'identité.
-
-## Commandes utiles
+## Commandes
 
 ```bash
-npm run dev      # serveur de développement local
-npm run build    # compilation de production statique (génère aussi le sitemap et les routes MDX)
-npm run lint     # vérification syntaxique et linter ESLint
+npm run dev           # Serveur de développement
+npm run build         # Build de production
+npm run lint          # ESLint
+npm run test          # Tests unitaires (Vitest)
+npm run test:e2e      # Tests e2e (Playwright)
 ```
 
+## Déploiement
+
+Optimisé pour **Vercel** avec domaine **samensteeve.com** géré sur **Cloudflare** (proxy activé, SSL Complet strict).
