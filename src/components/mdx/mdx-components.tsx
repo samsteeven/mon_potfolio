@@ -37,7 +37,7 @@ export function getMDXComponents(components?: MDXComponents): MDXComponents {
       return (
         <h2
           id={id}
-          className="mt-10 mb-4 font-display text-2xl font-semibold scroll-mt-24"
+          className="mt-10 mb-4 font-display text-2xl font-semibold scroll-mt-24 text-balance"
           {...props}
         >
           {children}
@@ -49,14 +49,14 @@ export function getMDXComponents(components?: MDXComponents): MDXComponents {
       return (
         <h3
           id={id}
-          className="mt-8 mb-3 font-display text-xl font-semibold scroll-mt-24"
+          className="mt-8 mb-3 font-display text-xl font-semibold scroll-mt-24 text-balance"
           {...props}
         >
           {children}
         </h3>
       );
     },
-    p: (props) => <p className="mb-4 leading-relaxed text-ink-soft" {...props} />,
+    p: (props) => <p className="mb-4 leading-relaxed text-ink-soft text-pretty" {...props} />,
     a: (props) => <a className="text-accent underline hover:opacity-80" {...props} />,
     ul: (props) => <ul className="mb-4 list-disc pl-6 text-ink-soft" {...props} />,
     ol: (props) => <ol className="mb-4 list-decimal pl-6 text-ink-soft" {...props} />,
@@ -75,7 +75,7 @@ export function getMDXComponents(components?: MDXComponents): MDXComponents {
     ),
     img: (props) => (
       // eslint-disable-next-line @next/next/no-img-element
-      <img className="my-6 rounded-lg" alt="" {...props} />
+      <img className="my-6 rounded-lg border border-line" alt="" {...props} />
     ),
     ...components,
   };

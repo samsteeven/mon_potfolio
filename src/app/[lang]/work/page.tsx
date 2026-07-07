@@ -45,7 +45,7 @@ export default async function WorkIndexPage({ params }: PageProps) {
         {projects.map((page, i) => (
           <ScrollReveal key={page.url} delay={i * 80}>
             <Link
-              href={`/${lang}/work/${page.slugs[page.slugs.length - 1]}`}
+              href={`/${lang}/work/${page.slugs.at(-1)}`}
               className="group flex flex-col gap-4 rounded-2xl border border-line bg-paper-raised/20 p-6 transition-all duration-300 ease-out hover:-translate-y-1.5 hover:border-accent/20 hover:bg-paper-raised hover:shadow-md hover:shadow-accent/[0.01]"
             >
               <div className="flex flex-col gap-1.5 sm:flex-row sm:items-center sm:justify-between">

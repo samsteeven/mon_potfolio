@@ -24,8 +24,8 @@ export function SiteHeader({ lang }: { lang: Language }) {
   const oppositeLang = lang === "en" ? "FR" : "EN";
 
   const navLinks = [
-    { href: `/${lang}/#work`, label: t.nav.work, key: "work" as const },
     { href: `/${lang}/#about`, label: t.nav.about, key: "about" as const },
+    { href: `/${lang}/#work`, label: t.nav.work, key: "work" as const },
     { href: `/${lang}/writing`, label: t.nav.writing, key: "writing" as const },
   ];
 

@@ -42,6 +42,9 @@ html {
   scrollbar-width: auto;
 }
 
+h1, h2, h3, h4 { text-wrap: balance; }
+p { text-wrap: pretty; }
+
 /* Personnalisation moderne de la scrollbar pour WebKit (Chrome, Safari, Edge) */
 ::-webkit-scrollbar {
   width: 10px;

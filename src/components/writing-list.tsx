@@ -156,13 +156,13 @@ export function WritingList({ items, lang }: { items: WritingItem[]; lang: Langu
               {item.tags.length > 0 && (
                 <div className="mt-3 flex flex-wrap gap-1.5 pl-32 sm:pl-40">
                   {item.tags.map((tag) => (
-                    <span
+                    <button
+                      type="button"
                       key={tag}
                       onClick={(e) => {
                         e.preventDefault();
                         setActive(tag);
                       }}
-                      role="button"
                       tabIndex={0}
                       onKeyDown={(e) => {
                         if (e.key === "Enter" || e.key === " ") {
@@ -178,7 +178,7 @@ export function WritingList({ items, lang }: { items: WritingItem[]; lang: Langu
                       ].join(" ")}
                     >
                       {tag}
-                    </span>
+                    </button>
                   ))}
                 </div>
               )}

@@ -45,7 +45,7 @@ const personJsonLd = {
     "Laravel",
     "React",
     "Next.js",
-      "Inertia js"
+    "Inertia js",
   ],
   mainEntityOfPage: {
     "@type": "WebPage",
@@ -68,14 +68,15 @@ export default function RootLayout({
   return (
     <html className="h-full antialiased" data-scroll-behavior="smooth" suppressHydrationWarning>
       <head>
-        {/* Anti-flash theme script */}
+        {/* Anti-flash theme script — doit s'exécuter avant l'hydratation React.
+            Le warning React 19 "Encountered a script tag" est attendu en dev
+            et n'apparaît pas en production. Le script fonctionne via le HTML SSR. */}
         <script dangerouslySetInnerHTML={{ __html: themeScript }} />
         {/* JSON-LD Person schema pour Google Knowledge Panel */}
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(personJsonLd) }}
         />
-
       </head>
       <body className="flex min-h-full flex-col bg-paper text-ink font-sans antialiased" suppressHydrationWarning>
         {children}

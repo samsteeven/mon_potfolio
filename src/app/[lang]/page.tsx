@@ -82,7 +82,7 @@ export default async function HomePage({ params }: PageProps) {
         >
           <Link
             href={`/${lang}/writing`}
-            className="rounded-full border border-line bg-paper-raised/40 px-5 py-2.5 font-mono text-xs uppercase tracking-wide text-ink transition-all duration-300 hover:scale-105 hover:border-accent/30 hover:bg-paper-raised hover:text-accent hover:shadow-md active:scale-95"
+            className="rounded-full border border-line bg-paper-raised/40 px-5 py-2.5 font-mono text-xs uppercase tracking-wide text-ink transition-all duration-300 hover:scale-105 hover:border-accent/30 hover:bg-paper-raised hover:text-accent hover:shadow-md active:scale-[0.96]"
           >
             {t.hero.readPosts}
           </Link>
@@ -90,7 +90,7 @@ export default async function HomePage({ params }: PageProps) {
             href="https://cal.com/samen-steeve/30min"
             target="_blank"
             rel="noopener noreferrer"
-            className="rounded-full bg-ink px-5 py-2.5 font-mono text-xs uppercase tracking-wide text-paper transition-all duration-300 hover:scale-105 hover:bg-accent hover:text-white hover:shadow-lg hover:shadow-accent/15 active:scale-95"
+            className="rounded-full bg-ink px-5 py-2.5 font-mono text-xs uppercase tracking-wide text-paper transition-all duration-300 hover:scale-105 hover:bg-accent hover:text-white hover:shadow-lg hover:shadow-accent/15 active:scale-[0.96]"
           >
             {t.hero.scheduleMeeting}
           </a>
@@ -107,7 +107,7 @@ export default async function HomePage({ params }: PageProps) {
           <div className="mt-5 flex gap-6 text-ink-soft">
             <a
               href="mailto:contact@samensteeve.com"
-              className="transition-all duration-200 hover:text-accent hover:scale-110"
+              className="transition-all duration-200 hover:text-accent hover:scale-110 active:scale-[0.96]"
               aria-label="Email"
             >
               <Mail className="h-7 w-7" />
@@ -116,7 +116,7 @@ export default async function HomePage({ params }: PageProps) {
               href="https://linkedin.com/in/samsteeven"
               target="_blank"
               rel="noopener noreferrer me"
-              className="transition-all duration-200 hover:text-accent hover:scale-110"
+              className="transition-all duration-200 hover:text-accent hover:scale-110 active:scale-[0.96]"
               aria-label="LinkedIn"
             >
               <LinkedinIcon className="h-7 w-7" />
@@ -125,7 +125,7 @@ export default async function HomePage({ params }: PageProps) {
               href="https://github.com/samsteeven"
               target="_blank"
               rel="noopener noreferrer me"
-              className="transition-all duration-200 hover:text-accent hover:scale-110"
+              className="transition-all duration-200 hover:text-accent hover:scale-110 active:scale-[0.96]"
               aria-label="GitHub"
             >
               <GithubIcon className="h-7 w-7" />
@@ -214,14 +214,14 @@ export default async function HomePage({ params }: PageProps) {
                   href="https://cal.com/samen-steeve/30min"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex items-center justify-center gap-2 rounded-xl bg-accent px-4 py-2.5 font-mono text-xs uppercase tracking-wider text-white shadow transition-all duration-200 hover:opacity-90 hover:shadow-md hover:shadow-accent/30 active:scale-95"
+                  className="inline-flex items-center justify-center gap-2 rounded-xl bg-accent px-4 py-2.5 font-mono text-xs uppercase tracking-wider text-white shadow transition-all duration-200 hover:opacity-90 hover:shadow-md hover:shadow-accent/30 active:scale-[0.96]"
                 >
                   <CalendarDays className="h-3.5 w-3.5" />
                   {lang === "en" ? "Book a 30-min call" : "Réserver un appel de 30 min"}
                 </a>
                 <a
                   href="mailto:contact@samensteeve.com"
-                  className="inline-flex items-center justify-center gap-2 rounded-xl border border-paper/20 px-4 py-2.5 font-mono text-xs uppercase tracking-wider text-paper/75 transition-all duration-200 hover:border-paper/40 hover:text-paper hover:bg-paper/5 active:scale-95"
+                  className="inline-flex items-center justify-center gap-2 rounded-xl border border-paper/20 px-4 py-2.5 font-mono text-xs uppercase tracking-wider text-paper/75 transition-all duration-200 hover:border-paper/40 hover:text-paper hover:bg-paper/5 active:scale-[0.96]"
                 >
                   <Mail className="h-3.5 w-3.5" />
                   contact@samensteeve.com
@@ -294,7 +294,7 @@ export default async function HomePage({ params }: PageProps) {
                     stack: page.data.stack,
                     status: page.data.status,
                     url: page.data.url,
-                    slug: page.slugs[page.slugs.length - 1],
+                    slug: page.slugs[page.slugs.length - 1] ?? "",
                   }}
                   lang={lang}
                 />

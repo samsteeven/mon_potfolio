@@ -5,9 +5,9 @@ import { ScrollReveal } from "@/components/scroll-reveal";
 
 export default async function NotFound({
   params,
-}: {
+}: Readonly<{
   params?: Promise<{ lang: Language }>;
-}) {
+}>) {
   const resolved = params ? await params : null;
   const lang: Language = resolved?.lang ?? "en";
   const t = getT(lang);
@@ -40,7 +40,7 @@ export default async function NotFound({
         <div className="relative inline-flex items-center justify-center mb-8">
           <div className="absolute inset-0 bg-accent/10 blur-xl rounded-full h-16 w-32 mx-auto"></div>
           <span
-            className="font-display font-mono text-8xl font-black tracking-widest text-accent/20 select-none"
+            className="font-mono text-8xl font-black tracking-widest text-accent/20 select-none"
           >
             404
           </span>
@@ -93,7 +93,7 @@ export default async function NotFound({
         {/* Bouton de retour direct */}
         <Link
           href={`/${lang}`}
-          className="mt-10 inline-flex items-center gap-2 rounded-full border border-line bg-paper-raised/40 px-5 py-2.5 font-mono text-xs uppercase tracking-wide text-ink transition-all duration-300 hover:scale-105 hover:border-accent/30 hover:bg-paper-raised hover:text-accent hover:shadow-md active:scale-95"
+          className="mt-10 inline-flex items-center gap-2 rounded-full border border-line bg-paper-raised/40 px-5 py-2.5 font-mono text-xs uppercase tracking-wide text-ink transition-all duration-300 hover:scale-105 hover:border-accent/30 hover:bg-paper-raised hover:text-accent hover:shadow-md active:scale-[0.96]"
         >
           <ArrowLeft className="h-3.5 w-3.5" />
           {t.notFound.cta}

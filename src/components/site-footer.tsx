@@ -30,7 +30,7 @@ export function SiteFooter({ lang }: { lang: Language }) {
           <div className="flex items-center gap-5 text-ink-soft">
             <a
               href="mailto:contact@samensteeve.com"
-              className="transition-all duration-200 hover:text-accent hover:scale-110"
+              className="transition-all duration-200 hover:text-accent hover:scale-110 active:scale-[0.96]"
               aria-label="Email"
             >
               <Mail className="h-6 w-6" />
@@ -39,7 +39,7 @@ export function SiteFooter({ lang }: { lang: Language }) {
               href="https://linkedin.com/in/samsteeven"
               target="_blank"
               rel="noopener noreferrer me"
-              className="transition-all duration-200 hover:text-accent hover:scale-110"
+              className="transition-all duration-200 hover:text-accent hover:scale-110 active:scale-[0.96]"
               aria-label="LinkedIn"
             >
               <LinkedinIcon className="h-6 w-6" />
@@ -48,7 +48,7 @@ export function SiteFooter({ lang }: { lang: Language }) {
               href="https://github.com/samsteeven"
               target="_blank"
               rel="noopener noreferrer me"
-              className="transition-all duration-200 hover:text-accent hover:scale-110"
+              className="transition-all duration-200 hover:text-accent hover:scale-110 active:scale-[0.96]"
               aria-label="GitHub"
             >
               <GithubIcon className="h-6 w-6" />
@@ -63,7 +63,7 @@ export function SiteFooter({ lang }: { lang: Language }) {
             href="https://cal.com/samen-steeve/30min"
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center gap-2 rounded-full bg-ink px-5 py-2.5 font-mono text-xs uppercase tracking-wide text-paper transition-all duration-300 hover:scale-105 hover:bg-accent hover:text-white hover:shadow-lg hover:shadow-accent/15 active:scale-95"
+            className="inline-flex items-center gap-2 rounded-full bg-ink px-5 py-2.5 font-mono text-xs uppercase tracking-wide text-paper transition-all duration-300 hover:scale-105 hover:bg-accent hover:text-white hover:shadow-lg hover:shadow-accent/15 active:scale-[0.96]"
           >
             <Calendar className="h-3.5 w-3.5" />
             {t.footer.bookCall}
