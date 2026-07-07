@@ -54,9 +54,32 @@ Chaque fichier `.mdx` a un frontmatter typé (Zod dans `source.config.ts`).
 src/app/
 ├── layout.tsx              # Root layout (html, head, script anti-flash, JSON-LD)
 ├── globals.css             # Tokens Tailwind, animations, mode sombre
-├── proxy.ts                # Redirection 308 / → /en
+├── proxy.ts                # Redirection 308 / → /en, Link headers, Markdown negociation
 ├── sitemap.ts              # Sitemap auto-généré
-├── robots.ts               # Robots.txt
+├── robots.txt/
+│   └── route.ts            # Robots.txt + Content-Signals
+├── auth.md/
+│   └── route.ts            # Auth.md pour agents (WorkOS spec)
+├── .well-known/
+│   ├── api-catalog/
+│   │   └── route.ts        # RFC 9727 — catalogue d'API
+│   ├── oauth-authorization-server/
+│   │   └── route.ts        # OIDC Discovery (RFC 8414)
+│   ├── oauth-protected-resource/
+│   │   └── route.ts        # OAuth ressources protégées (RFC 9728)
+│   ├── agent-skills/
+│   │   └── index.json/
+│   │       └── route.ts    # Index de compétences agents
+│   └── mcp/
+│       └── server-card.json/
+│           └── route.ts    # Carte serveur MCP
+├── api/
+│   ├── md/[...slug]/
+│   │   └── route.ts        # Markdown negotiation (Accept: text/markdown)
+│   └── data/
+│       ├── projects/route.ts
+│       ├── articles/route.ts
+│       └── skills/route.ts # Données structurées pour WebMCP
 └── [lang]/
     ├── layout.tsx          # SiteHeader + SiteFooter
     ├── page.tsx            # Accueil (Hero, À propos, Travail, Écrits)
@@ -108,6 +131,36 @@ npm run lint          # ESLint
 npm run test          # Tests unitaires (Vitest)
 npm run test:e2e      # Tests e2e (Playwright)
 ```
+
+## Découverte par agents IA
+
+Le site implémente plusieurs mécanismes de découverte pour agents IA :
+
+| Endpoint | Standard | Description |
+|---|---|---|
+| `/.well-known/api-catalog` | RFC 9727 | Catalogue d'API (linkset+json) |
+| `/.well-known/oauth-authorization-server` | RFC 8414 | Métadonnées OAuth/OIDC |
+| `/.well-known/oauth-protected-resource` | RFC 9728 | Ressources protégées OAuth |
+| `/.well-known/agent-skills/index.json` | Agent Skills RFC | Index des compétences exposées |
+| `/.well-known/mcp/server-card.json` | MCP (draft) | Carte serveur Model Context Protocol |
+| `/auth.md` | Auth.md (WorkOS) | Instructions d'authentification agent |
+| `/robots.txt` | Content-Signals | `ai-train=no, search=yes, ai-input=no` |
+| `Link` headers | RFC 8288 | En-têtes HTTP Link sur toutes les pages |
+| `Accept: text/markdown` | Markdown negociation | Contenu des pages en Markdown pour agents |
+| `navigator.modelContext` | WebMCP (Chrome) | Outils d'IA exposés côté navigateur |
+| `_agents.…` DNS-AID | draft-mozleywilliams | Voir configuration DNS ci-dessous |
+
+### DNS-AID (DNS for AI Discovery)
+
+Pour activer la découverte DNS par agents, ajouter ces enregistrements sur **Cloudflare** (avec DNSSEC activé) :
+
+```
+_agents.samensteeve.com.  IN  SVCB 1 . alpn="http"
+_a2a._agents.samensteeve.com.  IN  SVCB 1 https://samensteeve.com alpn="https" endpoint=":443"
+_index._agents.samensteeve.com.  IN  SVCB 1 https://samensteeve.com alpn="https" endpoint=":443"
+```
+
+Ces enregistrements `SVCB/HTTPS` (RFC 9460) signalent aux résolveurs DNS-AID les points d'entrée disponibles.
 
 ## Déploiement
 

@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
+import { WebMCPProvider } from "@/components/webmcp-provider";
 import type { Language } from "@/lib/translations";
 
 const BASE_URL =
@@ -77,6 +78,7 @@ export default async function RootLayout({ children, params }: LayoutProps) {
 
   return (
     <>
+      <WebMCPProvider />
       <SiteHeader lang={lang} />
       <div className="flex-1">{children}</div>
       <SiteFooter lang={lang} />

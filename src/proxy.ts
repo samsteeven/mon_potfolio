@@ -3,24 +3,31 @@ import type { NextRequest } from "next/server";
 
 const PUBLIC_FILE = /\.(.*)$/;
 
-/**
- * Proxy Next.js 16+ (anciennement "middleware" — renommé en Next.js 16).
- * Redirige toute URL sans préfixe de langue vers /en/.
- * Fichier : src/proxy.ts (convention Next.js 16+, ex-middleware.ts)
- */
+const LINK_HEADERS = [
+  "</.well-known/agent-skills/index.json>; rel=\"agent-skills\"",
+  "</.well-known/mcp/server-card.json>; rel=\"mcp-server\"",
+  "</.well-known/api-catalog>; rel=\"api-catalog\"",
+].join(", ");
+
 export function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
-  // Ignorer les internals Next.js, les API et les fichiers statiques
   if (
     pathname.startsWith("/_next") ||
     pathname.startsWith("/api") ||
+    pathname.startsWith("/.well-known") ||
     PUBLIC_FILE.test(pathname)
   ) {
     return NextResponse.next();
   }
 
-  // Si l'URL n'a pas de préfixe de langue, rediriger vers /en
+  const accept = request.headers.get("accept") || "";
+  if (accept.includes("text/markdown")) {
+    const url = new URL(`/api/md${pathname}`, request.url);
+    url.search = request.nextUrl.search;
+    return NextResponse.rewrite(url);
+  }
+
   const pathnameHasLocale =
     pathname.startsWith("/en") || pathname.startsWith("/fr");
 
@@ -30,9 +37,11 @@ export function proxy(request: NextRequest) {
     return NextResponse.redirect(url, 308);
   }
 
-  return NextResponse.next();
+  const response = NextResponse.next();
+  response.headers.set("Link", LINK_HEADERS);
+  return response;
 }
 
 export const config = {
-  matcher: ["/((?!api|_next/static|_next/image|favicon.ico).*)"],
+  matcher: ["/((?!api|_next/static|_next/image|favicon.ico|\\.well-known).*)"],
 };
