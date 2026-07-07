@@ -63,6 +63,8 @@ src/app/
 ├── .well-known/
 │   ├── api-catalog/
 │   │   └── route.ts        # RFC 9727 — catalogue d'API
+│   ├── http-message-signatures-directory/
+│   │   └── route.ts        # Web Bot Auth — JWKS directory
 │   ├── oauth-authorization-server/
 │   │   └── route.ts        # OIDC Discovery (RFC 8414)
 │   ├── oauth-protected-resource/
@@ -142,6 +144,7 @@ Le site implémente plusieurs mécanismes de découverte pour agents IA :
 | `/.well-known/oauth-authorization-server` | RFC 8414 | Métadonnées OAuth/OIDC |
 | `/.well-known/oauth-protected-resource` | RFC 9728 | Ressources protégées OAuth |
 | `/.well-known/agent-skills/index.json` | Agent Skills RFC | Index des compétences exposées |
+| `/.well-known/http-message-signatures-directory` | Web Bot Auth (IETF) | JWKS + signature Ed25519 pour identification bot |
 | `/.well-known/mcp/server-card.json` | MCP (draft) | Carte serveur Model Context Protocol |
 | `/auth.md` | Auth.md (WorkOS) | Instructions d'authentification agent |
 | `/robots.txt` | Content-Signals | `ai-train=no, search=yes, ai-input=no` |
