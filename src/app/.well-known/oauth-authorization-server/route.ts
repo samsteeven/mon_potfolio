@@ -20,8 +20,8 @@ export function GET() {
       events_endpoint: "",
       identity_types_supported: ["anonymous"],
       anonymous: {
-        credential_types_supported: [],
-        claim_uri: "",
+        credential_types_supported: ["none"],
+        claim_uri: "https://samensteeve.com/auth.md",
       },
       events_supported: [],
     },
