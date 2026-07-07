@@ -34,7 +34,7 @@ export function proxy(request: NextRequest) {
   if (!hasLang) {
     const url = new URL(`/en${pathname}`, request.url);
     url.search = request.nextUrl.search;
-    return NextResponse.redirect(url, 308);
+    return NextResponse.rewrite(url);
   }
 
   const response = NextResponse.next();

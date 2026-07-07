@@ -12,7 +12,7 @@ import { getOppositeUrl } from "@/hooks/use-language-switch";
 export function SiteHeader({ lang }: { lang: Language }) {
   const pathname = usePathname();
   const t = getT(lang);
-  const isHome = pathname === `/${lang}`;
+  const isHome = pathname === "/" || pathname === `/${lang}`;
 
   useEffect(() => {
     document.documentElement.lang = lang;
@@ -31,7 +31,7 @@ export function SiteHeader({ lang }: { lang: Language }) {
 
   const ariaCurrentOf = (linkKey: "work" | "about" | "writing") => {
     if (linkKey === "writing") {
-      return pathname.startsWith(`/${lang}/writing`) ? "page" : undefined;
+      return pathname.startsWith(`/${lang}/writing`) || pathname.startsWith("/writing") ? "page" : undefined;
     }
     return section === linkKey ? "true" : undefined;
   };
