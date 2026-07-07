@@ -2,22 +2,18 @@ export const dynamic = "force-static";
 
 export function GET() {
   const card = {
-    name: "Samen Steeve Portfolio",
+    $schema: "https://static.modelcontextprotocol.io/schemas/v1/server-card.schema.json",
+    name: "com.samensteeve/portfolio",
     version: "1.0.0",
     description: "Portfolio personnel — projets, articles, compétences",
-    transport: {
-      type: "http",
-      endpoint: "https://samensteeve.com",
-    },
-    capabilities: {
-      tools: {
-        listChanged: false,
+    title: "Samen Steeve Portfolio",
+    websiteUrl: "https://samensteeve.com",
+    remotes: [
+      {
+        type: "streamable-http",
+        url: "https://samensteeve.com",
       },
-      resources: {
-        subscribe: false,
-        listChanged: false,
-      },
-    },
+    ],
   };
 
   return Response.json(card, {

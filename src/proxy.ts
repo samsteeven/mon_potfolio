@@ -21,17 +21,17 @@ export function proxy(request: NextRequest) {
     return NextResponse.next();
   }
 
+  const hasLang = pathname.startsWith("/en") || pathname.startsWith("/fr");
+  const langPath = hasLang ? pathname : `/en${pathname}`;
+
   const accept = request.headers.get("accept") || "";
   if (accept.includes("text/markdown")) {
-    const url = new URL(`/api/md${pathname}`, request.url);
+    const url = new URL(`/api/md${langPath}`, request.url);
     url.search = request.nextUrl.search;
     return NextResponse.rewrite(url);
   }
 
-  const pathnameHasLocale =
-    pathname.startsWith("/en") || pathname.startsWith("/fr");
-
-  if (!pathnameHasLocale) {
+  if (!hasLang) {
     const url = new URL(`/en${pathname}`, request.url);
     url.search = request.nextUrl.search;
     return NextResponse.redirect(url, 308);
