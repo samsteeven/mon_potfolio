@@ -1,0 +1,70 @@
+export const fr = {
+  nav: {
+    work: "Travail",
+    about: "À propos",
+    writing: "Écrits",
+  },
+  hero: {
+    location: "Disponible pour le travail en remote",
+    bio: "Ingénieur Logiciel, Chercheur en Sécurité et Spécialiste en Automatisation IA. Je conçois des systèmes web résilients et performants, j'audite et sécurise les infrastructures numériques, et j'orchestre des flux d'agents IA autonomes pour simplifier les processus complexes.",
+    status: "Software Engineer · Security Researcher · AI Automation",
+    readPosts: "Lire les articles",
+    scheduleMeeting: "Planifier une réunion",
+  },
+  about: {
+    title: "À propos de moi",
+    q1: "Qui je suis",
+    a1: "Je suis ingénieur logiciel et chercheur en sécurité. Je me concentre sur la création d'applications robustes, l'audit de vulnérabilités système et l'aide à l'intégration d'automatisations IA pour optimiser les processus opérationnels des entreprises.",
+    q2: "Ma stack préférée",
+    a2: "Ma stack de prédilection associe React pour le frontend, Laravel pour le backend et Inertia.js comme pont fluide entre les deux. Pour l'automatisation, je développe des flux sur mesure via des agents IA autonomes.",
+    q3: "Services que j'offre",
+    a3: "Je conçois des applications web full-stack sur mesure, réalise des travaux de recherche en sécurité (analyse de vulnérabilités, modélisation des menaces et sécurisation de la logique applicative) et développe des solutions automatisées pour aider les entreprises à adopter l'IA dans leurs processus métier.",
+    q4: "Comment démarrer",
+    a4: "Un projet ou un défi de sécurité à relever ? Collaborons. Planifiez un court échange via Cal.com ou écrivez-moi à contact@samensteeve.com pour discuter de la façon de concevoir, sécuriser ou automatiser vos flux.",
+  },
+  work: {
+    title: "Travail",
+    caseStudy: "Lire l'étude de cas",
+    seoDescription: "Études de cas sélectionnées par Samen Steeve — applications web full-stack, durcissement de sécurité et automatisation IA.",
+  },
+  writing: {
+    title: "Écrits",
+    seoDescription: "Articles et réflexions de Samen Steeve sur le génie logiciel, la recherche en sécurité et l'automatisation IA.",
+    seeAll: "Voir tous les écrits",
+    all: "Tous",
+    empty: "Aucun écrit pour ce filtre.",
+    searchPlaceholder: "Rechercher par titre, description ou tag...",
+  },
+  notFound: {
+    title: "Page introuvable",
+    message: "Cette page n'existe pas ou a été déplacée.",
+    cta: "Retour à l'accueil",
+  },
+  details: {
+    back: "Retour",
+    role: "Rôle",
+    postIn: "Post in English",
+    postInFr: "Post in French",
+  },
+  footer: {
+    location: "Disponible pour le travail en remote",
+    specialty: "Software Engineer · Security Researcher · AI Automation",
+    rights: "Tous droits réservés",
+    bookCall: "Réserver un appel de 30 min",
+  },
+  stack: {
+    title: "Stack technique",
+    items: [
+      { name: "Next.js / React", url: "https://nextjs.org", desc: "Mon choix principal pour des apps web performantes et optimisées SEO, avec une expérience développeur moderne." },
+      { name: "Angular", url: "https://angular.dev", desc: "Framework frontend d'entreprise que j'utilise quotidiennement pour des SPA structurées, scalables et maintenables." },
+      { name: "TypeScript", url: "https://www.typescriptlang.org", desc: "La sécurité du typage sur toute la stack — des APIs backend aux IAs frontend et à l'orchestration d'agents IA." },
+      { name: "InertiaJS", url: "https://inertiajs.com", desc: "La colle qui relie Laravel aux frontends modernes sans construire de couche API séparée." },
+      { name: "Laravel", url: "https://laravel.com", desc: "Mon socle pour des backends sécurisés et robustes, livrés rapidement — des APIs REST aux serveurs WebSocket temps réel." },
+      { name: "AdonisJS", url: "https://adonisjs.com", desc: "Un framework Node.js structuré pour construire des backends typés avec la même élégance que Laravel." },
+      { name: "Redis", url: "https://redis.io", desc: "Au cœur du cache, des files d'attente, de la messagerie temps réel et de la gestion de sessions en production." },
+      { name: "PostgreSQL", url: "https://postgresql.org", desc: "Ma base relationnelle de référence pour l'intégrité des données, les requêtes complexes et la fiabilité en production." },
+      { name: "Tailwind CSS", url: "https://tailwindcss.com", desc: "Le moyen le plus rapide de concevoir des UI fluides et responsives — des dashboards admin aux pages publiques." },
+      { name: "Agents IA", url: "", desc: "Conception et déploiement d'agents IA autonomes connectés directement aux flux de production." },
+    ]
+  },
+} as const;

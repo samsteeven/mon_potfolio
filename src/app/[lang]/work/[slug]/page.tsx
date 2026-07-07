@@ -1,6 +1,7 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import type { Metadata } from "next";
+import Image from "next/image";
 import { ArrowLeft, ArrowUpRight } from "lucide-react";
 import { workSource } from "@/lib/source";
 import { getMDXComponents } from "@/components/mdx/mdx-components";
@@ -123,11 +124,13 @@ export default async function WorkPage({ params }: PageProps) {
       {/* Image de couverture optionnelle */}
       {page.data.cover && (
         <div className="relative mt-8 h-64 w-full overflow-hidden rounded-2xl sm:h-80">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
+          <Image
             src={page.data.cover}
             alt={page.data.title}
-            className="h-full w-full object-cover"
+            fill
+            sizes="(max-width: 768px) 100vw, 672px"
+            className="object-cover"
+            priority
           />
           <div className="absolute inset-0 rounded-2xl ring-1 ring-inset ring-line/20" />
         </div>
@@ -144,7 +147,7 @@ export default async function WorkPage({ params }: PageProps) {
           {page.data.description}
         </p>
         <div className="mt-6 flex flex-wrap items-center gap-3">
-          <StatusDot status={page.data.status} />
+          <StatusDot status={page.data.status} lang={lang} />
           <span className="inline-flex items-center gap-1.5 font-mono text-[10px] text-accent/80 border border-accent/20 bg-accent/5 rounded px-1.5 py-0.5">
             <span>
               {lang === "en" ? `Post in ${postLangLabel}` : `Rédigé en ${postLangLabel}`}
@@ -180,10 +183,10 @@ export default async function WorkPage({ params }: PageProps) {
 
       {/* Layout relatif pour le TOC absolu à droite */}
       <div className="relative">
+        <TableOfContents items={tocItems} lang={lang} />
         <article className="prose-headings:font-display prose-a:text-accent">
           <MDX components={getMDXComponents()} />
         </article>
-        <TableOfContents items={tocItems} lang={lang} />
       </div>
     </main>
   );

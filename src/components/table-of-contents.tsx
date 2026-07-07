@@ -1,9 +1,8 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import type { Language } from "@/lib/translations";
-
 import type { ReactNode } from "react";
+import type { Language } from "@/lib/translations";
 
 export interface TocItem {
   id: string;
@@ -29,7 +28,6 @@ export function TableOfContents({ items, lang }: TableOfContentsProps) {
 
     observerRef.current = new IntersectionObserver(
       (entries) => {
-        // Trouve le premier heading visible depuis le haut de la page
         const visible = entries
           .filter((e) => e.isIntersecting)
           .sort((a, b) => a.boundingClientRect.top - b.boundingClientRect.top);
@@ -52,48 +50,63 @@ export function TableOfContents({ items, lang }: TableOfContentsProps) {
   if (items.length === 0) return null;
 
   const contentLabel = lang === "en" ? "Contents" : "Sommaire";
+  const menuLabel = lang === "en" ? "On this page" : "Sur cette page";
+
+  const renderItems = () => (
+    <ul className="space-y-1.5">
+      {items.map((item) => {
+        const isActive = activeId === item.id;
+        const indent = item.depth === 3 ? "pl-3" : "pl-0";
+
+        return (
+          <li key={item.id}>
+            <a
+              href={`#${item.id}`}
+              className={[
+                "block rounded-md py-1 px-3 mx-1.5 font-sans text-[13px] leading-snug transition-all duration-200",
+                isActive
+                  ? "text-accent font-semibold bg-accent/5"
+                  : "text-ink-soft hover:bg-paper-raised/40 hover:text-ink",
+              ].join(" ")}
+              onClick={(e) => {
+                e.preventDefault();
+                const el = document.getElementById(item.id);
+                el?.scrollIntoView({ behavior: "smooth", block: "start" });
+                setActiveId(item.id);
+              }}
+            >
+              <span className={`block ${indent}`}>{item.title}</span>
+            </a>
+          </li>
+        );
+      })}
+    </ul>
+  );
 
   return (
-    <aside className="absolute top-0 -right-72 hidden h-full w-60 xl:block">
-      <div className="sticky top-24 flex max-h-[calc(100vh-8rem)] flex-col gap-2 overflow-hidden">
-        <div className="min-h-0 flex-1 overflow-y-auto rounded-xl border border-line bg-paper/80 p-4 shadow-sm backdrop-blur-sm">
-          <nav>
-            <h4 className="mb-4 font-mono text-[11px] uppercase tracking-widest text-ink-soft">
-              {contentLabel}
-            </h4>
-            <ul className="space-y-1.5">
-              {items.map((item) => {
-                const isActive = activeId === item.id;
-                const indent = item.depth === 3 ? "pl-3" : "pl-0";
-
-                return (
-                  <li key={item.id}>
-                    <a
-                      href={`#${item.id}`}
-                      className={[
-                        "block rounded-md py-1 px-3 mx-1.5 font-sans text-[13px] leading-snug transition-all duration-200",
-                        isActive
-                          ? "text-accent font-semibold bg-accent/5"
-                          : "text-ink-soft hover:bg-paper-raised/40 hover:text-ink",
-                      ].join(" ")}
-                      onClick={(e) => {
-                        e.preventDefault();
-                        const el = document.getElementById(item.id);
-                        el?.scrollIntoView({ behavior: "smooth", block: "start" });
-                        setActiveId(item.id);
-                      }}
-                    >
-                      <span className={`block ${indent}`}>
-                        {item.title}
-                      </span>
-                    </a>
-                  </li>
-                );
-              })}
-            </ul>
-          </nav>
+    <>
+      {/* Version desktop : aside sticky à droite (xl+) */}
+      <aside className="absolute top-0 -right-72 hidden h-full w-60 xl:block">
+        <div className="sticky top-24 flex max-h-[calc(100vh-8rem)] flex-col gap-2 overflow-hidden">
+          <div className="min-h-0 flex-1 overflow-y-auto rounded-xl border border-line bg-paper/80 p-4 shadow-sm backdrop-blur-sm">
+            <nav>
+              <h4 className="mb-4 font-mono text-[11px] uppercase tracking-widest text-ink-soft">
+                {contentLabel}
+              </h4>
+              {renderItems()}
+            </nav>
+          </div>
         </div>
-      </div>
-    </aside>
+      </aside>
+
+      {/* Version mobile / tablette : <details> repliable sous le titre */}
+      <details className="group mb-8 rounded-xl border border-line bg-paper/80 p-4 shadow-sm backdrop-blur-sm xl:hidden">
+        <summary className="flex cursor-pointer list-none items-center justify-between font-mono text-[11px] uppercase tracking-widest text-ink-soft hover:text-ink transition-colors">
+          <span>{menuLabel}</span>
+          <span className="text-ink-soft/60 transition-transform duration-200 group-open:rotate-180">▾</span>
+        </summary>
+        <nav className="mt-4">{renderItems()}</nav>
+      </details>
+    </>
   );
 }

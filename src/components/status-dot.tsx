@@ -1,11 +1,19 @@
+import type { Language } from "@/lib/translations";
+
 type Status = "shipped" | "in-progress";
 
-const LABELS: Record<Status, string> = {
-  "in-progress": "En cours",
-  shipped: "Livré",
+const LABELS: Record<Language, Record<Status, string>> = {
+  en: { "in-progress": "In progress", shipped: "Shipped" },
+  fr: { "in-progress": "En cours", shipped: "Livré" },
 };
 
-export function StatusDot({ status }: { status: Status }) {
+export function StatusDot({
+  status,
+  lang,
+}: {
+  status: Status;
+  lang: Language;
+}) {
   return (
     <span className="inline-flex items-center gap-2">
       <span
@@ -16,7 +24,7 @@ export function StatusDot({ status }: { status: Status }) {
         }
       />
       <span className="font-mono text-[11px] uppercase tracking-wide text-ink-soft">
-        {LABELS[status]}
+        {LABELS[lang][status]}
       </span>
     </span>
   );

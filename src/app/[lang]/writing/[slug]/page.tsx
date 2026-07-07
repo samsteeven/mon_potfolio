@@ -1,9 +1,10 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import type { Metadata } from "next";
+import Image from "next/image";
 import { ArrowLeft } from "lucide-react";
 import { getMdxBody, getReadingTime } from "@/lib/reading-time";
-import { writingSource } from "@/lib/source";
+import { writingSource, leafSlug } from "@/lib/source";
 import { getMDXComponents } from "@/components/mdx/mdx-components";
 import { translations, type Language } from "@/lib/translations";
 import { TableOfContents, type TocItem } from "@/components/table-of-contents";
@@ -17,7 +18,7 @@ export function generateStaticParams() {
   const pages = writingSource.getPages();
   return pages.map((page) => ({
     lang: page.data.lang || "fr",
-    slug: page.slugs[0],
+    slug: leafSlug(page.slugs),
   }));
 }
 
@@ -26,13 +27,14 @@ const BASE_URL =
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { lang, slug } = await params;
-  const page = writingSource.getPage([slug]);
+  const page = writingSource.getPage([lang, slug]);
   if (!page || !page.data.published || (page.data.lang || "fr") !== lang) return {};
 
   const canonicalUrl = `${BASE_URL}/${lang}/writing/${slug}`;
   const altLang = lang === "fr" ? "en" : "fr";
-  const altSlug = lang === "fr" ? `${slug}-en` : (slug.endsWith("-en") ? slug.slice(0, -3) : slug);
-  const altUrl = `${BASE_URL}/${altLang}/writing/${altSlug}`;
+  // Avec les sous-dossiers content/writing/{en,fr}/, le slug "feuille" est
+  // identique dans les deux langues : pas de manipulation de suffixe -en.
+  const altUrl = `${BASE_URL}/${altLang}/writing/${slug}`;
   const ogImage = page.data.cover || "/profil.png";
 
   return {
@@ -43,7 +45,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
       languages: {
         [lang]: canonicalUrl,
         [altLang]: altUrl,
-        "x-default": `${BASE_URL}/en/writing/${lang === "fr" ? `${slug}-en` : slug}`,
+        "x-default": `${BASE_URL}/en/writing/${slug}`,
       },
     },
     openGraph: {
@@ -66,7 +68,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 
 export default async function WritingPage({ params }: PageProps) {
   const { lang, slug } = await params;
-  const page = writingSource.getPage([slug]);
+  const page = writingSource.getPage([lang, slug]);
   if (!page || !page.data.published || (page.data.lang || "fr") !== lang) notFound();
 
   const t = translations[lang] || translations.en;
@@ -75,7 +77,7 @@ export default async function WritingPage({ params }: PageProps) {
   // Build canonical URL and shareable text (full post content) for copy buttons
   const canonicalUrl = `${BASE_URL}/${lang}/writing/${slug}`;
   
-  const bodyText = getMdxBody(slug, "writing", page.data.description);
+  const bodyText = getMdxBody(slug, `writing/${lang}`, page.data.description);
 
   const shareText = [
     page.data.title,
@@ -90,7 +92,7 @@ export default async function WritingPage({ params }: PageProps) {
     .join("\n")
     .trim();
 
-  const readTime = getReadingTime(slug, "writing", page.data.description);
+  const readTime = getReadingTime(slug, `writing/${lang}`, page.data.description);
   const readLabel = lang === "en" ? `${readTime} min read` : `${readTime} min de lecture`;
 
   // Extraction des headings depuis le TOC généré par Fumadocs
@@ -146,11 +148,13 @@ export default async function WritingPage({ params }: PageProps) {
       {/* Image de couverture optionnelle */}
       {page.data.cover && (
         <div className="relative mt-8 h-64 w-full overflow-hidden rounded-2xl sm:h-80">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
+          <Image
             src={page.data.cover}
             alt={page.data.title}
-            className="h-full w-full object-cover"
+            fill
+            sizes="(max-width: 768px) 100vw, 672px"
+            className="object-cover"
+            priority
           />
           <div className="absolute inset-0 rounded-2xl ring-1 ring-inset ring-line/20" />
         </div>
@@ -191,10 +195,10 @@ export default async function WritingPage({ params }: PageProps) {
 
       {/* Layout relatif pour le TOC absolu à droite */}
       <div className="relative">
+        <TableOfContents items={tocItems} lang={lang} />
         <article className="prose-headings:font-display prose-a:text-accent w-full max-w-full overflow-hidden">
           <MDX components={getMDXComponents()} />
         </article>
-        <TableOfContents items={tocItems} lang={lang} />
       </div>
     </main>
   );

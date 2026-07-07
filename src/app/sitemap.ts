@@ -1,31 +1,33 @@
 import type { MetadataRoute } from "next";
-import { workSource, writingSource } from "@/lib/source";
+import { workSource, writingSource, leafSlug } from "@/lib/source";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://samensteeve.com";
 
   const langs = ["en", "fr"];
-  const staticRoutes = ["", "/writing"];
+  const staticRoutes = ["", "/writing", "/work"];
 
   // Static pages (home + writing index) — one URL per lang
   const staticEntries = langs.flatMap((lang) =>
     staticRoutes.map((route) => ({
       url: `${baseUrl}/${lang}${route}`,
       lastModified: new Date(),
-      changeFrequency: "weekly" as const,
       priority: route === "" ? 1.0 : 0.8,
+      changeFrequency: route === "/work" ? ("monthly" as const) : ("weekly" as const),
     }))
   );
 
   // All writing articles (published only) — one URL per lang
   const writings = writingSource.getPages().filter((p) => p.data.published);
   const writingEntries = langs.flatMap((lang) =>
-    writings.map((page) => ({
-      url: `${baseUrl}/${lang}${page.url}`,
-      lastModified: page.data.date ? new Date(page.data.date) : new Date(),
-      changeFrequency: "monthly" as const,
-      priority: 0.7,
-    }))
+    writings
+      .filter((page) => (page.data.lang || "fr") === lang)
+      .map((page) => ({
+        url: `${baseUrl}/${lang}/writing/${leafSlug(page.slugs)}`,
+        lastModified: page.data.date ? new Date(page.data.date) : new Date(),
+        changeFrequency: "monthly" as const,
+        priority: 0.7,
+      }))
   );
 
   // ALL work pages (featured and non-featured) — one URL per lang

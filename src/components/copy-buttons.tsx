@@ -20,6 +20,8 @@ export function CopyButtons({ url, shareText, lang }: CopyButtonsProps) {
   const [copied, setCopied] = useState<CopyState>({ link: false, post: false });
 
   const handleCopy = async (type: keyof CopyState, text: string) => {
+    // API Clipboard moderne (HTTPS ou localhost). Pas de fallback execCommand
+    // (déprécié) — on échoue silencieusement si l'API est indisponible.
     try {
       await navigator.clipboard.writeText(text);
       setCopied((prev) => ({ ...prev, [type]: true }));
@@ -28,20 +30,7 @@ export function CopyButtons({ url, shareText, lang }: CopyButtonsProps) {
         2000
       );
     } catch {
-      // Fallback for browsers without clipboard API
-      const el = document.createElement("textarea");
-      el.value = text;
-      el.style.position = "fixed";
-      el.style.opacity = "0";
-      document.body.appendChild(el);
-      el.select();
-      document.execCommand("copy");
-      document.body.removeChild(el);
-      setCopied((prev) => ({ ...prev, [type]: true }));
-      setTimeout(
-        () => setCopied((prev) => ({ ...prev, [type]: false })),
-        2000
-      );
+      // Clipboard indisposable (HTTPS requis ou permission refusée) — on ignore
     }
   };
 

@@ -2,7 +2,7 @@ import Link from "next/link";
 import type { Metadata } from "next";
 import { ArrowLeft } from "lucide-react";
 import { getReadingTime } from "@/lib/reading-time";
-import { writingSource } from "@/lib/source";
+import { writingSource, leafSlug } from "@/lib/source";
 import { WritingList } from "@/components/writing-list";
 import { translations, type Language } from "@/lib/translations";
 
@@ -42,10 +42,14 @@ export default async function WritingIndexPage({ params }: PageProps) {
     .filter((page) => page.data.published && (page.data.lang || "fr") === lang)
     .sort((a, b) => (a.data.date < b.data.date ? 1 : -1))
     .map((page) => {
-      const readTime = getReadingTime(page.slugs[0], "writing", page.data.description);
+      const readTime = getReadingTime(
+        leafSlug(page.slugs),
+        `writing/${page.data.lang || "fr"}`,
+        page.data.description
+      );
 
       return {
-        url: page.url,
+        url: `/writing/${leafSlug(page.slugs)}`,
         title: page.data.title,
         description: page.data.description,
         date: page.data.date,

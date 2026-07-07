@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
@@ -10,38 +10,67 @@ import { translations, type Language } from "@/lib/translations";
 export function SiteHeader({ lang }: { lang: Language }) {
   const pathname = usePathname();
   const t = translations[lang] || translations.en;
+  const isHome = pathname === `/${lang}`;
+  const [activeSection, setActiveSection] = useState<string | null>(null);
 
   useEffect(() => {
     document.documentElement.lang = lang;
   }, [lang]);
+
+  // Scroll spy sur les sections ancrées de la home (#work, #about)
+  useEffect(() => {
+    if (!isHome) return;
+
+    const sections = ["about", "work"]
+      .map((id) => document.getElementById(id))
+      .filter((el): el is HTMLElement => el !== null);
+
+    if (sections.length === 0) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const visible = entries
+          .filter((e) => e.isIntersecting)
+          .sort((a, b) => a.boundingClientRect.top - b.boundingClientRect.top);
+        if (visible.length > 0) {
+          setActiveSection(visible[0].target.id);
+        }
+      },
+      { rootMargin: "-40% 0px -55% 0px", threshold: 0 }
+    );
+
+    sections.forEach((el) => observer.observe(el));
+    return () => observer.disconnect();
+  }, [isHome, lang]);
 
   const getOppositeLangLink = () => {
     if (!pathname) return "/";
     const segments = pathname.split("/");
     const targetLang = lang === "en" ? "fr" : "en";
     segments[1] = targetLang;
-
-    // Si c'est un article de blog (/writing/[slug])
-    if (segments[2] === "writing" && segments[3]) {
-      let slug = segments[3];
-      if (targetLang === "en") {
-        if (!slug.endsWith("-en")) slug = `${slug}-en`;
-      } else {
-        if (slug.endsWith("-en")) slug = slug.slice(0, -3);
-      }
-      segments[3] = slug;
-    }
-
+    // Avec les sous-dossiers content/writing/{en,fr}/, le slug d'article est
+    // identique dans les deux langues : il suffit de permuter le segment de langue.
     return segments.join("/");
   };
 
   const oppositeLang = lang === "en" ? "FR" : "EN";
 
   const navLinks = [
-    { href: `/${lang}/#work`, label: t.nav.work },
-    { href: `/${lang}/#about`, label: t.nav.about },
-    { href: `/${lang}/writing`, label: t.nav.writing },
+    { href: `/${lang}/#work`, label: t.nav.work, key: "work" as const },
+    { href: `/${lang}/#about`, label: t.nav.about, key: "about" as const },
+    { href: `/${lang}/writing`, label: t.nav.writing, key: "writing" as const },
   ];
+
+  // Section active uniquement sur la home (dérivée — pas de setState synchrone)
+  const section = isHome ? activeSection : null;
+
+  // aria-current par lien : "page" pour /writing, "true" pour ancres sur home
+  const ariaCurrentOf = (linkKey: "work" | "about" | "writing") => {
+    if (linkKey === "writing") {
+      return pathname.startsWith(`/${lang}/writing`) ? "page" : undefined;
+    }
+    return section === linkKey ? "true" : undefined;
+  };
 
   return (
     <header className="sticky top-0 z-40 border-b border-line bg-paper/80 backdrop-blur-md transition-all duration-300">
@@ -77,7 +106,8 @@ export function SiteHeader({ lang }: { lang: Language }) {
             <Link
               key={link.href}
               href={link.href}
-              className="relative py-1 transition-all duration-200 hover:text-accent after:absolute after:bottom-0 after:left-0 after:h-px after:w-0 after:bg-accent after:transition-all after:duration-300 hover:after:w-full"
+              aria-current={ariaCurrentOf(link.key)}
+              className="relative py-1 transition-all duration-200 hover:text-accent after:absolute after:bottom-0 after:left-0 after:h-px after:w-0 after:bg-accent after:transition-all after:duration-300 hover:after:w-full aria-[current=page]:text-accent aria-[current=page]:after:w-full aria-[current=true]:text-accent aria-[current=true]:after:w-full"
             >
               {link.label}
             </Link>

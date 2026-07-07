@@ -1,8 +1,9 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import Image from "next/image";
 import { ArrowUpRight, Mail, Code2, ShieldCheck, Bot, CalendarDays } from "lucide-react";
 import { getReadingTime } from "@/lib/reading-time";
-import { workSource, writingSource } from "@/lib/source";
+import { workSource, writingSource, leafSlug } from "@/lib/source";
 import { StatusDot } from "@/components/status-dot";
 import { translations, type Language } from "@/lib/translations";
 import { ScrollReveal } from "@/components/scroll-reveal";
@@ -329,7 +330,7 @@ export default async function HomePage({ params }: PageProps) {
                       <h3 className="font-display text-lg font-semibold text-ink">
                         {page.data.title}
                       </h3>
-                      <StatusDot status={page.data.status} />
+                      <StatusDot status={page.data.status} lang={lang} />
                     </div>
                     <span className="font-mono text-[11px] text-ink-soft/70">
                       {page.data.role} · {page.data.date}
@@ -394,26 +395,31 @@ export default async function HomePage({ params }: PageProps) {
 
         <div className="flex flex-col divide-y divide-line">
           {writing.map((page, i) => {
-            const readTime = getReadingTime(page.slugs[0], "writing", page.data.description);
+            const readTime = getReadingTime(
+              leafSlug(page.slugs),
+              `writing/${page.data.lang || "fr"}`,
+              page.data.description
+            );
             const readLabel = lang === "en" ? `${readTime} min read` : `${readTime} min de lecture`;
 
             return (
-              <ScrollReveal key={page.url} delay={i * 70}>
+              <ScrollReveal key={`${page.data.lang}-${leafSlug(page.slugs)}`} delay={i * 70}>
                 <Link
-                  href={`/${lang}${page.url}`}
+                  href={`/${lang}/writing/${leafSlug(page.slugs)}`}
                   className="group flex items-start gap-5 py-6 transition-all duration-300 ease-out -mx-4 px-4 rounded-2xl hover:bg-paper-raised/60 hover:shadow-sm hover:shadow-accent/[0.01] hover:-translate-y-0.5"
                 >
                   {/* Miniature à gauche */}
-                  <div className="shrink-0 w-32 h-24 sm:w-40 sm:h-28 rounded-xl overflow-hidden border border-line bg-paper-raised flex items-center justify-center">
+                  <div className="relative shrink-0 w-32 h-24 sm:w-40 sm:h-28 rounded-xl overflow-hidden border border-line bg-paper-raised">
                     {page.data.cover ? (
-                      /* eslint-disable-next-line @next/next/no-img-element */
-                      <img
+                      <Image
                         src={page.data.cover}
                         alt={page.data.title}
-                        className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-103"
+                        fill
+                        sizes="160px"
+                        className="object-cover transition-transform duration-500 group-hover:scale-103"
                       />
                     ) : (
-                      <span className="font-mono text-2xl font-bold text-ink-soft/15 select-none">
+                      <span className="absolute inset-0 flex items-center justify-center font-mono text-2xl font-bold text-ink-soft/15 select-none">
                         {String(i + 1).padStart(2, "0")}
                       </span>
                     )}
