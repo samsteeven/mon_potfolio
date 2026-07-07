@@ -31,15 +31,17 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       }))
   );
 
-  // ALL work pages (featured and non-featured) — one URL per lang
+  // Work pages — one URL per lang (only for the lang the content exists in)
   const works = workSource.getPages();
   const workEntries = langs.flatMap((lang) =>
-    works.map((page) => ({
-      url: `${baseUrl}/${lang}${page.url}`,
-      lastModified: page.data.date ? new Date(page.data.date) : new Date(),
-      changeFrequency: "monthly" as const,
-      priority: page.data.featured ? 0.9 : 0.7,
-    }))
+    works
+      .filter((page) => (page.data.lang || "fr") === lang)
+      .map((page) => ({
+        url: `${baseUrl}/${lang}${page.url}`,
+        lastModified: page.data.date ? new Date(page.data.date) : new Date(),
+        changeFrequency: "monthly" as const,
+        priority: page.data.featured ? 0.9 : 0.7,
+      }))
   );
 
   return [...staticEntries, ...writingEntries, ...workEntries];

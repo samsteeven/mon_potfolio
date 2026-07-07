@@ -27,7 +27,7 @@ export function proxy(request: NextRequest) {
   if (!pathnameHasLocale) {
     const url = new URL(`/en${pathname}`, request.url);
     url.search = request.nextUrl.search;
-    return NextResponse.redirect(url);
+    return NextResponse.redirect(url, 308);
   }
 
   return NextResponse.next();
