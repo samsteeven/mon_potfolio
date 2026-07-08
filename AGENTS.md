@@ -96,6 +96,54 @@ respecter le schéma existant, c'est tout — aucune migration, aucune interface
 Le composant `StatusDot` (`src/components/status-dot.tsx`) reflète le champ `status`
 des projets : ne pas le détourner pour autre chose, son rôle est précis (livré / en cours).
 
+## Synchronisation du contenu — ⚠️ à lire avant toute modification
+
+Quand tu ajoutes, modifies ou supprimes du contenu (projet, article, compétence),
+plusieurs fichiers doivent être mis à jour manuellement. Les pages et API routes
+lisent soit depuis `src/content/` (dynamique → auto-sync au rebuild), soit depuis
+des listes en dur (manuel uniquement).
+
+### Projets — `src/content/work/*.mdx`
+
+| Fichier | Source | Auto-sync ? |
+|---|---|---|
+| `src/app/[lang]/page.tsx` | `workSource.getPages()` | ✅ auto |
+| `src/app/[lang]/work/page.tsx` | `workSource.getPages()` | ✅ auto |
+| `src/app/[lang]/work/[slug]/page.tsx` | Fumadocs loader | ✅ auto |
+| `src/app/sitemap.ts` | `workSource.getPages()` | ✅ auto |
+| `src/app/api/data/projects/route.ts` | `readdirSync(src/content/work/)` | ✅ auto |
+| **`src/app/llms.txt/route.ts`** | chaînes en dur | **🔴 manuel** |
+
+### Articles — `src/content/writing/*.mdx`
+
+| Fichier | Source | Auto-sync ? |
+|---|---|---|
+| `src/app/[lang]/page.tsx` | `getWritingPages(lang)` | ✅ auto |
+| `src/app/[lang]/writing/page.tsx` | `getWritingPages(lang)` | ✅ auto |
+| `src/app/[lang]/writing/[slug]/page.tsx` | Fumadocs loader | ✅ auto |
+| `src/app/sitemap.ts` | `writingSource.getPages()` | ✅ auto |
+| `src/app/api/data/articles/route.ts` | `readdirSync(src/content/writing/)` | ✅ auto |
+| **`src/app/llms.txt/route.ts`** | chaînes en dur | **🔴 manuel** |
+
+### Compétences — `src/lib/i18n/{en,fr}.ts`
+
+| Fichier | Source | Auto-sync ? |
+|---|---|---|
+| **`src/app/api/data/skills/route.ts`** | `import { stack } from "src/lib/i18n/en.ts"` | **🔴 manuel** |
+
+### Procédure
+
+1. **Créer/modifier le fichier `.mdx`** dans `src/content/work/` ou `src/content/writing/`
+   en respectant le schéma `source.config.ts`.
+2. **Mettre à jour `src/app/llms.txt/route.ts`** — ajouter/modifier/supprimer l'entrée
+   dans la section correspondante (Projects / Writing).
+3. **Vérifier le bilinguisme** — si le contenu existe dans une seule langue, le signaler
+   dans `llms.txt` (optionel) ; les pages sans version FR utilisent `lang: "en"`.
+4. **Lancer `npm run build`** — confirme que tout est synchronisé et détecte les
+   éventuelles erreurs de schéma.
+5. **Pour les compétences** — modifier `src/lib/i18n/en.ts` et `src/lib/i18n/fr.ts`
+   (les deux langues en miroir).
+
 ## Pages
 
 - `src/app/[lang]/page.tsx` — accueil à sections ancrées (Hero, À propos, Travail, Écrits)
