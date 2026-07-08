@@ -3,7 +3,7 @@ import type { NextRequest } from "next/server";
 
 const PUBLIC_FILE = /\.(.*)$/;
 
-const CACHE_HEADERS = "public, s-maxage=3600, stale-while-revalidate=86400";
+const CACHE_HEADERS = "public, s-maxage=3600, stale-while-revalidate=3600";
 
 const LINK_HEADERS = [
   "</.well-known/agent-skills/index.json>; rel=\"agent-skills\"",
