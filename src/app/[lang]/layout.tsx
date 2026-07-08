@@ -20,13 +20,13 @@ export async function generateMetadata({
 
   const title =
     lang === "fr"
-      ? "Samen Steeve — Ingénieur Logiciel & Chercheur en Sécurité"
-      : "Samen Steeve — Software Engineer & Security Researcher";
+      ? "Samen Steeve — Ingénieur Logiciel · Automatisation IA"
+      : "Samen Steeve — Software Engineer · AI Automation";
 
   const description =
     lang === "fr"
-      ? "Ingénieur Logiciel, Chercheur en Sécurité et Spécialiste en Automatisation IA. Je conçois des systèmes résilients et sécurise la logique applicative."
-      : "Software Engineer, Security Researcher, and AI Automation Specialist. I build resilient systems and secure application logic.";
+      ? "Ingénieur logiciel. Je conçois et développe des systèmes logiciels résilients en apportant un soin particulier à la sécurité en production, l'intégrité des données et l'intégration de flux d'agents IA dans les processus métier."
+      : "Software Engineer. Designing and building resilient software systems with a focus on production security, data integrity, and integrating autonomous AI workflows into business processes.";
 
   return {
     title,

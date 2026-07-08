@@ -35,17 +35,18 @@ const personJsonLd = {
     "https://github.com/samsteeven",
     "https://linkedin.com/in/samensteeve",
   ],
-  jobTitle: "Software Engineer & Security Researcher",
+  jobTitle: "Software Engineer & AI Automation Specialist",
   description:
-    "Software Engineer, Security Researcher, and AI Automation Specialist. Building resilient systems and securing application logic.",
+    "Software Engineer specializing in resilient software systems. Focused on production security, data integrity, and integrating autonomous AI agent workflows into business processes.",
   knowsAbout: [
     "Software Engineering",
+    "Systems Architecture",
     "Web Security",
-    "Artificial Intelligence",
     "Laravel",
     "React",
-    "Next.js",
-    "Inertia js",
+    "Angular",
+    "Inertia.js",
+    "AI Agents",
   ],
   mainEntityOfPage: {
     "@type": "WebPage",

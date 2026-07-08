@@ -76,8 +76,8 @@ export function GET() {
   const body = [
     "# Samen Steeve — Portfolio",
     "",
-    "> Software Engineer, Security Researcher, and AI Automation Specialist.",
-    "> I build resilient systems and secure application logic.",
+    "> Software Engineer & AI Automation Specialist. Designing and building resilient software systems.",
+    "> Focused on production security, data integrity, and integrating autonomous AI agent workflows into business operations.",
     "",
     "## Projects",
     "",
