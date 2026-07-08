@@ -112,7 +112,7 @@ des listes en dur (manuel uniquement).
 | `src/app/[lang]/work/[slug]/page.tsx` | Fumadocs loader | ✅ auto |
 | `src/app/sitemap.ts` | `workSource.getPages()` | ✅ auto |
 | `src/app/api/data/projects/route.ts` | `readdirSync(src/content/work/)` | ✅ auto |
-| **`src/app/llms.txt/route.ts`** | chaînes en dur | **🔴 manuel** |
+| **`src/app/llms.txt/route.ts`** | `readdirSync(src/content/work/ + writing/)` | ✅ auto |
 
 ### Articles — `src/content/writing/*.mdx`
 
@@ -123,7 +123,6 @@ des listes en dur (manuel uniquement).
 | `src/app/[lang]/writing/[slug]/page.tsx` | Fumadocs loader | ✅ auto |
 | `src/app/sitemap.ts` | `writingSource.getPages()` | ✅ auto |
 | `src/app/api/data/articles/route.ts` | `readdirSync(src/content/writing/)` | ✅ auto |
-| **`src/app/llms.txt/route.ts`** | chaînes en dur | **🔴 manuel** |
 
 ### Compétences — `src/lib/i18n/{en,fr}.ts`
 
@@ -135,13 +134,11 @@ des listes en dur (manuel uniquement).
 
 1. **Créer/modifier le fichier `.mdx`** dans `src/content/work/` ou `src/content/writing/`
    en respectant le schéma `source.config.ts`.
-2. **Mettre à jour `src/app/llms.txt/route.ts`** — ajouter/modifier/supprimer l'entrée
-   dans la section correspondante (Projects / Writing).
-3. **Vérifier le bilinguisme** — si le contenu existe dans une seule langue, le signaler
-   dans `llms.txt` (optionel) ; les pages sans version FR utilisent `lang: "en"`.
-4. **Lancer `npm run build`** — confirme que tout est synchronisé et détecte les
+2. **Vérifier le bilinguisme** — créer les deux versions `en` et `fr` de l'article si
+   nécessaire ; les pages sans version FR utilisent `lang: "en"` dans le frontmatter.
+3. **Lancer `npm run build`** — confirme que tout est synchronisé et détecte les
    éventuelles erreurs de schéma.
-5. **Pour les compétences** — modifier `src/lib/i18n/en.ts` et `src/lib/i18n/fr.ts`
+4. **Pour les compétences** — modifier `src/lib/i18n/en.ts` et `src/lib/i18n/fr.ts`
    (les deux langues en miroir).
 
 ## Pages
