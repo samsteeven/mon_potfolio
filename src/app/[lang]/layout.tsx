@@ -4,6 +4,8 @@ import { SiteFooter } from "@/components/site-footer";
 import { WebMCPProvider } from "@/components/webmcp-provider";
 import type { Language } from "@/lib/translations";
 
+export const revalidate = 3600;
+
 const BASE_URL =
   process.env.NEXT_PUBLIC_SITE_URL || "https://samensteeve.com";
 
