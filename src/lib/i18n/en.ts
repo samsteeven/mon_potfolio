@@ -6,7 +6,7 @@ export const en = {
   },
   hero: {
     location: "Open to remote opportunities",
-    bio: "Software Engineer, Security Researcher, and AI Automation Specialist. I build resilient, high-performance systems, audit and secure digital infrastructures, and orchestrate autonomous AI agent workflows to solve complex operational challenges.",
+    bio: "I design resilient, high-performance systems, audit and secure digital infrastructures, and orchestrate autonomous AI agent workflows to solve complex operational challenges.",
     status: "Software Engineer · Security Researcher · AI Automation",
     readPosts: "Read all posts",
     scheduleMeeting: "Schedule a meeting",

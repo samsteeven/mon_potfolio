@@ -61,21 +61,21 @@ export default async function HomePage({ params }: PageProps) {
         >
           Samen Steeve
         </h1>
-        <p
-          className="fade-up mt-5 max-w-xl text-lg text-ink-soft"
-          style={{ animationDelay: "180ms" }}
-        >
-          {t.hero.bio}
-        </p>
         <div
-          className="fade-up mt-8 inline-flex items-center gap-2.5 rounded-full border border-line bg-paper-raised/60 px-4 py-1.5 shadow-sm backdrop-blur"
-          style={{ animationDelay: "240ms" }}
+          className="fade-up mt-5 inline-flex items-center gap-2.5 rounded-full border border-line bg-paper-raised/60 px-4 py-1.5 shadow-sm backdrop-blur"
+          style={{ animationDelay: "180ms" }}
         >
           <span className="h-1.5 w-1.5 rounded-full bg-accent animate-pulse" />
           <span className="font-mono text-[10px] uppercase tracking-wider text-ink-soft">
             {t.hero.status}
           </span>
         </div>
+        <p
+          className="fade-up mt-6 max-w-xl text-lg text-ink-soft"
+          style={{ animationDelay: "240ms" }}
+        >
+          {t.hero.bio}
+        </p>
         <div
           className="fade-up mt-10 flex gap-4"
           style={{ animationDelay: "320ms" }}

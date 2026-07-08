@@ -6,7 +6,7 @@ export const fr = {
   },
   hero: {
     location: "Disponible pour le travail en remote",
-    bio: "Ingénieur Logiciel, Chercheur en Sécurité et Spécialiste en Automatisation IA. Je conçois des systèmes web résilients et performants, j'audite et sécurise les infrastructures numériques, et j'orchestre des flux d'agents IA autonomes pour simplifier les processus complexes.",
+    bio: "Je conçois des systèmes web résilients et performants, j'audite et sécurise les infrastructures numériques, et j'orchestre des flux d'agents IA autonomes pour simplifier les processus complexes.",
     status: "Ingénieur Logiciel · Chercheur en Sécurité · Automatisation IA",
     readPosts: "Lire les articles",
     scheduleMeeting: "Planifier une réunion",
