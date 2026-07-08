@@ -116,6 +116,7 @@ export function GET() {
   return new Response(body, {
     headers: {
       "Content-Type": "text/markdown; charset=utf-8",
+      "Cache-Control": "public, s-maxage=3600, stale-while-revalidate=3600",
       "Access-Control-Allow-Origin": "*",
     },
   });
