@@ -5,7 +5,7 @@ import Image from "next/image";
 import { ArrowLeft, ArrowUpRight } from "lucide-react";
 import { workSource } from "@/lib/source";
 import { leafSlug } from "@/lib/slug";
-import { getMDXComponents } from "@/components/mdx/mdx-components";
+import { getMDXComponents, ZoomableImage } from "@/components/mdx/mdx-components";
 import { StatusDot } from "@/components/status-dot";
 import { getT, type Language } from "@/lib/translations";
 import { createPageMetadata } from "@/lib/metadata";
@@ -91,20 +91,14 @@ export default async function WorkPage({ params }: PageProps) {
         {t.details.back}
       </Link>
 
-      {/* Image de couverture optionnelle */}
+      {/* Image de couverture optionnelle et zoomable */}
       {page.data.cover && (
-        <div className="relative mt-8 h-64 w-full overflow-hidden rounded-2xl sm:h-80">
-          <Image
+        <div className="mt-8 overflow-hidden rounded-2xl border border-line">
+          <ZoomableImage
             src={page.data.cover}
             alt={page.data.title}
-            fill
-            sizes="(max-width: 768px) 100vw, 672px"
-            className="object-cover"
             priority
-            placeholder="blur"
-            blurDataURL={BLUR_DATA_URL}
           />
-          <div className="absolute inset-0 rounded-2xl ring-1 ring-inset ring-line/20" />
         </div>
       )}
 

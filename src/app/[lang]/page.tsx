@@ -172,18 +172,18 @@ export default async function HomePage({ params }: PageProps) {
             </ScrollReveal>
           ))}
 
-          {/* Card Services — accent tinted, contenu en liste avec icônes */}
+          {/* Card Services — design épuré, contenu en liste aérée avec icônes */}
           <ScrollReveal delay={160} className="h-full">
-            <div className="flex flex-col h-full rounded-2xl border border-accent/25 bg-accent/[0.06] p-6 shadow-sm transition-all duration-300 ease-out hover:-translate-y-1.5 hover:border-accent/40 hover:bg-accent/10 hover:shadow-md hover:shadow-accent/[0.07]">
+            <div className="flex flex-col h-full rounded-2xl border border-line bg-paper-raised/40 p-8 shadow-sm transition-all duration-300 ease-out hover:-translate-y-1.5 hover:border-accent/35 hover:bg-paper-raised hover:shadow-md">
               <p className="font-mono text-xs uppercase tracking-wider text-accent font-semibold">
                 {t.about.q3}
               </p>
-              <ul className="mt-5 flex flex-col gap-4">
+              <ul className="mt-6 flex flex-col gap-5">
                 {t.about.services.map((service, i) => (
-                <li key={i} className="flex items-start gap-3">
-                  {i === 0 && <Code2 className="mt-0.5 h-4 w-4 shrink-0 text-accent" />}
-                  {i === 1 && <ShieldCheck className="mt-0.5 h-4 w-4 shrink-0 text-accent" />}
-                  {i === 2 && <Bot className="mt-0.5 h-4 w-4 shrink-0 text-accent" />}
+                <li key={i} className="flex items-start gap-3.5">
+                  {i === 0 && <Code2 className="mt-0.5 h-4.5 w-4.5 shrink-0 text-accent" />}
+                  {i === 1 && <ShieldCheck className="mt-0.5 h-4.5 w-4.5 shrink-0 text-accent" />}
+                  {i === 2 && <Bot className="mt-0.5 h-4.5 w-4.5 shrink-0 text-accent" />}
                   <span className="text-sm leading-relaxed text-ink-soft">{service}</span>
                 </li>
                 ))}
@@ -191,9 +191,9 @@ export default async function HomePage({ params }: PageProps) {
             </div>
           </ScrollReveal>
 
-          {/* Card CTA — fond sombre premium, vrais boutons cliquables */}
+          {/* Card CTA — fond sombre premium, boutons cliquables, mise en page aérée */}
           <ScrollReveal delay={240} className="h-full">
-            <div className="flex flex-col justify-between h-full rounded-2xl bg-ink px-6 py-7 shadow-lg">
+            <div className="flex flex-col justify-between h-full rounded-2xl bg-ink p-8 shadow-lg">
               <div>
                 <p className="font-mono text-xs uppercase tracking-wider text-paper/45 font-semibold">
                   {t.about.q4}

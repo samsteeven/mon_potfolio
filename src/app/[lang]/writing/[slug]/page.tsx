@@ -5,7 +5,7 @@ import Image from "next/image";
 import { ArrowLeft } from "lucide-react";
 import { writingSource, getWritingPageContent } from "@/lib/source";
 import { leafSlug } from "@/lib/slug";
-import { getMDXComponents } from "@/components/mdx/mdx-components";
+import { getMDXComponents, ZoomableImage } from "@/components/mdx/mdx-components";
 import { getT, type Language } from "@/lib/translations";
 import { createPageMetadata } from "@/lib/metadata";
 import { BLUR_DATA_URL } from "@/lib/blur";
@@ -105,18 +105,12 @@ export default async function WritingPage({ params }: PageProps) {
       </Link>
 
       {content.cover && (
-        <div className="relative mt-8 h-64 w-full overflow-hidden rounded-2xl sm:h-80">
-          <Image
+        <div className="mt-8 overflow-hidden rounded-2xl border border-line">
+          <ZoomableImage
             src={content.cover}
             alt={content.title}
-            fill
-            sizes="(max-width: 768px) 100vw, 672px"
-            className="object-cover"
             priority
-            placeholder="blur"
-            blurDataURL={BLUR_DATA_URL}
           />
-          <div className="absolute inset-0 rounded-2xl ring-1 ring-inset ring-line/20" />
         </div>
       )}
 

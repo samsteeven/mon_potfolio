@@ -27,7 +27,7 @@ export const fr = {
     ctaButton: "Réserver un appel de 30 min",
     services: [
       "Génie logiciel & applications web — React · Angular · Laravel · Inertia.js",
-      "Architecture & systèmes backend — APIs, moteurs temps réel, files de messages et intégrité de base de données",
+      "Performance, scalabilité & fiabilité — des applications conçues pour monter en charge et tenir dans le temps",
       "Automatisation IA & Sécurité — intégration d'agents IA dans vos processus et développement orienté sécurité",
     ],
   },

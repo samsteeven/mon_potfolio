@@ -11,56 +11,65 @@ Most developers think of security as a stage — an audit to be done after a fea
 
 ## The shift in perspective
 
-When you develop, you think about what the code *should* do. When you look for vulnerabilities, you think about what the code *could* do if someone uses it differently from what you planned.
+When you develop, you think about what the code *should* do. When you look for vulnerabilities, you think about what the code *could* do if someone uses it differently than you intended.
 
-These two postures radically change how you model problems.
+These two perspectives radically change the way you model problems.
 
-## The most common mistakes I see
+---
 
-### Trusting user input too early
+## The most common errors I observe
 
+### 1. Trusting user input too early (IDOR)
+
+An IDOR (Insecure Direct Object Reference) occurs when an application exposes a direct reference to an internal database object (like an ID) and trusts user input to access or modify it.
+
+<CodeWindow filename="DocumentController.php">
 ```php
-// Dangerous — the ID comes from the request without verification of ownership
+// ❌ DANGEROUS — the ID comes directly from the request without owner validation
 public function destroy(Request $request): RedirectResponse
 {
     Document::findOrFail($request->id)->delete();
     return back();
 }
-```
 
-```php
-// Secure — verifying that the user owns the resource
+//  SECURE — Laravel Policy validates ownership
 public function destroy(Document $document): RedirectResponse
 {
-    $this->authorize('delete', $document); // Laravel Policy
+    $this->authorize('delete', $document); 
     $document->delete();
     return back();
 }
 ```
+</CodeWindow>
 
-The first version works perfectly in development. In production, any authenticated user can delete another's document by manipulating the ID in the request — this is an IDOR (Insecure Direct Object Reference).
+The first version works perfectly in development. In production, any authenticated user can delete another user's document by simply manipulating the ID in the request parameters.
 
-### Forgotten mass assignments
+### 2. Mass Assignment vulnerabilities
 
+Mass Assignment occurs when an application saves user input parameters (e.g. `is_admin = true`) directly to the database without checking which fields are allowed to be modified.
+
+<CodeWindow filename="UserController.php">
 ```php
-// Risky if the model doesn't have a properly defined $fillable array
+// ❌ RISKY — unless the model has a very restrictive $fillable array
 User::create($request->all());
 
-// Secure — explicitly defining what we accept
+//  SECURE — explicitly defining only allowed input fields
 User::create($request->only(['name', 'email', 'password']));
 ```
+</CodeWindow>
 
-If someone adds `is_admin=1` to the request and you use `$request->all()`, the result is predictable.
+### 3. Race Conditions on critical resources
 
-### Race conditions on critical resources
+This type of bug occurs when two concurrent requests execute at the exact same millisecond to manipulate a resource (like a wallet balance or product stock), bypassing state checks.
 
+<CodeWindow filename="WalletService.php">
 ```php
-// Race condition possible — two simultaneous requests can pass the check
+// ❌ DANGEROUS — both concurrent requests might pass the check before decrementing
 if ($wallet->balance >= $amount) {
     $wallet->decrement('balance', $amount);
 }
 
-// Secure — pessimistic locking within a transaction
+//  SECURE — pessimistic locking lockForUpdate within a SQL transaction
 DB::transaction(function () use ($wallet, $amount) {
     $wallet->lockForUpdate()->find($wallet->id);
 
@@ -71,21 +80,37 @@ DB::transaction(function () use ($wallet, $amount) {
     $wallet->decrement('balance', $amount);
 });
 ```
+</CodeWindow>
 
-This type of bug is invisible in unit tests and difficult to reproduce manually. It is exactly the kind of vulnerability you discover when actively looking for it.
+<Callout type="warning">
+  **Warning:** This type of bug is invisible in standard unit tests and extremely hard to reproduce manually. It requires robust SQL transactions and pessimistic locking (`lockForUpdate()`).
+</Callout>
 
-## How this changes my daily approach
+---
 
-**I model threats before coding.** For each feature, I ask myself: who can call this endpoint? What happens if two users perform the same action at the exact same time? What could a malicious user send?
+## What it changes in my daily work
 
-**I treat permissions as invariants, not selective checks.** Instead of sprinkling `if ($user->isAdmin())` everywhere, I use Laravel Policies that centralize authorization logic.
+<CardGrid>
+  <Card title="Threat Modeling first">
+    For every feature I build, I ask three questions: Who can call this endpoint? What happens if two actions occur concurrently? What can a malicious user send?
+  </Card>
+  <Card title="Centralized Policies">
+    Instead of scattering `if ($user->isAdmin())` statements throughout controllers, I centralize authorization rules in dedicated Laravel Policy classes.
+  </Card>
+  <Card title="State Transition Validation">
+    Objects shouldn't jump between states arbitrarily (e.g. `draft` directly to `published`). State transitions should be controlled by a State Pattern or dedicated transitions.
+  </Card>
+  <Card title="Zero-Trust internals">
+    I do not blindly trust data retrieved from the database either if it controls critical logic, such as user roles, account balances, or operational status.
+  </Card>
+</CardGrid>
 
-**I validate state transitions.** A document doesn't go from `draft` to `published` without passing through `review`. These rules live in dedicated classes, not in controllers.
+---
 
-**I don't trust data that comes from the database either.** If a value influences a critical decision — a role, a status, a balance — it is re-validated before being used.
+## Security as a design constraint, not a layer
 
-## Security as a design pattern, not a layer
+The main takeaway from my experience: security is not something you add at the end. It must be built into the architectural decisions from day one.
 
-The conclusion I've drawn from these experiences: security isn't added after the fact. It is integrated into architectural decisions from the very beginning.
-
-A well-structured codebase, with clear layers of responsibility and centralized authorization policies, is naturally harder to compromise. Security and code quality are not two distinct goals — they converge in the same place.
+<Callout type="tip">
+  A well-structured codebase, with clear separation of concerns (Services, Policies, Transactions) and centralized authorization policies, is naturally much harder to compromise.
+</Callout>

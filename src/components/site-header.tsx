@@ -82,6 +82,7 @@ export function SiteHeader({ lang }: { lang: Language }) {
           <span className="h-3 w-px bg-line/60" />
           <Link
             href={getOppositeUrl(pathname, lang, hash)}
+            scroll={false}
             className="font-semibold text-ink-soft hover:text-accent transition duration-200"
           >
             {oppositeLang}

@@ -15,52 +15,61 @@ Quand tu développes, tu penses à ce que le code *devrait* faire. Quand tu cher
 
 Ces deux postures changent radicalement la façon dont tu modélises les problèmes.
 
+---
+
 ## Les erreurs les plus fréquentes que j'observe
 
-### Faire confiance à l'entrée utilisateur trop tôt
+### 1. Faire confiance à l'entrée utilisateur trop tôt (IDOR)
 
+La faille IDOR (Insecure Direct Object Reference) consiste à manipuler un identifiant de ressource dans la requête pour accéder ou modifier les données d'un autre utilisateur.
+
+<CodeWindow filename="DocumentController.php">
 ```php
-// Dangereux — l'ID vient de la requête sans vérification de propriété
+// ❌ DANGEREUX — l'ID vient de la requête sans vérification de propriété
 public function destroy(Request $request): RedirectResponse
 {
     Document::findOrFail($request->id)->delete();
     return back();
 }
-```
 
-```php
-// Sécurisé — on vérifie que l'utilisateur est propriétaire de la ressource
+//  SÉCURISÉ — Laravel Policy valide l'ownership
 public function destroy(Document $document): RedirectResponse
 {
-    $this->authorize('delete', $document); // Laravel Policy
+    $this->authorize('delete', $document); 
     $document->delete();
     return back();
 }
 ```
+</CodeWindow>
 
-La première version fonctionne parfaitement en dev. En production, n'importe quel utilisateur authentifié peut supprimer le document d'un autre en manipulant l'ID dans la requête — c'est une IDOR (Insecure Direct Object Reference).
+La première version fonctionne parfaitement en développement. En production, n'importe quel utilisateur authentifié peut supprimer le document d'un autre en changeant simplement la valeur de l'identifiant.
 
-### Les mass assignment oubliés
+### 2. Les mass assignment (affectation de masse)
 
+Le mass assignment survient quand un utilisateur soumet des paramètres inattendus (ex: `is_admin = true`) et que l'application les persiste aveuglément en base de données.
+
+<CodeWindow filename="UserController.php">
 ```php
-// Risqué si le modèle n'a pas de $fillable défini correctement
+// ❌ RISQUÉ — si le modèle n'a pas de $fillable ou $guarded restrictif
 User::create($request->all());
 
-// Sécurisé — on définit explicitement ce qu'on accepte
+//  SÉCURISÉ — définition explicite des champs autorisés
 User::create($request->only(['name', 'email', 'password']));
 ```
+</CodeWindow>
 
-Si quelqu'un ajoute `is_admin=1` dans la requête et que tu utilises `$request->all()`, le résultat est prévisible.
+### 3. Les conditions de concurrence (Race Conditions)
 
-### Les conditions de concurrence sur les ressources critiques
+Ce type de bug survient lorsque deux requêtes concurrentes s'exécutent simultanément pour manipuler une ressource critique (ex: un solde de compte ou un stock), contournant les vérifications d'état.
 
+<CodeWindow filename="WalletService.php">
 ```php
-// Race condition possible — deux requêtes simultanées peuvent passer le check
+// ❌ DANGEREUX — les deux requêtes simultanées peuvent passer le check avant le décrément
 if ($wallet->balance >= $amount) {
     $wallet->decrement('balance', $amount);
 }
 
-// Sécurisé — verrouillage pessimiste pendant la transaction
+//  SÉCURISÉ — verrouillage pessimiste lockForUpdate dans une transaction SQL
 DB::transaction(function () use ($wallet, $amount) {
     $wallet->lockForUpdate()->find($wallet->id);
 
@@ -71,21 +80,37 @@ DB::transaction(function () use ($wallet, $amount) {
     $wallet->decrement('balance', $amount);
 });
 ```
+</CodeWindow>
 
-Ce type de bug est invisible en tests unitaires et difficile à reproduire manuellement. C'est exactement le genre de faille qu'on découvre en cherchant activement.
+<Callout type="warning">
+  **Attention :** Ce type de bug est invisible dans tes tests unitaires standards et difficile à reproduire manuellement. Il nécessite des transactions SQL rigoureuses et du verrouillage pessimiste (`lockForUpdate()`).
+</Callout>
+
+---
 
 ## Ce que ça change dans mon approche quotidienne
 
-**Je modélise les menaces avant de coder.** Pour chaque fonctionnalité, je me pose la question : qui peut appeler cet endpoint ? Qu'est-ce qui se passe si deux utilisateurs font la même action au même moment ? Qu'est-ce qu'un utilisateur malveillant pourrait envoyer ?
+<CardGrid>
+  <Card title="Modélisation des menaces">
+    Pour chaque endpoint créé, je me pose trois questions : Qui peut l'appeler ? Que se passe-t-il si deux actions surviennent en parallèle ? Que peut envoyer un attaquant ?
+  </Card>
+  <Card title="Autorisations centralisées (Policies)">
+    Plutôt que d'éparpiller des vérifications `if ($user->isAdmin())` dans les contrôleurs, je centralise l'autorisation dans des classes de Policies Laravel dédiées.
+  </Card>
+  <Card title="Validation des transitions d'état">
+    Un objet ne change pas d'état (ex: de `draft` à `published`) de manière arbitraire. Les transitions d'état sont contrôlées par un automate ou un pattern State.
+  </Card>
+  <Card title="Zero-Trust interne">
+    Je ne fais pas confiance absolue aux données qui viennent de la base de données sans validation préalable si elles influencent une décision critique (rôles, soldes).
+  </Card>
+</CardGrid>
 
-**Je traite les permissions comme des invariants, pas des vérifications ponctuelles.** Plutôt que d'ajouter des `if ($user->isAdmin())` partout, j'utilise des Policies Laravel qui centralisent la logique d'autorisation.
-
-**Je valide les transitions d'état.** Un document ne passe pas de `draft` à `published` sans passer par `review`. Ces règles vivent dans des classes dédiées, pas dans des contrôleurs.
-
-**Je ne fais pas confiance aux données qui viennent de la base de données non plus.** Si une valeur influence une décision critique — un rôle, un statut, un solde — elle est re-validée avant d'être utilisée.
+---
 
 ## La sécurité comme design, pas comme couche
 
 La conclusion que j'ai tirée de ces expériences : la sécurité ne s'ajoute pas après. Elle s'intègre dans les décisions d'architecture dès le départ.
 
-Un code bien structuré, avec des couches de responsabilités claires et des politiques d'autorisation centralisées, est naturellement plus difficile à compromettre. La sécurité et la qualité du code ne sont pas deux objectifs distincts — ils convergent vers le même endroit.
+<Callout type="tip">
+  Un code bien structuré, avec des couches de responsabilités claires (Services, Policies, Transactions) et des politiques d'autorisation centralisées, est naturellement beaucoup plus difficile à compromettre.
+</Callout>

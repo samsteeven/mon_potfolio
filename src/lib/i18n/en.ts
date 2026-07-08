@@ -32,7 +32,7 @@ export const en = {
     ctaButton: "Book a 30-min call",
     services: [
       "Software engineering & web applications — React · Angular · Laravel · Inertia.js",
-      "Architecture & systems backend — APIs, real-time engines, queues, and database integrity",
+      "Performance, scalability & reliability — applications built to scale and last",
       "AI automation & Security — tailored agent workflows for business processes and security-aware dev",
     ],
   },

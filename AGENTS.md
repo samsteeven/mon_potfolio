@@ -14,6 +14,7 @@ intervention (voir "Definition of done" en bas).
 - lucide-react — icônes
 - TypeScript strict
 - postcss-preset-env — compatibilité CSS pour navigateurs anciens (iOS Safari ≥ 9)
+- @fontsource/* — polices auto-hébergées pour l'offline-first et les performances PageSpeed
 
 ## Commandes
 
@@ -32,11 +33,10 @@ polices). Ils sont exposés comme utilitaires Tailwind via `@theme inline` :
   `text-accent` / `bg-accent`. **Ne jamais** utiliser une couleur Tailwind par défaut
   (`bg-neutral-100`, `text-gray-500`...) ni une couleur hexadécimale en dur — ça casse
   le mode sombre. Toujours passer par ces tokens.
-- Polices : `font-display` (Outfit — titres uniquement), `font-sans` (Inter —
-  texte par défaut, pas besoin de la préciser), `font-mono` (JetBrains Mono — labels,
-  dates, tags, statuts, code).
-  **Ne jamais** utiliser `style={{ fontFamily: "..." }}` en dur — toujours passer
-  par les classes Tailwind `font-display`, `font-sans`, `font-mono`.
+- Polices : `font-display` (Outfit / Instrument Sans), `font-sans` (Inter),
+  `font-mono` (JetBrains Mono).
+  **Ne jamais** charger de polices réseau à l'aide de balises `<link>` Google Fonts dans le layout.
+  Toutes les polices doivent être importées via les dépendances npm `@fontsource/*` dans le layout principal `src/app/layout.tsx`.
 - Mode sombre : géré par l'attribut `data-theme="dark"` sur `<html>`, basculé par
   `src/components/theme-toggle.tsx` et persisté dans `localStorage` (clé `theme`).
   Le script anti-flash dans `src/app/layout.tsx` (`<head>`) applique l'attribut avant le
@@ -45,7 +45,7 @@ polices). Ils sont exposés comme utilitaires Tailwind via `@theme inline` :
 ## Architecture du thème (important)
 
 - `src/app/layout.tsx` — Root layout **persistant** : contient `<html>`, `<head>`, `<body>`,
-  le script anti-flash et le JSON-LD Schema.org. Ce composant n'est **jamais** démonté
+  le script anti-flash, les imports de polices Fontsource et le JSON-LD Schema.org. Ce composant n'est **jamais** démonté
   lors des changements de route ou de langue. Ne pas y déplacer de logique de page.
 - `src/app/[lang]/layout.tsx` — Sub-layout bilingue : contient uniquement `SiteHeader`,
   `SiteFooter` et `{children}`. Pas de `<html>/<body>` ici.
@@ -60,6 +60,7 @@ polices). Ils sont exposés comme utilitaires Tailwind via `@theme inline` :
   s'appelle `proxy.ts` et l'export s'appelle `export function proxy(...)`.
   Ne pas le renommer en `middleware.ts`, ça déprécierait la convention.
 - La redirection `/` → `/en` est gérée par ce proxy.
+- **Changement de langue sans scroll** : Pour éviter que la page ne remonte automatiquement en haut lors du changement de langue, le composant `<Link>` de langue dans `site-header.tsx` utilise la propriété `scroll={false}` de Next.js.
 
 ## Utilitaires partagés
 
@@ -83,13 +84,33 @@ fonctionnel) plutôt que d'ajouter une librairie d'animation.
 Le mode "réduction des animations" du système (`prefers-reduced-motion`) est neutralisé
 globalement dans `globals.css`. Ne pas contourner ce comportement.
 
+## Composants MDX, Zoom d'images et Hydratation (⚠️ Très Important)
+
+Le rendu MDX est configuré de façon personnalisée dans `src/components/mdx/mdx-components.tsx` et `mdx-client.tsx` :
+
+### 1. Zoom d'image / Lightbox
+- Toutes les balises `<img>` du MDX et les images de couverture (`cover`) des projets et articles utilisent le composant client `ZoomableImage`.
+- Au clic, l'image s'ouvre dans un modal fluide plein écran.
+
+### 2. Hydratation HTML valide (Div vs Paragraph)
+- Le compilateur MDX enveloppe automatiquement le texte et les images isolées dans des balises `<p>`. 
+- **Règle absolue** : Les composants MDX ne doivent jamais générer de balise `<div>` ou de balise `<p>` imbriquée à l'intérieur d'un `<p>`.
+- Dans `ZoomableImage`, le conteneur externe est un `<span>` configuré en `block` pour éviter l'imbrication `<p><div>` interdite en HTML.
+- Les cartes `<Card>` utilisent quant à elles un conteneur `<div>` externe pour permettre l'inclusion libre de multiples paragraphes, gras, italique et liens sans conflits d'hydratation React.
+
+### 3. Composants riches disponibles dans le MDX
+Les rédacteurs d'articles et cas d'études peuvent enrichir la lecture avec les composants exportés :
+- `<Callout type="info | tip | warning | danger">` : Pour les encadrés d'alertes avec icônes.
+- `<CodeWindow filename="...">` : Pour simuler une fenêtre de code style macOS avec titre.
+- `<CardGrid>` et `<Card title="...">` : Pour créer des grilles d'information et présenter des points de manière aérée.
+
 ## Contenu — pas de base de données
 
 Le contenu vit dans `src/content/` en fichiers `.mdx`, versionnés avec Git. Le schéma
 de frontmatter est défini et validé (Zod) dans `source.config.ts`.
 
 - `src/content/work/{en,fr}/*.mdx` — études de cas projets (sous-dossiers par langue)
-  (`title`, `description`, `date`, `role`, `stack[]`, `status: "shipped" | "in-progress"`, `featured`)
+  (`title`, `description`, `date`, `role`, `stack[]`, `status: "shipped" | "in-progress"`, `featured`, `cover?`)
 - `src/content/writing/{en,fr}/*.mdx` — articles (sous-dossiers par langue)
   (`title`, `description`, `date`, `tags[]`, `published`, `lang`, `cover?`)
 
@@ -99,7 +120,7 @@ respecter le schéma existant, c'est tout — aucune migration, aucune interface
 Le composant `StatusDot` (`src/components/status-dot.tsx`) reflète le champ `status`
 des projets : ne pas le détourner pour autre chose, son rôle est précis (livré / en cours).
 
-## Synchronisation du contenu — ⚠️ à lire avant toute modification
+## Synchronisation du contenu
 
 Quand tu ajoutes, modifies ou supprimes du contenu (projet, article, compétence),
 plusieurs fichiers doivent être mis à jour manuellement. Les pages et API routes
@@ -167,8 +188,8 @@ des listes en dur (manuel uniquement).
 - Ne pas réintroduire `fumadocs-ui` — le rendu MDX est volontairement custom
   (`src/components/mdx/mdx-components.tsx`) pour garder un contrôle total du design.
 - Ne pas casser le mode sombre en ajoutant des couleurs hors tokens.
-- Ne pas remplacer le système de thème actuel (`data-theme` + localStorage) par une
-  librairie (`next-themes`, etc.) sans raison concrète — ça fonctionne déjà.
+- Ne pas remplacer le système de thème actuel (`data-theme` + localStorage) by a
+  library (`next-themes`, etc.) sans raison concrète — ça fonctionne déjà.
 - Ne pas mettre `<html>/<body>` dans `src/app/[lang]/layout.tsx` — ils appartiennent
   au root layout `src/app/layout.tsx`.
 - Ne pas renommer `src/proxy.ts` en `middleware.ts` — convention Next.js 16+.
