@@ -1,0 +1,57 @@
+---
+title: "Tribunejustice"
+description: "Complete legaltech platform: client-lawyer matching, secure payments, real-time communication, and AI automation."
+date: "2026-01-15"
+role: "Tech Lead & Project Manager"
+stack: ["Laravel", "Angular", "Next.js", "Redis", "Docker", "Laravel Reverb"]
+status: "in-progress"
+featured: true
+url: "https://tribunejustice.com"
+cover: "/projects/logoTBJ.png"
+lang: "en"
+---
+
+## Context
+
+Tribunejustice connects clients with lawyers and legal experts. The platform handles sensitive data, escrow payments, real-time communication, and orchestrates a complete case lifecycle — all under stringent security constraints.
+
+## Architecture & Technical Decisions
+
+**Modular backend (Laravel)**: The system is organized around the *Service Request* concept — the central entity carrying the full lifecycle: creation, expert assignment, tracking, payment, resolution. A `ServiceRequestStatusMachine` state machine guarantees transition integrity.
+
+**Security — defense-in-depth approach**: The platform processes sensitive legal data. Multiple protection layers are in place:
+- Granular RBAC with strict Admin / Super Admin separation for critical operations (role management, permissions, settings)
+- Sudo mode (password confirmation) required for sensitive actions: enabling 2FA, password changes, data exports, heavy admin operations
+- SSRF protection on the blog image proxy via a strict allowlist
+- Hardened CRM observers to prevent data leaks between modules
+- Inline `current_password` validation on critical endpoints (email, 2FA)
+- Redis cache driver with TTL for sudo sessions (10 minutes)
+
+**Evolving frontend (Angular)**: The frontend underwent a major architectural migration — the monolithic `AuthService` (594 lines, 87 consumers) was split into four specialized services (`AuthStateService`, `AuthApiService`, `TokenService`, `PermissionService`), all built on Angular signals for predictable reactive state. The `ApiClient` centralizes URL resolution, Laravel response normalization, exponential backoff retry, idempotency, and typed error handling (7 `ApiError` subclasses).
+
+**Real-time (Laravel Reverb)**: Client-expert messaging uses WebSocket via Reverb, with Horizon queue workers for async notification processing and email dispatch.
+
+**Search & discovery**: Expert profile indexing goes through Typesense, with real-time combined facets and filters.
+
+**Multi-format blog**: The blog (Next.js) handles two article types — editorial and sponsored — with custom mixing (1 sponsored every 4 articles) and manual Laravel paginator reconstruction. Authors are loaded from a cross-DB query (blog → main). A 5-minute Redis cache per parameter combination avoids full recomputation on every visit.
+
+**CRM integration**: A full CRM module tracks contacts, lifecycle stages, lead scoring, and campaign automation — all connected to the main domain via observers and events.
+
+**Performance**: Redis caching on ~10 endpoints, 4 composite indexes added, N+1 query elimination, blog listing and expert search caching (5 min / 2 min).
+
+## Security Audits
+
+- **17 blog vulnerabilities fixed**: SSRF proxy, GET→POST logout, missing auth middleware, open redirect
+- **14 RBAC flaws**: Admin/Super Admin separation, critical permission protection (roles, permissions, settings)
+- **10 frontend fixes**: XSS via isomorphic-dompurify, open redirect via `isSafeRedirectUrl()`, fail-closed guards
+- **Sudo mode audit**: 2FA enable/confirm routes without protection, change-password without sudo, broken admin verify-email route
+
+## What This Experience Taught Me
+
+Architecting a legaltech platform forced me to think about security from day one — not as an afterthought. Every feature had to answer: *"can this data leak?"* and *"can this workflow be subverted?"*
+
+I also learned to balance quality against speed: shipping security fixes without breaking user experience, migrating an Angular codebase without halting production, and — most importantly — documenting architectural decisions so the team could move forward without me on every detail.
+
+## Next Steps
+
+The project is currently serving as a testing ground for AI agent integration directly into the production stack — automated responses, legal document analysis, and complex workflow orchestration.

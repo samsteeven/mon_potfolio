@@ -76,7 +76,10 @@ export async function GET(
   // /en/work or /fr/work
   if (contentType === "work") {
     if (rest.length === 1) {
-      const workDir = join(CONTENT_DIR, "work");
+      const workDir = join(CONTENT_DIR, "work", lang);
+      if (!existsSync(workDir)) {
+        return NextResponse.json({ error: "Not found" }, { status: 404 });
+      }
       const files = readFileSync(workDir, "utf-8")
         .split("\n")
         .filter(Boolean)
@@ -95,7 +98,7 @@ export async function GET(
       const lines = [
         `# Work — Samen Steeve`,
         "",
-        items.map(i => `- [${i!.title}](/en/work/${i!.slug})${i!.desc ? ` — ${i!.desc}` : ""}${i!.status ? ` (${i!.status})` : ""}`).join("\n"),
+        items.map(i => `- [${i!.title}](/${lang}/work/${i!.slug})${i!.desc ? ` — ${i!.desc}` : ""}${i!.status ? ` (${i!.status})` : ""}`).join("\n"),
         "",
         `_${items.length} project${items.length > 1 ? "s" : ""}_`,
       ];
@@ -106,7 +109,7 @@ export async function GET(
 
     // /en/work/[slug] — single work page
     const workSlug = rest[1];
-    const workFile = join(CONTENT_DIR, "work", `${workSlug}.mdx`);
+    const workFile = join(CONTENT_DIR, "work", lang, `${workSlug}.mdx`);
     const mdx = readMdxFile(workFile);
     if (!mdx) {
       return NextResponse.json({ error: "Not found" }, { status: 404 });

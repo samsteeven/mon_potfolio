@@ -34,10 +34,12 @@ Mode clair/sombre géré par l'attribut `data-theme` sur `<html>`, persisté dan
 
 ```
 src/content/
-├── work/          → études de cas projets
-│   ├── tribunejustice.mdx
-│   └── digitram.mdx
-└── writing/       → articles de blog
+├── work/          → études de cas projets (sous-dossiers par langue)
+│   ├── en/
+│   │   └── *.mdx
+│   └── fr/
+│       └── *.mdx
+└── writing/       → articles de blog (sous-dossiers par langue)
     ├── en/
     │   └── *.mdx
     └── fr/
@@ -83,16 +85,22 @@ src/app/
 │       ├── articles/route.ts
 │       └── skills/route.ts # Données structurées pour WebMCP
 └── [lang]/
-    ├── layout.tsx          # SiteHeader + SiteFooter
+    ├── layout.tsx          # SiteHeader + SiteFooter + skip-to-content
+    ├── loading.tsx         # Squelette de chargement (toutes les pages)
+    ├── error.tsx           # Page d'erreur générique
     ├── page.tsx            # Accueil (Hero, À propos, Travail, Écrits)
     ├── not-found.tsx       # 404
     ├── [...catchAll]/
     │   └── page.tsx
     ├── work/
+    │   ├── loading.tsx     # Squelette de chargement projets
+    │   ├── error.tsx       # Erreur projets
     │   ├── page.tsx        # Liste des projets
     │   └── [slug]/
     │       └── page.tsx    # Détail d'un projet (MDX + TOC + JSON-LD)
     └── writing/
+        ├── loading.tsx     # Squelette de chargement articles
+        ├── error.tsx       # Erreur articles
         ├── page.tsx        # Liste des articles (filtre par tag)
         └── [slug]/
             └── page.tsx    # Détail d'un article (MDX + TOC + CopyButtons)
@@ -115,6 +123,7 @@ src/app/
 - `scroll-reveal.tsx` — Animation d'entrée au scroll
 - `copy-buttons.tsx` — Partage d'article
 - `table-of-contents.tsx` — Table des matières latérale
+- `skeleton-card.tsx` — Squelette de chargement pour les listes
 - `mdx/mdx-components.tsx` — Rendu MDX custom
 
 ## SEO
@@ -163,7 +172,7 @@ _a2a._agents.samensteeve.com.  IN  SVCB 1 https://samensteeve.com alpn="https" e
 _index._agents.samensteeve.com.  IN  SVCB 1 https://samensteeve.com alpn="https" endpoint=":443"
 ```
 
-Ces enregistrements `SVCB/HTTPS` (RFC 9460) signalent aux résolveurs DNS-AID les points d'entrée disponibles.
+Ces enregistrements `SVCB/HTTPS` (RFC 9460) signalent aux résolveurs DNS-AID les points d'entrée disponibles. **Configuration manuelle requise** (Cloudflare + DNSSEC).
 
 ## Déploiement
 

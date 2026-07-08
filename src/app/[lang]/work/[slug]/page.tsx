@@ -4,10 +4,12 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import { ArrowLeft, ArrowUpRight } from "lucide-react";
 import { workSource } from "@/lib/source";
+import { leafSlug } from "@/lib/slug";
 import { getMDXComponents } from "@/components/mdx/mdx-components";
 import { StatusDot } from "@/components/status-dot";
 import { getT, type Language } from "@/lib/translations";
 import { createPageMetadata } from "@/lib/metadata";
+import { BLUR_DATA_URL } from "@/lib/blur";
 import { TableOfContents, type TocItem } from "@/components/table-of-contents";
 import { LanguageFlag } from "@/components/language-flag";
 
@@ -17,26 +19,24 @@ interface PageProps {
 
 export function generateStaticParams() {
   const pages = workSource.getPages();
-  const params: { lang: string; slug: string }[] = [];
-  for (const page of pages) {
-    params.push({ lang: "en", slug: page.slugs[0] });
-    params.push({ lang: "fr", slug: page.slugs[0] });
-  }
-  return params;
+  return pages.map((page) => ({
+    lang: page.data.lang || "fr",
+    slug: leafSlug(page.slugs),
+  }));
 }
 
 const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://samensteeve.com";
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { lang, slug } = await params;
-  const page = workSource.getPage([slug]);
+  const page = workSource.getPage([lang, slug]);
   if (!page) return {};
   return createPageMetadata({
     lang,
     title: page.data.title,
     description: page.data.description,
     path: `/work/${slug}`,
-    image: page.data.cover || "/profil.png",
+    image: page.data.cover || "/profile/profil.png",
     type: "article",
   });
 }
@@ -44,20 +44,13 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 
 export default async function WorkPage({ params }: PageProps) {
   const { lang, slug } = await params;
-  const page = workSource.getPage([slug]);
-  if (!page) notFound();
+  const page = workSource.getPage([lang, slug]);
+  if (!page || (page.data.lang || "fr") !== lang) notFound();
 
   const t = getT(lang);
   const MDX = page.data.body;
 
-  const postLangLabel =
-    page.data.lang === "en"
-      ? lang === "en"
-        ? "English"
-        : "Anglais"
-      : lang === "en"
-        ? "French"
-        : "Français";
+  const postLabel = page.data.lang === "en" ? t.details.writtenInEn : t.details.writtenInFr;
 
   // Extraction des headings depuis le TOC généré par Fumadocs
   const tocItems: TocItem[] = (page.data.toc ?? [])
@@ -74,7 +67,7 @@ export default async function WorkPage({ params }: PageProps) {
     "@type": "CreativeWork",
     name: page.data.title,
     description: page.data.description,
-    image: page.data.cover ? `${BASE_URL}${page.data.cover}` : `${BASE_URL}/profil.png`,
+    image: page.data.cover ? `${BASE_URL}${page.data.cover}` : `${BASE_URL}/profile/profil.png`,
     author: {
       "@type": "Person",
       name: "Samen Steeve",
@@ -84,7 +77,7 @@ export default async function WorkPage({ params }: PageProps) {
   };
 
   return (
-    <main className="mx-auto max-w-2xl px-6 py-20">
+    <main id="main-content" className="mx-auto max-w-2xl px-6 py-20">
       {/* JSON-LD CreativeWork Schema pour Google Rich Snippets */}
       <script
         type="application/ld+json"
@@ -108,6 +101,8 @@ export default async function WorkPage({ params }: PageProps) {
             sizes="(max-width: 768px) 100vw, 672px"
             className="object-cover"
             priority
+            placeholder="blur"
+            blurDataURL={BLUR_DATA_URL}
           />
           <div className="absolute inset-0 rounded-2xl ring-1 ring-inset ring-line/20" />
         </div>
@@ -127,7 +122,7 @@ export default async function WorkPage({ params }: PageProps) {
           <StatusDot status={page.data.status} lang={lang} />
           <span className="inline-flex items-center gap-1.5 font-mono text-[10px] text-accent/80 border border-accent/20 bg-accent/5 rounded px-1.5 py-0.5">
             <span>
-              {lang === "en" ? `Post in ${postLangLabel}` : `Rédigé en ${postLangLabel}`}
+              {postLabel}
             </span>
             <LanguageFlag lang={page.data.lang || "fr"} />
           </span>
@@ -151,8 +146,8 @@ export default async function WorkPage({ params }: PageProps) {
             className="mt-6 inline-flex items-center gap-2 rounded-full border border-accent/30 bg-accent/5 px-5 py-2.5 font-mono text-xs uppercase tracking-wide text-accent transition-all duration-300 hover:scale-105 hover:bg-accent hover:text-white hover:shadow-lg hover:shadow-accent/15 active:scale-[0.96]"
           >
             {page.data.url.startsWith("https://github.com")
-              ? (lang === "en" ? "View repository" : "Voir le dépôt")
-              : (lang === "en" ? "Visit the site" : "Voir le site")}
+              ? t.details.viewRepository
+              : t.details.visitSite}
             <ArrowUpRight className="h-3.5 w-3.5" />
           </a>
         )}

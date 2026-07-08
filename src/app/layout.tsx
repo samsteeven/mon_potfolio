@@ -30,7 +30,7 @@ const personJsonLd = {
   name: "Samen Steeve",
   alternateName: "samsteeven",
   url: "https://samensteeve.com",
-  image: "https://samensteeve.com/profil.png",
+  image: "https://samensteeve.com/profile/profil.png",
   sameAs: [
     "https://github.com/samsteeven",
     "https://linkedin.com/in/samensteeve",

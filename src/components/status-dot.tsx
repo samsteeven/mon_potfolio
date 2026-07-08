@@ -11,9 +11,11 @@ export function StatusDot({
   status,
   lang,
 }: {
-  status: Status;
+  status?: Status;
   lang: Language;
 }) {
+  if (!status) return null;
+
   return (
     <span className="inline-flex items-center gap-2">
       <span

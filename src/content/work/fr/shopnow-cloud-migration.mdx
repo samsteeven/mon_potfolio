@@ -1,0 +1,48 @@
+---
+title: "ShopNow — Architecture Cloud Hybride & Infrastructure Multi-Sites"
+description: "Conception d'une infrastructure cloud hybride pour une entreprise e-commerce : 3 sites interconnectés, migration Microsoft 365, plan de reprise, et 56M FCFA de budget maîtrisé."
+date: "2026-04-01"
+role: "Architecte Cloud"
+stack: ["Azure", "Active Directory", "Microsoft 365", "Veeam", "FortiGate", "pfSense", "MPLS", "IPSec VPN", "Docker", "Kubernetes", "Terraform", "Zabbix", "Grafana"]
+cover: "/projects/archi_cloud.png"
+featured: false
+lang: "fr"
+---
+
+![Architecture on-premise existante](/projects/archi_onpromise.png)
+
+## Le problème
+
+ShopNow tourne sur un serveur monolithique dans un seul datacenter à Douala. Pas de redondance. Les pannes sont fréquentes, les pics de trafic mettent le site au sol, et la maintenance coûte une fortune. La direction veut moderniser — mais personne n'a envie de tout casser en migrant vers le cloud.
+
+Trois sites physiques à connecter : Douala (siège), Yaoundé (antenne), Bafoussam (agence). Chacun a ses contraintes réseau, électriques, et de compétences IT locales.
+
+## Ce que j'ai fait
+
+J'ai conçu une architecture hybride on-premise + Azure qui permet de migrer progressivement sans arrêter la production. Voici les décisions clés.
+
+**Réseau** : Chaque site est relié à Douala par MPLS (QoS garantie pour la VoIP) avec un tunnel IPSec de secours sur Internet. Le basculement est automatique. Sans ça, un appel téléphonique entre Douala et Bafoussam devient inaudible dès que le lien principal faiblit.
+
+**Identité** : Active Directory on-premise synchronisé avec Azure AD. Les utilisateurs gardent le même mot de passe partout. J'ai ajouté la MFA sur tous les accès distants — dans le contexte camerounais où les connexions se font souvent depuis des appareils personnels, c'est non-négociable.
+
+**Messagerie** : Grosse décision. Le serveur Exchange on-premise bouffe 30% du temps de l'équipe IT en maintenance. Je les ai poussés vers Microsoft 365. Ça a libéré du temps immédiatement et les utilisateurs ont vu la différence en 3 mois — Teams, SharePoint, calendrier partagé. Ce genre de victoire rapide donne du crédit pour le reste du projet.
+
+**Sauvegarde** : Veeam avec Cloud Tier vers Azure Blob. Les sauvegardes quotidiennes sont répliquées dans le cloud automatiquement. Si le datacenter de Douala brûle (littéralement — coupures électriques + incendies, ça arrive), on bascule sur Azure en moins de 4 heures.
+
+## Pourquoi Azure et pas AWS
+
+J'ai comparé les trois. Azure gagne sur un point précis : l'intégration Active Directory est native. Pas besoin de couche tierce pour faire fonctionner l'authentification entreprise. Et Microsoft 365, que l'équipe utilise déjà, s'intègre sans friction. La région Azure South Africa North offre une latence acceptable (~60ms depuis le Cameroun).
+
+AWS aurait marché, mais j'aurais dû bricoler une passerelle LDAP pour l'AD, et la migration M365 serait devenue un projet parallèle. Azure réduit la complexité globale.
+
+## Ce que ça a donné
+
+Le plan de migration en 6 phases s'étale sur 12 à 18 mois. Chaque phase est réversible. La première année coûte ~56M FCFA (86 000 €), puis ~27M FCFA par an en récurrent — bien moins que ce que coûtait la maintenance du système legacy.
+
+Mais le vrai résultat, c'est que l'équipe IT peut maintenant dormir la nuit. Plus d'appels urgents pour un serveur surchauffé, plus de restaurations manuelles après une coupure. Le cloud a absorbé la complexité qu'ils géraient avec du ruban adhésif.
+
+## Ce que j'ai appris
+
+Ce projet m'a confirmé une chose : dans un contexte africain, le cloud hybride n'est pas un luxe — c'est une nécessité. La connectivité Internet n'est pas assez fiable pour du 100% cloud, les data centers locaux ne répondent pas aux normes internationales, et la régulation impose de garder certaines données sur le territoire.
+
+J'ai aussi appris à vendre un projet cloud à une direction qui ne comprend pas la technique. Je ne leur ai pas parlé de VPC ou de Terraform. Je leur ai dit : "vous aurez 99,9% de disponibilité, vos équipes pourront travailler depuis n'importe où, et vous paierez moins cher qu'aujourd'hui." Le cloud, pour eux, c'est ça.

@@ -8,6 +8,7 @@ import { leafSlug } from "@/lib/slug";
 import { getMDXComponents } from "@/components/mdx/mdx-components";
 import { getT, type Language } from "@/lib/translations";
 import { createPageMetadata } from "@/lib/metadata";
+import { BLUR_DATA_URL } from "@/lib/blur";
 import { TableOfContents, type TocItem } from "@/components/table-of-contents";
 import { CopyButtons } from "@/components/copy-buttons";
 
@@ -35,7 +36,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     title: page.data.title,
     description: page.data.description,
     path: `/writing/${slug}`,
-    image: page.data.cover || "/profil.png",
+    image: page.data.cover || "/profile/profil.png",
     type: "article",
   });
 }
@@ -57,13 +58,13 @@ export default async function WritingPage({ params }: PageProps) {
     "",
     content.tags.map((t: string) => `#${t}`).join(" "),
     "",
-    lang === "en" ? `Read online:` : `Lire en ligne :`,
+    t.details.shareText,
     canonicalUrl,
   ]
     .join("\n")
     .trim();
 
-  const readLabel = lang === "en" ? `${content.readTime} min read` : `${content.readTime} min de lecture`;
+  const readLabel = `${content.readTime} ${t.writing.minRead}`;
 
   const tocItems: TocItem[] = (content.toc ?? [])
     .filter((item) => item.depth === 2 || item.depth === 3)
@@ -78,19 +79,19 @@ export default async function WritingPage({ params }: PageProps) {
     "@type": "BlogPosting",
     headline: content.title,
     description: content.description,
-    image: content.cover ? `${BASE_URL}${content.cover}` : `${BASE_URL}/profil.png`,
+    image: content.cover ? `${BASE_URL}${content.cover}` : `${BASE_URL}/profile/profil.png`,
     datePublished: content.date,
     author: { "@type": "Person", name: "Samen Steeve", url: BASE_URL },
     publisher: {
       "@type": "Organization",
       name: "Samen Steeve",
-      logo: { "@type": "ImageObject", url: `${BASE_URL}/profil.png` },
+      logo: { "@type": "ImageObject", url: `${BASE_URL}/profile/profil.png` },
     },
     mainEntityOfPage: { "@type": "WebPage", "@id": canonicalUrl },
   };
 
   return (
-    <main className="mx-auto max-w-2xl px-6 py-20">
+    <main id="main-content" className="mx-auto max-w-2xl px-6 py-20">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(articleJsonLd) }}
@@ -112,6 +113,8 @@ export default async function WritingPage({ params }: PageProps) {
             sizes="(max-width: 768px) 100vw, 672px"
             className="object-cover"
             priority
+            placeholder="blur"
+            blurDataURL={BLUR_DATA_URL}
           />
           <div className="absolute inset-0 rounded-2xl ring-1 ring-inset ring-line/20" />
         </div>

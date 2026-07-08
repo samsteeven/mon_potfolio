@@ -66,6 +66,9 @@ polices). Ils sont exposés comme utilitaires Tailwind via `@theme inline` :
 - `src/lib/reading-time.ts` — Fonctions `getReadingTime()` et `getMdxBody()` pour calculer
   le temps de lecture et extraire le corps d'un fichier MDX. **Source unique de vérité** —
   ne pas dupliquer cette logique dans les pages, toujours importer depuis ce module.
+- `src/lib/mdx.ts` — Fonction `parseFrontmatter()` partagée par les API routes
+  (`articles`, `projects`, `llms.txt`). **Source unique de vérité** — ne pas dupliquer.
+- `src/lib/blur.ts` — Constante `BLUR_DATA_URL` pour `placeholder="blur"` sur les images.
 - `src/lib/source.ts` — Connecte les collections de contenu aux routes (via
   `toFumadocsSource` + `loader` de `fumadocs-core/source`, pas `fumadocs-ui`).
 
@@ -85,9 +88,9 @@ globalement dans `globals.css`. Ne pas contourner ce comportement.
 Le contenu vit dans `src/content/` en fichiers `.mdx`, versionnés avec Git. Le schéma
 de frontmatter est défini et validé (Zod) dans `source.config.ts`.
 
-- `src/content/work/*.mdx` — études de cas projets
+- `src/content/work/{en,fr}/*.mdx` — études de cas projets (sous-dossiers par langue)
   (`title`, `description`, `date`, `role`, `stack[]`, `status: "shipped" | "in-progress"`, `featured`)
-- `src/content/writing/*.mdx` — articles
+- `src/content/writing/{en,fr}/*.mdx` — articles (sous-dossiers par langue)
   (`title`, `description`, `date`, `tags[]`, `published`, `lang`, `cover?`)
 
 Pour publier un nouveau projet ou article : créer le fichier `.mdx` correspondant,
@@ -103,7 +106,7 @@ plusieurs fichiers doivent être mis à jour manuellement. Les pages et API rout
 lisent soit depuis `src/content/` (dynamique → auto-sync au rebuild), soit depuis
 des listes en dur (manuel uniquement).
 
-### Projets — `src/content/work/*.mdx`
+### Projets — `src/content/work/{en,fr}/*.mdx` (sous-dossiers par langue)
 
 | Fichier | Source | Auto-sync ? |
 |---|---|---|
@@ -112,9 +115,9 @@ des listes en dur (manuel uniquement).
 | `src/app/[lang]/work/[slug]/page.tsx` | Fumadocs loader | ✅ auto |
 | `src/app/sitemap.ts` | `workSource.getPages()` | ✅ auto |
 | `src/app/api/data/projects/route.ts` | `readdirSync(src/content/work/)` | ✅ auto |
-| **`src/app/llms.txt/route.ts`** | `readdirSync(src/content/work/ + writing/)` | ✅ auto |
+| **`src/app/llms.txt/route.ts`** | `readdirSync(src/content/work/{en,fr}/ + writing/)` | ✅ auto |
 
-### Articles — `src/content/writing/*.mdx`
+### Articles — `src/content/writing/{en,fr}/*.mdx`
 
 | Fichier | Source | Auto-sync ? |
 |---|---|---|

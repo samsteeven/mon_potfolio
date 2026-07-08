@@ -31,13 +31,13 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       }))
   );
 
-  // Work pages — one URL per lang (only for the lang the content exists in)
+  // Work pages — one URL per lang
   const works = workSource.getPages();
   const workEntries = langs.flatMap((lang) =>
     works
       .filter((page) => (page.data.lang || "fr") === lang)
       .map((page) => ({
-        url: `${baseUrl}/${lang}${page.url}`,
+        url: `${baseUrl}/${lang}/work/${leafSlug(page.slugs)}`,
         lastModified: page.data.date ? new Date(page.data.date) : new Date(),
         changeFrequency: "monthly" as const,
         priority: page.data.featured ? 0.9 : 0.7,

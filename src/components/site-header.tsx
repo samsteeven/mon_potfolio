@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
@@ -11,6 +11,7 @@ import { getOppositeUrl } from "@/hooks/use-language-switch";
 
 export function SiteHeader({ lang }: { lang: Language }) {
   const pathname = usePathname();
+  const [hash, setHash] = useState("");
   const t = getT(lang);
   const isHome = pathname === "/" || pathname === `/${lang}`;
 
@@ -18,10 +19,17 @@ export function SiteHeader({ lang }: { lang: Language }) {
     document.documentElement.lang = lang;
   }, [lang]);
 
+  useEffect(() => {
+    const updateHash = () => setHash(window.location.hash);
+    updateHash();
+    window.addEventListener("hashchange", updateHash);
+    return () => window.removeEventListener("hashchange", updateHash);
+  }, []);
+
   const activeSection = useScrollSpy(["about", "work"], [isHome]);
   const section = isHome ? activeSection : null;
 
-  const oppositeLang = lang === "en" ? "FR" : "EN";
+  const oppositeLang = t.nav.opposite;
 
   const navLinks = [
     { href: `/${lang}/#about`, label: t.nav.about, key: "about" as const },
@@ -47,7 +55,7 @@ export function SiteHeader({ lang }: { lang: Language }) {
         >
           <div className="relative h-8 w-8 overflow-hidden rounded-full border border-line bg-paper-raised/80 shadow-sm transition-all duration-300 group-hover:border-accent/40 group-hover:scale-105">
             <Image
-              src="/profil.png"
+              src="/profile/profil.png"
               alt="Samen Steeve"
               width={32}
               height={32}
@@ -73,7 +81,7 @@ export function SiteHeader({ lang }: { lang: Language }) {
           ))}
           <span className="h-3 w-px bg-line/60" />
           <Link
-            href={getOppositeUrl(pathname, lang)}
+            href={getOppositeUrl(pathname, lang, hash)}
             className="font-semibold text-ink-soft hover:text-accent transition duration-200"
           >
             {oppositeLang}

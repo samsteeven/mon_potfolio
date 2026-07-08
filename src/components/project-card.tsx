@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { ArrowUpRight } from "lucide-react";
 import { StatusDot } from "@/components/status-dot";
-import type { Language } from "@/lib/translations";
+import { getT, type Language } from "@/lib/translations";
 
 interface ProjectCardData {
   title: string;
@@ -9,7 +9,7 @@ interface ProjectCardData {
   date: string;
   role: string;
   stack: string[];
-  status: "shipped" | "in-progress";
+  status?: "shipped" | "in-progress";
   url?: string;
   slug: string;
 }
@@ -21,6 +21,7 @@ export function ProjectCard({
   project: ProjectCardData;
   lang: Language;
 }) {
+  const t = getT(lang);
   return (
     <div className="flex flex-col gap-4 rounded-2xl border border-line bg-paper-raised/20 p-6 transition-all duration-300 ease-out hover:-translate-y-1.5 hover:border-accent/20 hover:bg-paper-raised hover:shadow-md hover:shadow-accent/[0.01]">
       <div className="flex flex-col gap-1.5 sm:flex-row sm:items-center sm:justify-between">
@@ -55,8 +56,8 @@ export function ProjectCard({
               className="inline-flex items-center gap-1.5 font-mono text-[11px] uppercase tracking-wide text-accent/80 hover:text-accent transition-all duration-200 hover:gap-2 shrink-0"
             >
               {project.url.startsWith("https://github.com")
-                ? (lang === "en" ? "View repository" : "Voir le dépôt")
-                : (lang === "en" ? "Visit site" : "Voir le site")}
+                ? t.details.viewRepository
+                : t.details.visitSiteShort}
               <ArrowUpRight className="h-3.5 w-3.5" />
             </a>
           )}
@@ -64,7 +65,7 @@ export function ProjectCard({
             href={`/${lang}/work/${project.slug}`}
             className="inline-flex items-center gap-1.5 font-mono text-[11px] uppercase tracking-wide text-accent/80 hover:text-accent transition-all duration-200 hover:gap-2 shrink-0"
           >
-            {lang === "en" ? "Read case study" : "Lire l'étude de cas"}
+            {t.details.readCaseStudy}
             <ArrowUpRight className="h-3.5 w-3.5" />
           </Link>
         </div>

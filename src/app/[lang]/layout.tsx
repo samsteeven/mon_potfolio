@@ -47,7 +47,7 @@ export async function generateMetadata({
       siteName: "Samen Steeve",
       images: [
         {
-          url: "/profil.png",
+          url: "/profile/profil.png",
           width: 800,
           height: 800,
           alt: title,
@@ -58,7 +58,7 @@ export async function generateMetadata({
       card: "summary",
       title,
       description,
-      images: ["/profil.png"],
+      images: ["/profile/profil.png"],
     },
   };
 }
@@ -80,9 +80,15 @@ export default async function RootLayout({ children, params }: LayoutProps) {
 
   return (
     <>
+      <a
+        href="#main-content"
+        className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-50 focus:rounded-lg focus:bg-accent focus:px-4 focus:py-2 focus:text-sm focus:font-medium focus:text-white focus:shadow-lg focus:outline-none"
+      >
+        Skip to content
+      </a>
       <WebMCPProvider />
       <SiteHeader lang={lang} />
-      <div className="flex-1">{children}</div>
+      <div id="main-content" tabIndex={-1} className="flex-1 outline-none">{children}</div>
       <SiteFooter lang={lang} />
     </>
   );

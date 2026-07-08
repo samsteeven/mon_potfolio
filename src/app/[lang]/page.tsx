@@ -3,11 +3,13 @@ import Link from "next/link";
 import Image from "next/image";
 import { ArrowUpRight, Mail, Code2, ShieldCheck, Bot, CalendarDays } from "lucide-react";
 import { workSource, getWritingPages } from "@/lib/source";
+import { leafSlug } from "@/lib/slug";
 import { ProjectCard, sortByFeaturedAndDate } from "@/components/project-card";
 import { getT, type Language } from "@/lib/translations";
 import { createPageMetadata } from "@/lib/metadata";
 import { ScrollReveal } from "@/components/scroll-reveal";
 import { LinkedinIcon, GithubIcon } from "@/components/icons";
+import { BLUR_DATA_URL } from "@/lib/blur";
 
 interface PageProps {
   params: Promise<{ lang: Language }>;
@@ -28,12 +30,26 @@ export default async function HomePage({ params }: PageProps) {
   const { lang } = await params;
   const t = getT(lang);
 
-  const work = workSource.getPages().sort(sortByFeaturedAndDate);
+  const work = workSource
+    .getPages()
+    .filter((p) => (p.data.lang || "fr") === lang)
+    .sort(sortByFeaturedAndDate)
+    .map((page) => ({
+      slug: leafSlug(page.slugs),
+      title: page.data.title,
+      description: page.data.description,
+      date: page.data.date,
+      role: page.data.role,
+      stack: page.data.stack,
+      status: page.data.status,
+      url: page.data.url,
+      cover: page.data.cover,
+    }));
 
   const writing = getWritingPages(lang).slice(0, 5);
 
   return (
-    <main className="mx-auto max-w-3xl px-6 pb-24">
+    <main id="main-content" className="mx-auto max-w-3xl px-6 pb-24">
       {/* ---------- HERO ---------- */}
       <section className="pt-10 pb-24 sm:pt-18 sm:pb-36">
         {/* Avatar */}
@@ -43,7 +59,7 @@ export default async function HomePage({ params }: PageProps) {
         {/*>*/}
         {/*  /!* eslint-disable-next-line @next/next/no-img-element *!/*/}
         {/*  <img*/}
-        {/*    src="/profil.png"*/}
+        {/*    src="/profile/profil.png"*/}
         {/*    alt="Samen Steeve"*/}
         {/*    className="h-20 w-20 sm:h-24 sm:w-24 rounded-full border-2 border-line object-cover object-[center_15%] shadow-md ring-4 ring-paper"*/}
         {/*  />*/}
@@ -163,30 +179,14 @@ export default async function HomePage({ params }: PageProps) {
                 {t.about.q3}
               </p>
               <ul className="mt-5 flex flex-col gap-4">
-                <li className="flex items-start gap-3">
-                  <Code2 className="mt-0.5 h-4 w-4 shrink-0 text-accent" />
-                  <span className="text-sm leading-relaxed text-ink-soft">
-                    {lang === "en"
-                      ? "Custom full-stack web applications (React · Laravel · Inertia.js)"
-                      : "Applications web full-stack sur mesure (React · Laravel · Inertia.js)"}
-                  </span>
+                {t.about.services.map((service, i) => (
+                <li key={i} className="flex items-start gap-3">
+                  {i === 0 && <Code2 className="mt-0.5 h-4 w-4 shrink-0 text-accent" />}
+                  {i === 1 && <ShieldCheck className="mt-0.5 h-4 w-4 shrink-0 text-accent" />}
+                  {i === 2 && <Bot className="mt-0.5 h-4 w-4 shrink-0 text-accent" />}
+                  <span className="text-sm leading-relaxed text-ink-soft">{service}</span>
                 </li>
-                <li className="flex items-start gap-3">
-                  <ShieldCheck className="mt-0.5 h-4 w-4 shrink-0 text-accent" />
-                  <span className="text-sm leading-relaxed text-ink-soft">
-                    {lang === "en"
-                      ? "Security research — vulnerability analysis, threat modeling & securing application logic"
-                      : "Recherche en sécurité — analyse de vulnérabilités, modélisation des menaces et sécurisation applicative"}
-                  </span>
-                </li>
-                <li className="flex items-start gap-3">
-                  <Bot className="mt-0.5 h-4 w-4 shrink-0 text-accent" />
-                  <span className="text-sm leading-relaxed text-ink-soft">
-                    {lang === "en"
-                      ? "AI automation — tailored agent workflows to help companies adopt AI in their business processes"
-                      : "Automatisation IA — workflows d'agents sur mesure pour aider les entreprises à adopter l'IA dans leurs processus métier"}
-                  </span>
-                </li>
+                ))}
               </ul>
             </div>
           </ScrollReveal>
@@ -199,14 +199,10 @@ export default async function HomePage({ params }: PageProps) {
                   {t.about.q4}
                 </p>
                 <p className="mt-4 text-base font-semibold leading-snug text-paper">
-                  {lang === "en"
-                    ? "Have a project, a security challenge or a collaboration in mind?"
-                    : "Un projet, un défi de sécurité ou une collaboration ?"}
+                  {t.about.ctaTitle}
                 </p>
                 <p className="mt-2 text-sm leading-relaxed text-paper/60">
-                  {lang === "en"
-                    ? "Let's talk. I'll get back to you with a concrete proposal."
-                    : "Parlons-en. Je vous répondrai avec une proposition concrète."}
+                  {t.about.ctaSubtitle}
                 </p>
               </div>
               <div className="mt-8 flex flex-col gap-3">
@@ -217,7 +213,7 @@ export default async function HomePage({ params }: PageProps) {
                   className="inline-flex items-center justify-center gap-2 rounded-xl bg-accent px-4 py-2.5 font-mono text-xs uppercase tracking-wider text-white shadow transition-all duration-200 hover:opacity-90 hover:shadow-md hover:shadow-accent/30 active:scale-[0.96]"
                 >
                   <CalendarDays className="h-3.5 w-3.5" />
-                  {lang === "en" ? "Book a 30-min call" : "Réserver un appel de 30 min"}
+                  {t.about.ctaButton}
                 </a>
                 <a
                   href="mailto:contact@samensteeve.com"
@@ -282,19 +278,19 @@ export default async function HomePage({ params }: PageProps) {
         <ScrollReveal>
           <h2 className="font-display text-2xl font-semibold">{t.work.title}</h2>
         </ScrollReveal>
-        <div className="mt-8 flex flex-col gap-4">
-          {work.map((page, i) => (
-              <ScrollReveal key={page.url} delay={i * 80}>
+         <div className="mt-8 flex flex-col gap-4">
+          {work.map((p, i) => (
+              <ScrollReveal key={p.slug} delay={i * 80}>
                 <ProjectCard
                   project={{
-                    title: page.data.title,
-                    description: page.data.description,
-                    date: page.data.date,
-                    role: page.data.role,
-                    stack: page.data.stack,
-                    status: page.data.status,
-                    url: page.data.url,
-                    slug: page.slugs[page.slugs.length - 1] ?? "",
+                    title: p.title,
+                    description: p.description,
+                    date: p.date,
+                    role: p.role,
+                    stack: p.stack,
+                    status: p.status,
+                    url: p.url,
+                    slug: p.slug,
                   }}
                   lang={lang}
                 />
@@ -320,7 +316,7 @@ export default async function HomePage({ params }: PageProps) {
 
         <div className="flex flex-col divide-y divide-line">
           {writing.map((item, i) => {
-            const readLabel = lang === "en" ? `${item.readTime} min read` : `${item.readTime} min de lecture`;
+            const readLabel = `${item.readTime} ${t.writing.minRead}`;
 
             return (
               <ScrollReveal key={`${item.lang}-${item.url}`} delay={i * 70}>
@@ -337,6 +333,8 @@ export default async function HomePage({ params }: PageProps) {
                         fill
                         sizes="160px"
                         className="object-cover transition-transform duration-500 group-hover:scale-103"
+                        placeholder="blur"
+                        blurDataURL={BLUR_DATA_URL}
                       />
                     ) : (
                       <span className="absolute inset-0 flex items-center justify-center font-mono text-2xl font-bold text-ink-soft/15 select-none">

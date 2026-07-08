@@ -29,7 +29,7 @@ export default async function WritingIndexPage({ params }: PageProps) {
   const items = getWritingPages(lang);
 
   return (
-    <main className="mx-auto max-w-2xl px-6 py-20">
+    <main id="main-content" className="mx-auto max-w-2xl px-6 py-20">
       <Link
         href={`/${lang}`}
         className="inline-flex items-center gap-2 font-mono text-xs uppercase tracking-wider text-ink-soft transition-all duration-200 hover:text-accent hover:-translate-x-0.5"

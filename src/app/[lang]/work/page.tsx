@@ -2,6 +2,7 @@ import Link from "next/link";
 import type { Metadata } from "next";
 import { ArrowLeft, ArrowUpRight } from "lucide-react";
 import { workSource } from "@/lib/source";
+import { leafSlug } from "@/lib/slug";
 import { StatusDot } from "@/components/status-dot";
 import { ScrollReveal } from "@/components/scroll-reveal";
 import { getT, type Language } from "@/lib/translations";
@@ -27,10 +28,22 @@ export default async function WorkIndexPage({ params }: PageProps) {
   const { lang } = await params;
   const t = getT(lang);
 
-  const projects = workSource.getPages().sort(sortByFeaturedAndDate);
+  const projects = workSource
+    .getPages()
+    .filter((p) => (p.data.lang || "fr") === lang)
+    .sort(sortByFeaturedAndDate)
+    .map((page) => ({
+      slug: leafSlug(page.slugs),
+      title: page.data.title,
+      description: page.data.description,
+      role: page.data.role,
+      date: page.data.date,
+      stack: page.data.stack,
+      status: page.data.status,
+    }));
 
   return (
-    <main className="mx-auto max-w-2xl px-6 py-20">
+    <main id="main-content" className="mx-auto max-w-2xl px-6 py-20">
       <Link
         href={`/${lang}`}
         className="inline-flex items-center gap-2 font-mono text-xs uppercase tracking-wider text-ink-soft transition-all duration-200 hover:text-accent hover:-translate-x-0.5"
@@ -42,27 +55,27 @@ export default async function WorkIndexPage({ params }: PageProps) {
       <h1 className="fade-up mt-8 mb-10 font-display text-3xl font-bold tracking-tight">{t.work.title}</h1>
 
       <div className="flex flex-col gap-4">
-        {projects.map((page, i) => (
-          <ScrollReveal key={page.url} delay={i * 80}>
+        {projects.map((p, i) => (
+          <ScrollReveal key={p.slug} delay={i * 80}>
             <Link
-              href={`/${lang}/work/${page.slugs.at(-1)}`}
+              href={`/${lang}/work/${p.slug}`}
               className="group flex flex-col gap-4 rounded-2xl border border-line bg-paper-raised/20 p-6 transition-all duration-300 ease-out hover:-translate-y-1.5 hover:border-accent/20 hover:bg-paper-raised hover:shadow-md hover:shadow-accent/[0.01]"
             >
               <div className="flex flex-col gap-1.5 sm:flex-row sm:items-center sm:justify-between">
                 <div className="flex items-center gap-3">
                   <h2 className="font-display text-lg font-semibold text-ink group-hover:text-accent transition-colors">
-                    {page.data.title}
+                    {p.title}
                   </h2>
-                  <StatusDot status={page.data.status} lang={lang} />
+                  <StatusDot status={p.status} lang={lang} />
                 </div>
                 <span className="font-mono text-[11px] text-ink-soft/70">
-                  {page.data.role} · {page.data.date}
+                  {p.role} · {p.date}
                 </span>
               </div>
-              <p className="text-sm leading-relaxed text-ink-soft">{page.data.description}</p>
+              <p className="text-sm leading-relaxed text-ink-soft">{p.description}</p>
               <div className="flex flex-wrap items-center justify-between gap-3 pt-3 border-t border-line/40">
                 <div className="flex flex-wrap items-center gap-2">
-                  {page.data.stack.map((tech) => (
+                  {p.stack.map((tech) => (
                     <span
                       key={tech}
                       className="rounded-full border border-line bg-paper-raised/60 px-2.5 py-0.5 font-mono text-[9px] text-ink-soft transition duration-300"

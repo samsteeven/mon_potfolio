@@ -1,0 +1,48 @@
+---
+title: "ShopNow — Hybrid Cloud Architecture & Multi-Site Infrastructure"
+description: "Hybrid cloud architecture for an e-commerce company in Cameroon: 3 interconnected sites, Microsoft 365 migration, disaster recovery plan, and a €86K first-year budget."
+date: "2026-04-01"
+role: "Cloud Architect"
+stack: ["Azure", "Active Directory", "Microsoft 365", "Veeam", "FortiGate", "pfSense", "MPLS", "IPSec VPN", "Docker", "Kubernetes", "Terraform", "Zabbix", "Grafana"]
+cover: "/projects/archi_cloud.png"
+featured: false
+lang: "en"
+---
+
+![Existing on-premise architecture](/projects/archi_onpromise.png)
+
+## The Problem
+
+ShopNow runs on a monolithic server in a single datacenter in Douala. No redundancy. Frequent outages. Traffic spikes take the site down. Maintenance costs are eating the budget. Management wants to modernize — but nobody wants to break production by migrating to the cloud.
+
+Three physical sites to connect: Douala (HQ), Yaoundé (regional office), Bafoussam (agency). Each has different constraints for power, internet quality, and local IT skills.
+
+## What I Did
+
+I designed a hybrid on-premise + Azure architecture that allows progressive migration without downtime. Here are the key decisions.
+
+**Network** : Each site connects to Douala over MPLS (QoS guaranteed for VoIP) with a backup IPSec tunnel over the public internet. Failover is automatic. Without this, a phone call between Douala and Bafoussam becomes unusable the moment the primary link degrades.
+
+**Identity** : On-premise Active Directory synced with Azure AD. Users keep the same password everywhere. I added MFA on all remote access — in a context where people often connect from personal devices, this was non-negotiable.
+
+**Email** : Big decision. The on-premise Exchange server was consuming 30% of the IT team's time in maintenance. I pushed them to Microsoft 365. It freed up time immediately, and users saw the difference in 3 months — Teams, SharePoint, shared calendars. Quick wins like this build credibility for the rest of the migration.
+
+**Backup** : Veeam with Cloud Tier to Azure Blob. Daily backups are replicated to the cloud automatically. If the Douala datacenter goes down (power surges, fires — it happens), we fail over to Azure in under 4 hours.
+
+## Why Azure Over AWS
+
+I compared all three. Azure wins on one specific point: native Active Directory integration. No intermediary layer needed for enterprise authentication. And Microsoft 365, which the team already uses, integrates without friction. The Azure South Africa North region delivers acceptable latency (~60ms from Cameroon).
+
+AWS would have worked, but I'd have needed to jury-rig an LDAP gateway for AD, and the M365 migration would have become a separate project. Azure reduces overall complexity.
+
+## The Outcome
+
+The 6-phase migration plan spans 12 to 18 months. Every phase is reversible. First-year cost is approximately €86K, then ~€42K per year recurring — significantly less than the legacy system's maintenance.
+
+But the real win is that the IT team can sleep at night. No more emergency calls for an overheating server, no more manual restores after a power cut. The cloud absorbed the complexity they were managing with duct tape.
+
+## What I Learned
+
+This project confirmed one thing: in an African context, hybrid cloud isn't a luxury — it's a necessity. Internet connectivity isn't reliable enough for 100% cloud, local datacenters don't meet international standards, and regulations require keeping certain data on national territory.
+
+I also learned to sell a cloud project to non-technical leadership. I didn't talk about VPCs or Terraform. I said: "you'll get 99.9% uptime, your teams can work from anywhere, and you'll pay less than today." For them, that's what the cloud means.

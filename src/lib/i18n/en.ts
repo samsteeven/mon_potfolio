@@ -3,6 +3,7 @@ export const en = {
     work: "Work",
     about: "About",
     writing: "Writing",
+    opposite: "FR",
   },
   hero: {
     location: "Open to remote opportunities",
@@ -26,6 +27,14 @@ export const en = {
     a3: "I design custom full-stack web applications, conduct security research (vulnerability analysis, threat modeling, and securing application logic), and build systems that automate processes to help companies adopt AI in their business workflows.",
     q4: "How to get started",
     a4: "Have a project or a security challenge? Let's collaborate. You can schedule a brief call via Cal.com or write to me at contact@samensteeve.com to discuss how we can build, secure, or automate your workflows.",
+    ctaTitle: "Have a project, a security challenge or a collaboration in mind?",
+    ctaSubtitle: "Let's talk. I'll get back to you with a concrete proposal.",
+    ctaButton: "Book a 30-min call",
+    services: [
+      "Custom full-stack web applications (React · Laravel · Inertia.js)",
+      "Security research \u2014 vulnerability analysis, threat modeling & securing application logic",
+      "AI automation \u2014 tailored agent workflows to help companies adopt AI in their business processes",
+    ],
   },
   writing: {
     title: "Writing",
@@ -34,6 +43,7 @@ export const en = {
     all: "All",
     empty: "No posts found for this filter.",
     searchPlaceholder: "Search by title, description or tag...",
+    minRead: "min read",
   },
   notFound: {
     title: "Page not found",
@@ -43,8 +53,19 @@ export const en = {
   details: {
     back: "Back",
     role: "Role",
-    postIn: "Post in English",
-    postInFr: "Post in French",
+    writtenInEn: "Post in English",
+    writtenInFr: "Post in French",
+    viewRepository: "View repository",
+    visitSite: "Visit the site",
+    visitSiteShort: "Visit site",
+    readCaseStudy: "Read case study",
+    shareText: "Read online:",
+    english: "English",
+    french: "French",
+  },
+  toc: {
+    contents: "Contents",
+    onThisPage: "On this page",
   },
   footer: {
     location: "Open to remote opportunities",

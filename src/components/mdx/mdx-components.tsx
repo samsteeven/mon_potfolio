@@ -1,5 +1,6 @@
 import type { MDXComponents } from "mdx/types";
 import type { ReactNode } from "react";
+import Image from "next/image";
 
 // Génère un id slugifié à partir du texte enfant d'un heading
 function slugify(text: string): string {
@@ -73,9 +74,15 @@ export function getMDXComponents(components?: MDXComponents): MDXComponents {
         {...props}
       />
     ),
-    img: (props) => (
-      // eslint-disable-next-line @next/next/no-img-element
-      <img className="my-6 rounded-lg border border-line" alt="" {...props} />
+    img: ({ src, alt }) => (
+      <Image
+        src={src || ""}
+        alt={alt || ""}
+        width={1200}
+        height={675}
+        className="my-6 h-auto w-full rounded-lg border border-line"
+        sizes="(max-width: 768px) 100vw, 672px"
+      />
     ),
     ...components,
   };

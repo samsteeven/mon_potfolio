@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import type { ReactNode } from "react";
-import type { Language } from "@/lib/translations";
+import { getT, type Language } from "@/lib/translations";
 
 export interface TocItem {
   id: string;
@@ -16,6 +16,7 @@ interface TableOfContentsProps {
 }
 
 export function TableOfContents({ items, lang }: TableOfContentsProps) {
+  const t = getT(lang);
   const [activeId, setActiveId] = useState<string | null>(null);
   const observerRef = useRef<IntersectionObserver | null>(null);
 
@@ -49,8 +50,8 @@ export function TableOfContents({ items, lang }: TableOfContentsProps) {
 
   if (items.length === 0) return null;
 
-  const contentLabel = lang === "en" ? "Contents" : "Sommaire";
-  const menuLabel = lang === "en" ? "On this page" : "Sur cette page";
+  const contentLabel = t.toc.contents;
+  const menuLabel = t.toc.onThisPage;
 
   const renderItems = () => (
     <ul className="space-y-1.5">

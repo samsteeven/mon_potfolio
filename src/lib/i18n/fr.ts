@@ -3,6 +3,7 @@ export const fr = {
     work: "Travail",
     about: "À propos",
     writing: "Écrits",
+    opposite: "EN",
   },
   hero: {
     location: "Disponible pour le travail en remote",
@@ -21,6 +22,14 @@ export const fr = {
     a3: "Je conçois des applications web full-stack sur mesure, réalise des travaux de recherche en sécurité (analyse de vulnérabilités, modélisation des menaces et sécurisation de la logique applicative) et développe des solutions automatisées pour aider les entreprises à adopter l'IA dans leurs processus métier.",
     q4: "Comment démarrer",
     a4: "Un projet ou un défi de sécurité à relever ? Collaborons. Planifiez un court échange via Cal.com ou écrivez-moi à contact@samensteeve.com pour discuter de la façon de concevoir, sécuriser ou automatiser vos flux.",
+    ctaTitle: "Un projet, un défi de sécurité ou une collaboration ?",
+    ctaSubtitle: "Parlons-en. Je vous répondrai avec une proposition concrète.",
+    ctaButton: "Réserver un appel de 30 min",
+    services: [
+      "Applications web full-stack sur mesure (React · Laravel · Inertia.js)",
+      "Recherche en sécurité — analyse de vulnérabilités, modélisation des menaces et sécurisation applicative",
+      "Automatisation IA — workflows d'agents sur mesure pour aider les entreprises à adopter l'IA dans leurs processus métier",
+    ],
   },
   work: {
     title: "Travail",
@@ -34,6 +43,7 @@ export const fr = {
     all: "Tous",
     empty: "Aucun écrit pour ce filtre.",
     searchPlaceholder: "Rechercher par titre, description ou tag...",
+    minRead: "min de lecture",
   },
   notFound: {
     title: "Page introuvable",
@@ -43,8 +53,19 @@ export const fr = {
   details: {
     back: "Retour",
     role: "Rôle",
-    postIn: "Post in English",
-    postInFr: "Post in French",
+    writtenInEn: "Rédigé en Anglais",
+    writtenInFr: "Rédigé en Français",
+    viewRepository: "Voir le dépôt",
+    visitSite: "Voir le site",
+    visitSiteShort: "Voir le site",
+    readCaseStudy: "Lire l'étude de cas",
+    shareText: "Lire en ligne :",
+    english: "Anglais",
+    french: "Français",
+  },
+  toc: {
+    contents: "Sommaire",
+    onThisPage: "Sur cette page",
   },
   footer: {
     location: "Disponible pour le travail en remote",

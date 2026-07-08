@@ -1,5 +1,6 @@
 import { readFileSync, readdirSync, existsSync } from "fs";
 import { join } from "path";
+import { parseFrontmatter } from "@/lib/mdx";
 
 const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://samensteeve.com";
 const WORK_DIR = join(process.cwd(), "src/content", "work");
@@ -7,36 +8,27 @@ const WRITING_DIR = join(process.cwd(), "src/content", "writing");
 
 export const dynamic = "force-static";
 
-function parseFrontmatter(raw: string) {
-  const match = raw.match(/^---\n([\s\S]*?)\n---\n([\s\S]*)$/);
-  if (!match) return null;
-  const fm: Record<string, string> = {};
-  for (const line of match[1].split("\n")) {
-    const sep = line.indexOf(":");
-    if (sep === -1) continue;
-    const key = line.slice(0, sep).trim();
-    let val = line.slice(sep + 1).trim();
-    if (val.startsWith('"') && val.endsWith('"')) val = val.slice(1, -1);
-    if (val.startsWith("[")) val = val.slice(1, -1);
-    fm[key] = val;
-  }
-  return fm;
-}
-
 function loadProjects() {
   if (!existsSync(WORK_DIR)) return [];
-  return readdirSync(WORK_DIR)
-    .filter((f) => f.endsWith(".mdx"))
-    .map((file) => {
-      const raw = readFileSync(join(WORK_DIR, file), "utf-8");
+  const projects: { title: string; description: string; url: string }[] = [];
+
+  for (const lang of ["en", "fr"]) {
+    const dir = join(WORK_DIR, lang);
+    if (!existsSync(dir)) continue;
+
+    for (const file of readdirSync(dir).filter((f) => f.endsWith(".mdx"))) {
+      const raw = readFileSync(join(dir, file), "utf-8");
       const fm = parseFrontmatter(raw);
       const slug = file.replace(".mdx", "");
-      return {
-        slug,
+      projects.push({
         title: fm?.title || slug,
         description: fm?.description || "",
-      };
-    });
+        url: `${BASE_URL}/${fm?.lang || lang}/work/${slug}`,
+      });
+    }
+  }
+
+  return projects;
 }
 
 function loadWritings() {
@@ -74,7 +66,7 @@ export function GET() {
   const writings = loadWritings();
 
   const projectLines = projects.map(
-    (p) => `- [${p.title}](${BASE_URL}/en/work/${p.slug}): ${p.description}`,
+    (p) => `- [${p.title}](${p.url}): ${p.description}`,
   );
 
   const writingLines = writings.map(

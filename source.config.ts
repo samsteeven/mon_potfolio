@@ -18,7 +18,7 @@ export const work = defineCollections({
   schema: baseSchema.extend({
     role: z.string(),
     stack: z.array(z.string()).default([]),
-    status: z.enum(["shipped", "in-progress"]).default("shipped"),
+    status: z.enum(["shipped", "in-progress"]).optional(),
     featured: z.boolean().default(false),
     url: z.string().optional(),
   }),
