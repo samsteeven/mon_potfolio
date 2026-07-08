@@ -23,6 +23,7 @@ Inertia n'est pas un framework. C'est un protocole de communication entre un bac
 
 Le contrôleur Laravel passe des données directement au composant React, comme s'il retournait une vue Blade. Côté React, tu reçois ces données comme des props normales. Pas de `fetch`, pas de state management pour les données serveur, pas de loading states à gérer.
 
+<CodeWindow filename="DashboardController.php">
 ```php
 // Contrôleur Laravel
 public function index(): Response
@@ -33,7 +34,9 @@ public function index(): Response
     ]);
 }
 ```
+</CodeWindow>
 
+<CodeWindow filename="Dashboard.tsx">
 ```tsx
 // Composant React — les données arrivent comme des props
 export default function Dashboard({ projects, stats }: PageProps) {
@@ -45,6 +48,7 @@ export default function Dashboard({ projects, stats }: PageProps) {
   );
 }
 ```
+</CodeWindow>
 
 Pas de `useEffect`, pas d'appel API, pas de spinner. Les données sont là au premier rendu.
 

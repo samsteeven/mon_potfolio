@@ -23,6 +23,7 @@ Inertia isn't a framework. It's a communication protocol between a server-side b
 
 The Laravel controller passes data directly to the React component, as if it were returning a Blade view. On the React side, you receive that data as regular props. No `fetch`, no server state management, no loading states to handle.
 
+<CodeWindow filename="DashboardController.php">
 ```php
 // Laravel controller
 public function index(): Response
@@ -33,7 +34,9 @@ public function index(): Response
     ]);
 }
 ```
+</CodeWindow>
 
+<CodeWindow filename="Dashboard.tsx">
 ```tsx
 // React component — data arrives as props
 export default function Dashboard({ projects, stats }: PageProps) {
@@ -45,6 +48,7 @@ export default function Dashboard({ projects, stats }: PageProps) {
   );
 }
 ```
+</CodeWindow>
 
 No `useEffect`, no API call, no spinner. The data is there on first render.
 

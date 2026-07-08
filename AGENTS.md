@@ -181,6 +181,125 @@ des listes en dur (manuel uniquement).
 - Le sitemap est auto-généré à `/sitemap.xml` par Next.js au build.
 - Les images OG sont définies dans les métadonnées de chaque page.
 
+## Conventions de rédaction du contenu MDX (⚠️ À respecter impérativement)
+
+Ces règles garantissent l'uniformité visuelle entre tous les articles et études de cas.
+Tout agent qui génère ou modifie du contenu `.mdx` doit les appliquer systématiquement.
+
+### Blocs de code — règle fondamentale
+
+**Ne jamais utiliser de fences Markdown nues (` ```lang `) pour afficher du code source.**
+Utiliser impérativement le composant `<CodeWindow>` à la place.
+
+| Situation | À faire | À ne pas faire |
+|---|---|---|
+| Code source (fichier nommé) | `<CodeWindow filename="MonFichier.php">` | ` ```php ` seul |
+| Commande shell / terminal | `<CodeWindow filename="terminal">` | ` ```bash ` seul |
+| Pseudo-code court inline | `` `code` `` (backtick inline) | ` ``` ` bloc |
+
+**Syntaxe correcte :**
+```mdx
+<CodeWindow filename="DashboardController.php">
+```php
+public function index(): Response
+{
+    return Inertia::render('Dashboard', [
+        'projects' => Project::with('client')->latest()->get(),
+    ]);
+}
+```
+</CodeWindow>
+```
+
+- Le `filename` doit être le vrai nom du fichier (ex : `Dashboard.tsx`, `deploy.sh`).
+- Pour un terminal / shell, utiliser `filename="terminal"` ou `filename="bash"`.
+- La fence de langage à l'intérieur (` ```php `, ` ```tsx `…) reste obligatoire pour la coloration syntaxique.
+- Le bouton "Copier" est automatiquement présent dans la barre de titre — ne pas l'ajouter manuellement.
+
+---
+
+### Callout — quand l'utiliser
+
+```mdx
+<Callout type="info">
+  Conseil ou contexte neutre.
+</Callout>
+
+<Callout type="tip">
+  Bonne pratique ou optimisation.
+</Callout>
+
+<Callout type="warning">
+  Point d'attention, comportement subtil.
+</Callout>
+
+<Callout type="danger">
+  Erreur courante, pièges, breaking change.
+</Callout>
+```
+
+- `info` : information de contexte ou d'explication neutre.
+- `tip` : bonne pratique, raccourci, conseil d'expérience.
+- `warning` : cas limites, comportements surprenants, limitations.
+- `danger` : erreurs fréquentes, failles de sécurité, pertes de données potentielles.
+- **Ne pas** enchaîner plusieurs Callout consécutifs — alterner avec du texte entre eux.
+
+---
+
+### CardGrid / Card — quand l'utiliser
+
+```mdx
+<CardGrid>
+  <Card title="Titre A">
+    Description concise du point A.
+  </Card>
+  <Card title="Titre B">
+    Description concise du point B.
+  </Card>
+</CardGrid>
+```
+
+- Idéal pour lister des fonctionnalités, avantages, outils ou comparaisons (2 à 4 cartes max).
+- Ne pas y mettre du code — utiliser `<CodeWindow>` pour ça.
+- Ne pas imbriquer des `<CardGrid>` l'un dans l'autre.
+
+---
+
+### Images dans le MDX
+
+- Les images MDX standard (`![alt](url)`) sont automatiquement rendues via `ZoomableImage` (clic → lightbox plein écran).
+- Toujours fournir un attribut `alt` descriptif.
+- Pas besoin d'utiliser manuellement `<ZoomableImage>` dans le contenu — la balise `img` Markdown suffit.
+- Pour les covers : renseigner le champ `cover` dans le frontmatter (chemin relatif depuis `public/`).
+
+---
+
+### Éléments Markdown natifs — usage attendu
+
+| Élément | Usage |
+|---|---|
+| `## Titre` | Sections principales de l'article — apparaissent dans la table des matières |
+| `### Sous-titre` | Sous-sections — apparaissent aussi dans la TDM |
+| `**gras**` | Termes importants, mots-clés techniques |
+| `*italique*` | Emphase légère, termes étrangers |
+| `` `inline code` `` | Noms de variables, fonctions, classes, commandes courtes |
+| `> blockquote` | Citations, extraits de documentation externe |
+| `---` | Séparateur thématique entre deux grandes parties |
+| Liste `-` | Énumérations simples sans hiérarchie |
+| Liste `1.` | Étapes séquentielles (procédures, tutoriels) |
+
+---
+
+### Tone & voix éditoriale
+
+- Ton direct, professionnel, sans marketing ronflant.
+- Première personne du singulier autorisée pour les retours d'expérience.
+- Éviter les formulations génériques ("dans cet article, nous allons voir…").
+- Aller droit au but dès la première phrase — pas d'intro de réchauffement.
+- Bilinguisme : chaque article doit exister en `en` et `fr`, avec un contenu adapté (pas une traduction littérale mécanique).
+
+---
+
 ## Ce qu'il ne faut pas faire
 
 - Ne pas ajouter de base de données, de CMS headless, ou d'API admin — c'est un choix
