@@ -172,13 +172,13 @@ export default async function HomePage({ params }: PageProps) {
             </ScrollReveal>
           ))}
 
-          {/* Card Services — design épuré, contenu en liste aérée avec icônes */}
-          <ScrollReveal delay={160} className="h-full">
-            <div className="flex flex-col h-full rounded-2xl border border-line bg-paper-raised/40 p-8 shadow-sm transition-all duration-300 ease-out hover:-translate-y-1.5 hover:border-accent/35 hover:bg-paper-raised hover:shadow-md">
+          {/* Card Services — design épuré, contenu en grille aérée avec icônes */}
+          <ScrollReveal delay={160} className="md:col-span-2">
+            <div className="flex flex-col rounded-2xl border border-line bg-paper-raised/40 p-8 shadow-sm transition-all duration-300 ease-out hover:-translate-y-1.5 hover:border-accent/35 hover:bg-paper-raised hover:shadow-md">
               <p className="font-mono text-xs uppercase tracking-wider text-accent font-semibold">
                 {t.about.q3}
               </p>
-              <ul className="mt-6 flex flex-col gap-5">
+              <ul className="mt-8 grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-6">
                 {t.about.services.map((service, i) => (
                 <li key={i} className="flex items-start gap-3.5">
                   {i === 0 && <Code2 className="mt-1 h-4.5 w-4.5 shrink-0 text-accent" />}
@@ -195,10 +195,10 @@ export default async function HomePage({ params }: PageProps) {
             </div>
           </ScrollReveal>
 
-          {/* Card CTA — fond sombre premium, boutons cliquables, mise en page aérée */}
-          <ScrollReveal delay={240} className="h-full">
-            <div className="flex flex-col justify-between h-full rounded-2xl bg-ink p-8 shadow-lg">
-              <div>
+          {/* Card CTA — fond sombre premium, boutons cliquables, mise en page aérée et horizontale */}
+          <ScrollReveal delay={240} className="md:col-span-2">
+            <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-6 rounded-2xl bg-ink p-8 shadow-lg">
+              <div className="max-w-md">
                 <p className="font-mono text-xs uppercase tracking-wider text-paper/45 font-semibold">
                   {t.about.q4}
                 </p>
@@ -209,19 +209,19 @@ export default async function HomePage({ params }: PageProps) {
                   {t.about.ctaSubtitle}
                 </p>
               </div>
-              <div className="mt-8 flex flex-col gap-3">
+              <div className="flex flex-col gap-3 shrink-0 w-full md:w-auto">
                 <a
                   href="https://cal.com/samen-steeve/30min"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex items-center justify-center gap-2 rounded-xl bg-accent px-4 py-2.5 font-mono text-xs uppercase tracking-wider text-white shadow transition-all duration-200 hover:opacity-90 hover:shadow-md hover:shadow-accent/30 active:scale-[0.96]"
+                  className="inline-flex items-center justify-center gap-2 rounded-xl bg-accent px-5 py-3 font-mono text-xs uppercase tracking-wider text-white shadow transition-all duration-200 hover:opacity-90 hover:shadow-md hover:shadow-accent/30 active:scale-[0.96]"
                 >
                   <CalendarDays className="h-3.5 w-3.5" />
                   {t.about.ctaButton}
                 </a>
                 <a
                   href="mailto:contact@samensteeve.com"
-                  className="inline-flex items-center justify-center gap-2 rounded-xl border border-paper/20 px-4 py-2.5 font-mono text-xs uppercase tracking-wider text-paper/75 transition-all duration-200 hover:border-paper/40 hover:text-paper hover:bg-paper/5 active:scale-[0.96]"
+                  className="inline-flex items-center justify-center gap-2 rounded-xl border border-paper/20 px-5 py-3 font-mono text-xs uppercase tracking-wider text-paper/75 transition-all duration-200 hover:border-paper/40 hover:text-paper hover:bg-paper/5 active:scale-[0.96]"
                 >
                   <Mail className="h-3.5 w-3.5" />
                   contact@samensteeve.com
