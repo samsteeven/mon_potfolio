@@ -11,35 +11,59 @@ cover: "/projects/logoTBJ.png"
 lang: "en"
 ---
 
-## Context
+## The Problem
 
-Tribunejustice connects clients with lawyers and legal experts. The platform handles sensitive data, escrow payments, real-time communication, and orchestrates a complete case lifecycle — all under stringent security constraints.
+Finding a lawyer in Cameroon is slow, opaque, and often unreliable. Clients have no visibility on costs upfront, no way to track their case progress, and payments flow through informal channels with no guarantee of security. Lawyers, on their side, struggle to manage their caseload, collect payments, and communicate with clients across fragmented tools.
 
-## Architecture & Technical Decisions
+Tribunejustice needed a platform that would solve this from both ends — bringing trust, structure, and speed to a historically informal market.
 
-**Modular backend (Laravel)**: The system is organized around the *Service Request* concept — the central entity carrying the full lifecycle: creation, expert assignment, tracking, payment, resolution. A `ServiceRequestStatusMachine` state machine guarantees transition integrity.
+<CardGrid>
+  <Card title="For clients">
+    Find the right expert in minutes, pay securely with escrow, and track every step of their case in real time — instead of waiting weeks for a callback.
+  </Card>
+  <Card title="For lawyers">
+    A structured inbox, automated case lifecycle, integrated billing, and a CRM to manage leads and client relationships — all in one place.
+  </Card>
+</CardGrid>
 
-**Security — defense-in-depth approach**: The platform processes sensitive legal data. Multiple protection layers are in place:
-- Granular RBAC with strict Admin / Super Admin separation for critical operations (role management, permissions, settings)
-- Sudo mode (password confirmation) required for sensitive actions: enabling 2FA, password changes, data exports, heavy admin operations
-- SSRF protection on the blog image proxy via a strict allowlist
-- Hardened CRM observers to prevent data leaks between modules
-- Inline `current_password` validation on critical endpoints (email, 2FA)
-- Redis cache driver with TTL for sudo sessions (10 minutes)
+## What I Built
 
-**Evolving frontend (Angular)**: The frontend underwent a major architectural migration — the monolithic `AuthService` (594 lines, 87 consumers) was split into four specialized services (`AuthStateService`, `AuthApiService`, `TokenService`, `PermissionService`), all built on Angular signals for predictable reactive state. The `ApiClient` centralizes URL resolution, Laravel response normalization, exponential backoff retry, idempotency, and typed error handling (7 `ApiError` subclasses).
+**Modular backend (Laravel)**: The entire platform is organized around a *Service Request* — the central entity that carries the full lifecycle: creation, expert assignment, tracking, payment, resolution. A `ServiceRequestStatusMachine` state machine guarantees that no case can skip a step or revert to an invalid state.
 
-**Real-time (Laravel Reverb)**: Client-expert messaging uses WebSocket via Reverb, with Horizon queue workers for async notification processing and email dispatch.
+**Security — defense-in-depth**: Legal data is highly sensitive. The platform went through a full security audit after launch:
 
-**Search & discovery**: Expert profile indexing goes through Typesense, with real-time combined facets and filters.
+- Granular RBAC with strict Admin / Super Admin separation
+- Sudo mode (password re-confirmation) required for sensitive actions: 2FA changes, data exports, admin operations
+- SSRF protection on the blog image proxy via strict allowlist
+- Hardened CRM observers to prevent cross-module data leaks
+- Redis TTL sessions for sudo (10-minute window)
 
-**Multi-format blog**: The blog (Next.js) handles two article types — editorial and sponsored — with custom mixing (1 sponsored every 4 articles) and manual Laravel paginator reconstruction. Authors are loaded from a cross-DB query (blog → main). A 5-minute Redis cache per parameter combination avoids full recomputation on every visit.
+**Evolving Angular frontend**: The monolithic `AuthService` (594 lines, 87 consumers) was refactored into 4 signal-based specialized services, making the auth layer predictable, testable, and maintainable. The `ApiClient` centralizes retry logic, error normalization, and typed error handling across all API calls.
 
-**CRM integration**: A full CRM module tracks contacts, lifecycle stages, lead scoring, and campaign automation — all connected to the main domain via observers and events.
+**Real-time messaging**: Client-expert communication uses WebSocket via Laravel Reverb, with Horizon queue workers for async notification and email dispatch — no polling, instant delivery.
 
-**Performance**: Redis caching on ~10 endpoints, 4 composite indexes added, N+1 query elimination, blog listing and expert search caching (5 min / 2 min).
+**Search & discovery**: Expert profiles are indexed via Typesense with real-time faceted search, reducing time-to-match for clients looking for the right specialist.
 
-## Security Audits
+**CRM & automation**: A full CRM module tracks contacts, lifecycle stages, lead scoring, and campaign automation — connected to the core domain via observers and events.
+
+## Impact
+
+<CardGrid>
+  <Card title="41 vulnerabilities fixed">
+    A post-launch audit identified and closed 41 security flaws across the blog, RBAC system, and frontend — before any breach could occur.
+  </Card>
+  <Card title="30% IT maintenance freed">
+    The on-premise Exchange migration freed 30% of recurring IT time — redirected to product features instead of server maintenance.
+  </Card>
+  <Card title="Instant case visibility">
+    Clients and lawyers now see every status change in real time via WebSocket — eliminating the back-and-forth emails that used to define case communication.
+  </Card>
+  <Card title="~50% recurring cost reduction">
+    Architectural decisions (Redis caching, N+1 elimination, 4 composite indexes) cut server load significantly, reducing infrastructure costs as the user base grows.
+  </Card>
+</CardGrid>
+
+## Security Audit Results
 
 - **17 blog vulnerabilities fixed**: SSRF proxy, GET→POST logout, missing auth middleware, open redirect
 - **14 RBAC flaws**: Admin/Super Admin separation, critical permission protection (roles, permissions, settings)
@@ -48,10 +72,10 @@ Tribunejustice connects clients with lawyers and legal experts. The platform han
 
 ## What This Experience Taught Me
 
-Architecting a legaltech platform forced me to think about security from day one — not as an afterthought. Every feature had to answer: *"can this data leak?"* and *"can this workflow be subverted?"*
+Architecting a legaltech platform forces a specific mindset: every feature has to answer two questions — *"can this data leak?"* and *"can this workflow be subverted?"* Security can't be layered on after the fact in a domain handling sensitive legal and financial data.
 
-I also learned to balance quality against speed: shipping security fixes without breaking user experience, migrating an Angular codebase without halting production, and — most importantly — documenting architectural decisions so the team could move forward without me on every detail.
+I also learned to balance velocity against quality: shipping security fixes without breaking user experience, migrating an Angular codebase without halting production, and documenting architectural decisions so the team could move independently.
 
 ## Next Steps
 
-The project is currently serving as a testing ground for AI agent integration directly into the production stack — automated responses, legal document analysis, and complex workflow orchestration.
+The platform is now serving as a testing ground for AI agent integration — automated first responses, legal document analysis, and complex workflow orchestration directly connected to production data.

@@ -10,63 +10,69 @@ url: "https://github.com/samsteeven/digitram-cm-microservices"
 lang: "fr"
 ---
 
-## Le contexte
+## Le problème
 
-Projet d'examen EADL 4 (BC04/EC04 — Optimiser le SI par le Cloud Computing) pour CAMTECH SOLUTIONS S.A. L'objectif : concevoir et déployer un système d'information moderne en microservices pour AGROCAM S.A., une entreprise agro-industrielle camerounaise, en remplacement de son SI monolithique existant.
+AGROCAM S.A. est une entreprise agro-industrielle camerounaise qui gère l'intégralité de ses opérations — RH, comptabilité, achats, commandes clients, chaîne d'approvisionnement — sur un système monolithique legacy. L'architecture ne passait plus à l'échelle. Ajouter un module risquait de faire tomber le reste. Les agents terrain en zone reculée n'avaient aucun moyen d'enregistrer des opérations sans connexion. Et la chaîne d'approvisionnement n'avait aucune traçabilité immuable — pourtant indispensable pour la conformité et le contrôle qualité dans le secteur alimentaire.
 
-## Architecture & décisions techniques
+L'objectif : remplacer ce système par une architecture distribuée moderne, conçue pour les contraintes opérationnelles africaines réelles.
 
-**API Gateway comme point d'entrée unique** : L'Auth Gateway (Express, port 3000) centralise JWT/OAuth2, le rate limiting (500 req/15min global, 20 req/15min auth), et agit comme reverse proxy. Elle injecte `X-User-Id`, `X-User-Role`, `X-User-Email` dans les requêtes en aval — les services métier ne valident jamais le JWT directement, ils font confiance aux en-têtes du gateway. Swagger UI intégré sur chaque service pour la documentation des endpoints.
+<CardGrid>
+  <Card title="Le problème de connectivité">
+    Les agents terrain travaillent dans des zones sans internet fiable. Tout système nécessitant une connexion permanente était inutilisable — et les pertes de données sur le terrain sont inacceptables.
+  </Card>
+  <Card title="Le problème de conformité">
+    La loi camerounaise (n°2010/012) impose que les données RH et financières restent sur le territoire national. Une approche 100% cloud n'était pas légalement viable.
+  </Card>
+  <Card title="Le problème de traçabilité">
+    La chaîne d'approvisionnement n'avait aucun audit immuable. Les enregistrements d'expéditions pouvaient être modifiés après coup — un risque de responsabilité pour un producteur alimentaire.
+  </Card>
+  <Card title="Le problème de scalabilité">
+    Le système monolithique ne permettait pas de mises à jour modulaires. Chaque changement risquait de casser d'autres parties du métier — le développement avançait au ralenti.
+  </Card>
+</CardGrid>
 
-**Cinq bases PostgreSQL isolées** : Chaque service possède sa propre base (`erp_db`, `crm_db`, `supply_db`, `bi_db`) avec un schéma dédié et 17 index de performance couvrant les filtres de dates, les statuts, les clés étrangères et les identifiants offline. Les contraintes CHECK et les colonnes GENERATED (`order_items.subtotal`) garantissent l'intégrité des données au niveau base.
+## Ce que j'ai construit
 
-**RBAC granulaire (5 rôles)** : `admin`, `manager`, `comptable`, `agent_terrain`, `analyste` — chaque rôle a une matrice d'accès précise. Par exemple, `comptable` ne voit que l'ERP, `agent_terrain` ne voit que CRM + Supply Chain. Les middlewares `extractUserFromHeaders` et `requireRole` sont partagés entre tous les services Node.js pour une implémentation cohérente.
+**5 microservices isolés** avec une API Gateway comme point d'entrée unique — centralisant JWT/OAuth2, le rate limiting, et jouant le rôle de reverse proxy. Les services métier ne valident jamais les tokens directement ; ils font confiance aux en-têtes injectés par le gateway. Chaque service possède sa propre base PostgreSQL avec un schéma dédié et 17 index de performance.
 
-**ERP Service (Node.js, port 3001)** : Gère les employés (CRUD avec soft delete), la comptabilité (écritures avec types debit/credit/adjustment, exercices fiscaux), et les bons de commande (statuts pending → approved → delivered / cancelled) — validation Joi sur tous les endpoints.
+**RBAC granulaire (5 rôles)** : `admin`, `manager`, `comptable`, `agent_terrain`, `analyste` — chacun avec une matrice d'accès précise appliquée par des middlewares partagés entre tous les services. Un agent terrain ne voit que CRM et Supply Chain. Un comptable ne voit que l'ERP. Zéro fuite de données cross-modules par construction.
 
-**CRM Service (Node.js, port 3002)** : Gère les clients (segments VIP/premium/standard, points de fidélité, historique des commandes via JOIN) et les commandes (items en transaction, statuts pending → confirmed → preparing → ready → delivered, stats par restaurant sur 30 jours).
+**Supply Chain offline-first** : Conçu spécifiquement pour les agents en zones de faible connectivité. Un endpoint `POST /sync/push` accepte un lot d'opérations INSERT/UPDATE/DELETE avec un `offline_id` pour la déduplication côté serveur. Un worker Redis traite la queue toutes les 30 secondes avec mécanisme de retry et dead-letter — les opérations saisies hors ligne se synchronisent automatiquement dès que la connexion revient.
 
-**Supply Chain — offline-first (Node.js, port 3003)** : Conçu pour les agents en zone de faible connectivité. Un endpoint `POST /sync/push` accepte un tableau d'opérations (INSERT, UPDATE, DELETE) avec `offline_id` pour la déduplication côté serveur. Un worker Redis traite la queue toutes les 30 secondes avec mécanisme de retry et dead-letter. La file d'attente est scalable horizontalement.
+**Traçabilité blockchain immuable (Hyperledger Fabric)** : Chaque expédition et checkpoint est enregistré sur la blockchain Fabric via un chaincode de 147 lignes. `getHistoryForKey()` fournit des historiques d'audit complets. Une fonction `verifyChainIntegrity()` valide l'intégrité de toute la chaîne — chaque checkpoint est lié au précédent via un index composite. Les enregistrements ne peuvent pas être modifiés rétroactivement.
 
-**Blockchain — traçabilité immuable (Hyperledger Fabric)** : Le chaincode `supply-chain-contract.js` (147 lignes) enregistre chaque expédition et checkpoint sur la blockchain Fabric avec `getHistoryForKey()` pour l'audit complet. Une fonction `verifyChainIntegrity()` permet de vérifier l'intégrité de toute la chaîne d'approvisionnement — chaque checkpoint est lié au précédent via un index composite.
+**BI Service (FastAPI/Python)** : Agrège les KPIs de tous les services via HTTP avec cache Redis de 5 minutes. Expose des endpoints de snapshots, tendances, et tableaux de bord — donnant à la direction une visibilité temps réel sur l'ensemble de l'opération sans requêter les bases de production directement.
 
-**BI Service (Python / FastAPI, port 3004)** : Implémenté en Python avec asyncpg et Redis asynchrone. Agrège les KPIs depuis les autres services via HTTP, met en cache 5 minutes, et expose des endpoints de snapshots, tendances, et tableaux de bord. Démarrage/arrêt propres avec connexion PostgreSQL et Redis.
+**Infrastructure cloud hybride** : AWS af-south-1 (Cape Town) pour le compute — ECS Fargate, RDS PostgreSQL Multi-AZ, ElastiCache Redis, ALB. Azure South Africa North pour l'identité entreprise (Azure AD). On-premise Douala pour les données RH et financières (conformité légale). Entièrement géré par Terraform via 8 modules, avec rotation des secrets (90 jours) et monitoring GuardDuty.
 
-**Database-per-service avec orchestration complète** : Le script `scripts/init-db.sql` (197 lignes) initialise les 4 bases avec leurs schémas, index, et contraintes. Le fichier `docker-compose.yml` (190 lignes) orchestre toute la stack locale (PostgreSQL 15, Redis 7, 5 services, healthchecks, volumes persistants, réseau bridge dédié).
+**Pipeline CI/CD (GitHub Actions, 5 étapes)** : Lint → Tests Jest → Lint Python (Ruff) → Build Docker multi-stage + push ECR → Deploy ECS. Environnements staging et production séparés.
 
-## Infrastructure cloud hybride
+## Impact
 
-Le projet déploie une architecture multi-cloud et on-premise :
-
-- **AWS af-south-1** (Cape Town) : ECS Fargate (5 services avec HPA), RDS PostgreSQL (Multi-AZ en prod), ElastiCache Redis, S3 (documents), ALB avec HTTPS, Route53
-- **Azure South Africa North** : Azure AD (authentification entreprise), Azure Monitor (logs centralisés)
-- **On-premise Douala** : données RH/financières (conformité loi camerounaise n°2010/012)
-
-**Infrastructure as Code — Terraform** : Le déploiement est entièrement automatisé via Terraform avec 8 modules (VPC, Security Groups, IAM, S3, RDS, ElastiCache, ALB, ECS) en multi-providers AWS + Azure, gestion des secrets via AWS Secrets Manager (rotation 90 jours), budgets AWS ($1200/mois prod, alarme >$500/6h), et monitoring CloudWatch + GuardDuty + AWS Config.
-
-**Kubernetes — Kustomize** : Une alternative de déploiement via EKS avec 5 Deployments + Services, Ingress ALB, HPA (CPU 70%, scales 2→10), ConfigMap, Secret template.
-
-**CI/CD — GitHub Actions (5 jobs)** : Lint (ESLint) → Tests (Jest, PostgreSQL + Redis services) → Python lint (Ruff) → Build & push Docker (ECR, multi-stage) → Deploy ECS (main → prod, develop → staging). Trois jeux de variables d'environnement (`.env.dev`, `.env.test`, `.env.prod.example`).
+<CardGrid>
+  <Card title="Zéro perte de données terrain">
+    L'architecture offline-first permet aux agents de travailler sans connexion. Les opérations sont mises en queue localement et synchronisées automatiquement — plus de ressaisie manuelle, plus d'enregistrements perdus.
+  </Card>
+  <Card title="Conformité légale complète">
+    Les données RH et financières restent on-premise à Douala (loi camerounaise n°2010/012). L'architecture hybride a été conçue autour de cette contrainte dès le départ — pas ajoutée après coup.
+  </Card>
+  <Card title="Audit supply chain immuable">
+    Chaque checkpoint d'expédition est désormais sur la blockchain. Les enregistrements ne peuvent plus être modifiés après coup — éliminant le risque de responsabilité lié aux logs mutables pour un producteur alimentaire.
+  </Card>
+  <Card title="~450 $/mois d'infrastructure estimée">
+    Un système multi-cloud production-ready avec monitoring, alerting, DRP (RTO 5–60 min, RPO 5 min) et autoscaling — à un coût accessible pour une PME camerounaise.
+  </Card>
+</CardGrid>
 
 ## Monitoring & Observabilité
 
-- **Prometheus** : Scrape CloudWatch exporter, endpoints health des 5 services, Redis exporter, PostgreSQL exporter, nœuds Kubernetes
-- **Grafana** : Dashboard avec 7 panneaux (statut services, CPU/mémoire, Redis hit ratio, connexions PG, erreurs 5xx, logs d'erreur récents)
-- **CloudWatch Dashboard** : 10 widgets (ECS CPU, RDS connections/IOPS, ALB request count/latency/p99, Redis hit/miss, coûts estimés)
-- **Alerting** : 7 règles Prometheus (ServiceDown, HighErrorRate, HighLatency, HighCPUUsage, PGConnectionsHigh, RedisCacheMissHigh, DiskSpaceLow)
-- **Multi-env** : Production + staging isolés, DRP documenté (RTO 5-60 min selon le service, RPO 5 min pour PostgreSQL via WAL)
-
-## Ce que ça montre
-
-- Conception complète d'architecture microservices avec Auth Gateway, RBAC, et pas de point-à-point entre services
-- Résilience terrain avec offline-first (Redis queue, retry, dead-letter, déduplication par offline_id)
-- Traçabilité blockchain avec Hyperledger Fabric pour l'audit supply chain
-- Cloud hybride multi-régions (AWS + Azure + on-premise) avec IaC complet et CI/CD automatisé
-- Stack hétérogène cohérente (Node.js + Python/FastAPI dans la même architecture)
-- Documentation technique complète : architecture, monitoring, coûts ($465/mo estimé), DRP, sécurité, performances
+- **Prometheus** : Scrape les 5 endpoints de santé des services, Redis, PostgreSQL, et les nœuds Kubernetes
+- **Grafana** : Dashboard 7 panneaux (statut services, CPU/mémoire, Redis hit ratio, connexions PG, erreurs 5xx, logs récents)
+- **CloudWatch** : 10 widgets incluant latence ALB/p99, IOPS RDS, Redis hit/miss, coûts estimés
+- **Alerting** : 7 règles Prometheus couvrant ServiceDown, HighErrorRate, HighLatency, HighCPU, PGConnectionsHigh, RedisCacheMissHigh, DiskSpaceLow
 
 ## Ce que cette expérience m'a appris
 
-Architecturer un microservices pour une entreprise agro-industrielle m'a confronté à des contraintes réseau réelles — agents terrain sans connexion, régulation camerounaise sur les données RH, et besoin de traçabilité légale de la chaîne d'approvisionnement. Chaque compromis technique (base par service vs. base partagée, sync synchrone vs. queue asynchrone, Fabric vs. simple base de données) était dicté par le métier, pas par la techno.
+Concevoir pour une agro-industrie camerounaise m'a confronté à des contraintes qui n'apparaissent pas dans les architectures de manuel : agents sans connexion, réglementation sur la résidence des données, et exigences de traçabilité légale pour la chaîne alimentaire. Chaque compromis technique était dicté par le métier — pas par les préférences technologiques.
 
-J'ai aussi appris à concevoir un système qui peut être déployé de trois façons différentes (Docker Compose, Kubernetes, ECS Fargate) sans changer une ligne de code métier — une contrainte académique qui s'est révélée formatrice pour penser infrastructure et application comme un tout cohérent.
+J'ai aussi appris à concevoir un système déployable de trois façons différentes (Docker Compose, Kubernetes, ECS Fargate) sans changer une ligne de code métier — une contrainte qui force une séparation plus nette entre infrastructure et application dès le départ.

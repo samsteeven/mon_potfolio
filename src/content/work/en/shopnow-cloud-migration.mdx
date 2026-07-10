@@ -13,36 +13,45 @@ lang: "en"
 
 ## The Problem
 
-ShopNow runs on a monolithic server in a single datacenter in Douala. No redundancy. Frequent outages. Traffic spikes take the site down. Maintenance costs are eating the budget. Management wants to modernize — but nobody wants to break production by migrating to the cloud.
+ShopNow was running its entire e-commerce operation on a single monolithic server in one datacenter in Douala. Every traffic spike risked bringing the site down. Every power outage meant manual recovery. The IT team was spending most of their bandwidth keeping aging infrastructure alive rather than building anything new.
 
-Three physical sites to connect: Douala (HQ), Yaoundé (regional office), Bafoussam (agency). Each has different constraints for power, internet quality, and local IT skills.
+Three physical sites — Douala (HQ), Yaoundé (regional office), Bafoussam (agency) — had no reliable interconnection. Teams were emailing files back and forth. Remote work was effectively impossible. And there was no disaster recovery plan: if the Douala datacenter had a fire or a sustained power cut, the entire business would stop.
 
-## What I Did
+Management wanted to modernize, but had one hard constraint: zero downtime during migration.
 
-I designed a hybrid on-premise + Azure architecture that allows progressive migration without downtime. Here are the key decisions.
+## What I Built
 
-**Network** : Each site connects to Douala over MPLS (QoS guaranteed for VoIP) with a backup IPSec tunnel over the public internet. Failover is automatic. Without this, a phone call between Douala and Bafoussam becomes unusable the moment the primary link degrades.
+I designed a hybrid on-premise + Azure architecture enabling a phased, reversible migration — each of the 6 phases can be rolled back without affecting the others.
 
-**Identity** : On-premise Active Directory synced with Azure AD. Users keep the same password everywhere. I added MFA on all remote access — in a context where people often connect from personal devices, this was non-negotiable.
+**Network**: Each site connects to Douala via MPLS (QoS guaranteed for VoIP) with an automatic IPSec fallback tunnel over the public internet. Without this, a single link degradation makes phone calls between sites unusable.
 
-**Email** : Big decision. The on-premise Exchange server was consuming 30% of the IT team's time in maintenance. I pushed them to Microsoft 365. It freed up time immediately, and users saw the difference in 3 months — Teams, SharePoint, shared calendars. Quick wins like this build credibility for the rest of the migration.
+**Identity**: On-premise Active Directory synced with Azure AD. Users keep the same password everywhere — no additional login friction. MFA enforced on all remote access. In a context where employees often connect from personal devices, this was non-negotiable.
 
-**Backup** : Veeam with Cloud Tier to Azure Blob. Daily backups are replicated to the cloud automatically. If the Douala datacenter goes down (power surges, fires — it happens), we fail over to Azure in under 4 hours.
+**Email & collaboration**: The on-premise Exchange server was consuming 30% of the IT team's time in maintenance. I pushed them toward Microsoft 365 — Teams, SharePoint, shared calendars. Users saw the difference within 3 months. Quick wins like this build credibility for the harder phases ahead.
 
-## Why Azure Over AWS
+**Disaster recovery**: Veeam with Cloud Tier to Azure Blob. Daily backups replicated to the cloud automatically. If the Douala datacenter goes down — power surges, fires, flooding — the business fails over to Azure in under 4 hours.
 
-I compared all three. Azure wins on one specific point: native Active Directory integration. No intermediary layer needed for enterprise authentication. And Microsoft 365, which the team already uses, integrates without friction. The Azure South Africa North region delivers acceptable latency (~60ms from Cameroon).
+**Why Azure over AWS**: Azure wins on one specific point — native Active Directory integration, no intermediary gateway needed. The Azure South Africa North region delivers ~60ms latency from Cameroon. AWS would have required a jury-rigged LDAP bridge for AD and turned the M365 migration into a separate project.
 
-AWS would have worked, but I'd have needed to jury-rig an LDAP gateway for AD, and the M365 migration would have become a separate project. Azure reduces overall complexity.
+## Impact
 
-## The Outcome
-
-The 6-phase migration plan spans 12 to 18 months. Every phase is reversible. First-year cost is approximately €86K, then ~€42K per year recurring — significantly less than the legacy system's maintenance.
-
-But the real win is that the IT team can sleep at night. No more emergency calls for an overheating server, no more manual restores after a power cut. The cloud absorbed the complexity they were managing with duct tape.
+<CardGrid>
+  <Card title="~50% cost reduction year-over-year">
+    First-year budget: €86K. Recurring from year 2: ~€42K — significantly less than the legacy system's maintenance cost, while delivering far higher reliability.
+  </Card>
+  <Card title="99.9% uptime target">
+    From a single point of failure to a multi-region architecture with automatic failover. The platform can now sustain traffic spikes that previously took the site offline.
+  </Card>
+  <Card title="30% IT maintenance freed">
+    The Exchange → Microsoft 365 migration alone freed 30% of IT team bandwidth previously consumed by server maintenance — redirected to product and infrastructure improvements.
+  </Card>
+  <Card title="RTO < 4 hours">
+    In case of full datacenter failure, the business can resume operations on Azure in under 4 hours — down from an estimated 2–3 days with the legacy setup.
+  </Card>
+</CardGrid>
 
 ## What I Learned
 
-This project confirmed one thing: in an African context, hybrid cloud isn't a luxury — it's a necessity. Internet connectivity isn't reliable enough for 100% cloud, local datacenters don't meet international standards, and regulations require keeping certain data on national territory.
+This project confirmed something specific to the African context: hybrid cloud isn't an architectural preference — it's a necessity. Internet connectivity isn't reliable enough for 100% cloud, local datacenters rarely meet international standards, and regulations require keeping certain data on national territory.
 
-I also learned to sell a cloud project to non-technical leadership. I didn't talk about VPCs or Terraform. I said: "you'll get 99.9% uptime, your teams can work from anywhere, and you'll pay less than today." For them, that's what the cloud means.
+I also learned to sell a technical migration to non-technical leadership. I didn't talk about VPCs or Terraform. I said: *"you'll get 99.9% uptime, your teams can work from anywhere, and you'll pay less than today."* For them, that's what the cloud means — and it's the right framing.

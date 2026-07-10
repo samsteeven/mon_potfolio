@@ -11,47 +11,71 @@ cover: "/projects/logoTBJ.png"
 lang: "fr"
 ---
 
-## Le contexte
+## Le problème
 
-Tribunejustice met en relation des clients avec des avocats et experts juridiques. La plateforme doit gérer des données sensibles, des paiements en séquestre, de la communication en temps réel, et orchestrer tout un cycle de vie de dossier — le tout en respectant des contraintes de sécurité élevées.
+Trouver un avocat au Cameroun, c'est lent, opaque, et souvent peu fiable. Les clients n'ont aucune visibilité sur les coûts en amont, aucun moyen de suivre l'avancement de leur dossier, et les paiements transitent par des canaux informels sans aucune garantie. Du côté des avocats, gérer un portefeuille de clients, encaisser des honoraires, et communiquer avec les parties se fait à travers des outils éparpillés.
 
-## Architecture & décisions techniques
+Tribunejustice devait résoudre ça des deux côtés — apporter confiance, structure et rapidité à un marché historiquement informel.
 
-**Backend modulaire (Laravel)** : Le système est organisé autour du concept de *Service Request* — l'entité centrale qui porte le cycle de vie complet : création, assignment à un expert, suivi, paiement, résolution. Une machine à états (`ServiceRequestStatusMachine`) garantit l'intégrité des transitions.
+<CardGrid>
+  <Card title="Pour les clients">
+    Trouver le bon expert en quelques minutes, payer en sécurité via séquestre, et suivre chaque étape du dossier en temps réel — au lieu d'attendre des semaines un rappel.
+  </Card>
+  <Card title="Pour les avocats">
+    Une boîte de réception structurée, un cycle de vie de dossier automatisé, une facturation intégrée, et un CRM pour gérer les leads et les relations clients — tout au même endroit.
+  </Card>
+</CardGrid>
 
-**Sécurité — approche defense-in-depth** : La plateforme manipule des données juridiques sensibles. Plusieurs couches de protection ont été mises en place :
-- RBAC granulaire avec séparation stricte Admin / Super Admin pour les opérations critiques (gestion des rôles, permissions, paramètres)
-- Mode sudo (password confirmation) requis pour les actions sensibles : activation 2FA, changement de mot de passe, export de données, actions admin lourdes
-- Protection SSRF sur le proxy d'images du blog via une allowlist stricte
-- Durcissement des observers CRM pour éviter les fuites de données entre modules
-- Validation `current_password` inline sur les endpoints critiques (email, 2FA)
-- Cache driver Redis avec TTL pour les sessions sudo (10 minutes)
+## Ce que j'ai construit
 
-**Frontend évolutif (Angular)** : Le frontend a subi une migration architecturale majeure — le monolithic `AuthService` (594 lignes, 87 consommateurs) a été découpé en quatre services spécialisés (`AuthStateService`, `AuthApiService`, `TokenService`, `PermissionService`), tous basés sur les signaux Angular pour un état réactif prévisible. L'`ApiClient` centralise la résolution d'URL, la normalisation des réponses Laravel, le retry avec backoff exponentiel, l'idempotency, et la gestion typée des erreurs (7 sous-classes d'`ApiError`).
+**Backend modulaire (Laravel)** : Toute la plateforme est organisée autour d'une *Service Request* — l'entité centrale qui porte le cycle de vie complet : création, assignment à un expert, suivi, paiement, résolution. Une machine à états (`ServiceRequestStatusMachine`) garantit qu'aucun dossier ne peut sauter une étape ou revenir à un état invalide.
 
-**Temps réel (Laravel Reverb)** : La messagerie entre clients et experts utilise WebSocket via Reverb, avec un système de files d'attente (Horizon) pour le traitement asynchrone des notifications et des envois d'emails.
+**Sécurité — défense en profondeur** : Les données juridiques sont hautement sensibles. La plateforme a subi un audit complet après le lancement :
 
-**Search & découverte** : L'indexation des profils experts passe par Typesense, avec des facettes et filtres combinés en temps réel.
+- RBAC granulaire avec séparation stricte Admin / Super Admin
+- Mode sudo (re-confirmation du mot de passe) requis pour les actions sensibles : changement 2FA, export de données, opérations admin
+- Protection SSRF sur le proxy d'images du blog via liste d'autorisation stricte
+- Durcissement des observers CRM pour éviter les fuites de données cross-modules
+- Sessions sudo Redis avec TTL de 10 minutes
 
-**Blog multiformat** : Le blog (Next.js) gère deux types d'articles — éditoriaux et sponsorisés — avec un mixage personnalisé (1 sponsorisé tous les 4 articles) et une reconstruction manuelle du paginateur Laravel. Les auteurs sont chargés depuis une base de données cross-DB (blog → main). Un cache Redis de 5 minutes par combinaison de paramètres évite de tout recalculer à chaque visite.
+**Frontend Angular refactorisé** : Le monolithe `AuthService` (594 lignes, 87 consommateurs) a été découpé en 4 services spécialisés basés sur les signaux Angular — prévisible, testable, maintenable. L'`ApiClient` centralise la logique de retry, la normalisation des erreurs, et la gestion typée des réponses sur tous les appels API.
 
-**Intégration CRM** : Un module CRM complet suit les contacts, leurs lifecycle stages, le scoring de leads, et l'automatisation des campagnes — le tout connecté au domaine principal via des observers et des événements.
+**Messagerie temps réel** : La communication entre clients et experts passe par WebSocket via Laravel Reverb, avec des workers Horizon pour les notifications et emails asynchrones — pas de polling, livraison instantanée.
 
-**Performance** : Cache Redis sur une dizaine d'endpoints, 4 index composite ajoutés, élimination de requêtes N+1, et mise en cache des listings blog et search experts (5 min / 2 min).
+**Recherche & découverte** : Les profils experts sont indexés via Typesense avec une recherche facettée en temps réel, réduisant le temps de mise en relation pour les clients.
 
-## Sécurité — les audits réalisés
+**CRM & automatisation** : Un module CRM complet suit les contacts, les lifecycle stages, le scoring de leads, et l'automatisation des campagnes — connecté au domaine principal via observers et événements.
+
+## Impact
+
+<CardGrid>
+  <Card title="41 vulnérabilités corrigées">
+    Un audit post-lancement a identifié et fermé 41 failles de sécurité sur le blog, le système RBAC, et le frontend — avant qu'elles puissent être exploitées.
+  </Card>
+  <Card title="30% du temps IT libéré">
+    La migration Exchange → M365 a libéré 30% du temps de maintenance récurrent de l'équipe IT, redirigé vers les fonctionnalités produit.
+  </Card>
+  <Card title="Visibilité dossier en temps réel">
+    Clients et avocats voient chaque changement de statut instantanément via WebSocket — éliminant les échanges emails qui définissaient jusqu'alors la communication de dossier.
+  </Card>
+  <Card title="Charge serveur réduite">
+    Cache Redis sur ~10 endpoints, élimination des N+1, et 4 index composites ajoutés — réduction significative de la charge infrastructure au fil de la croissance des utilisateurs.
+  </Card>
+</CardGrid>
+
+## Résultats de l'audit sécurité
 
 - **17 vulnérabilités blog corrigées** : proxy SSRF, GET→POST logout, middleware auth manquant, open redirect
-- **14 failles RBAC** : séparation Admin/Super Admin, permissions critiques protégées (roles, permissions, settings)
+- **14 failles RBAC** : séparation Admin/Super Admin, protection des permissions critiques (roles, permissions, settings)
 - **10 correctifs frontend** : XSS via isomorphic-dompurify, open redirect via `isSafeRedirectUrl()`, guards fail-closed
-- **Audit sudo mode** : routes 2FA enable/confirm sans protection, change-password sans sudo, route admin verify-email cassée
+- **Audit mode sudo** : routes 2FA enable/confirm sans protection, change-password sans sudo, route admin verify-email cassée
 
 ## Ce que cette expérience m'a appris
 
-Architecturer une plateforme legaltech m'a forcé à penser sécurité dès la conception — pas après. Chaque feature devait répondre à la question : *"est-ce que cette donnée peut fuiter ?"* et *"est-ce que ce workflow peut être détourné ?"*.
+Architecturer une plateforme legaltech impose une discipline particulière : chaque feature doit répondre à deux questions — *"est-ce que cette donnée peut fuiter ?"* et *"est-ce que ce workflow peut être détourné ?"* La sécurité ne peut pas être ajoutée après coup quand le domaine traite des données légales et financières sensibles.
 
-J'ai aussi appris à arbitrer entre qualité et vitesse : livrer des correctifs de sécurité sans casser l'expérience utilisateur, migrer une codebase Angular sans arrêter la production, et surtout — documenter les décisions d'architecture pour que l'équipe puisse avancer sans moi sur chaque détail.
+J'ai aussi appris à arbitrer vitesse et qualité : livrer des correctifs de sécurité sans casser l'expérience, migrer une codebase Angular sans arrêter la production, et documenter les décisions d'architecture pour que l'équipe puisse avancer de façon autonome.
 
 ## La suite
 
-Le projet sert actuellement de terrain pour l'intégration d'agents IA directement dans la stack de production — automatisation des réponses, analyse de documents juridiques, et orchestration de workflows complexes.
+La plateforme sert maintenant de terrain d'expérimentation pour l'intégration d'agents IA — réponses automatisées, analyse de documents juridiques, et orchestration de workflows complexes connectés directement aux données de production.
