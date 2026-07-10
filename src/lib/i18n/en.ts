@@ -23,7 +23,7 @@ export const en = {
     a1: "Software Engineer by training. I design and ship resilient software systems with security, reliability, and long-term maintainability built in. I focus on backend engineering, security-first architecture, and automating business processes by integrating autonomous AI agent workflows.",
     q2: "What I work with",
     a2: "Laravel and React (or Angular) are my core tools, with Inertia.js as a seamless bridge. PostgreSQL, Redis, and Docker handle the infrastructure and systems layer. I develop custom orchestration systems to connect AI agents with production data.",
-    q3: "What I bring to a project",
+    q3: "What I bring to your project",
     a3: "I take ownership of the full technical scope — architecture decisions, backend reliability, systems security, and automation workflows. I'm most useful on projects where stability, scalability, and operational security are critical.",
     q4: "How to get started",
     a4: "Have a project or a technical challenge? Schedule a brief call via Cal.com or write to contact@samensteeve.com — I'll respond with a concrete take on how to move forward.",
@@ -31,9 +31,22 @@ export const en = {
     ctaSubtitle: "Let's talk. I'll respond with a concrete proposal.",
     ctaButton: "Book a 30-min call",
     services: [
-      "Software engineering & web applications — React · Angular · Laravel · Inertia.js",
-      "Performance, scalability & reliability — applications built to scale and last",
-      "AI automation & Security — tailored agent workflows for business processes and security-aware dev",
+      {
+        title: "Fast, reliable delivery",
+        desc: "I build systems that are secure, scalable, and maintainable — so you can ship quickly without trading long-term quality."
+      },
+      {
+        title: "Security & data integrity",
+        desc: "Security is not an add-on. I design architectures where vulnerabilities are minimized from the start, and data integrity is guaranteed."
+      },
+      {
+        title: "AI-driven automation",
+        desc: "I integrate autonomous AI agents into your workflows to reduce manual work, cut errors, and speed up processes — without compromising control or security."
+      },
+      {
+        title: "Technical leadership",
+        desc: "As a Tech Lead / Solution Architect, I can align your team, define clear patterns, and ensure the system evolves cleanly over time."
+      }
     ],
   },
   writing: {

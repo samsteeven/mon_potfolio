@@ -18,7 +18,7 @@ export const fr = {
     a1: "Ingénieur logiciel de formation. Je conçois et développe des systèmes logiciels résilients avec la sécurité, la fiabilité et la maintenabilité intégrées dès le départ. Je me concentre sur l'ingénierie backend, la sécurité des architectures et l'automatisation des processus métier via l'intégration de flux d'agents IA autonomes.",
     q2: "Ce avec quoi je travaille",
     a2: "Laravel et React (ou Angular) sont mes outils de base, avec Inertia.js comme pont fluide. PostgreSQL, Redis et Docker gèrent la couche système et infrastructure. Je conçois des orchestrations sur mesure pour connecter les agents IA aux données de production.",
-    q3: "Ce que j'apporte à un projet",
+    q3: "Ce que j'apporte à votre projet",
     a3: "Je prends en charge l'ensemble du périmètre technique — choix d'architecture, fiabilité backend, sécurité système et flux d'automatisation. Je suis le plus utile sur des projets où la stabilité, la scalabilité et la sécurité opérationnelle sont critiques.",
     q4: "Comment démarrer",
     a4: "Un projet ou un défi technique ? Planifiez un appel sur Cal.com ou écrivez à contact@samensteeve.com — je reviendrai avec une proposition concrète.",
@@ -26,9 +26,22 @@ export const fr = {
     ctaSubtitle: "Parlons-en. Je réponds avec une proposition concrète.",
     ctaButton: "Réserver un appel de 30 min",
     services: [
-      "Génie logiciel & applications web — React · Angular · Laravel · Inertia.js",
-      "Performance, scalabilité & fiabilité — des applications conçues pour monter en charge et tenir dans le temps",
-      "Automatisation IA & Sécurité — intégration d'agents IA dans vos processus et développement orienté sécurité",
+      {
+        title: "Livraison rapide et fiable",
+        desc: "Je conçois des systèmes sécurisés, scalables et maintenables, pour vous permettre de livrer rapidement sans compromettre la qualité à long terme."
+      },
+      {
+        title: "Sécurité & intégrité des données",
+        desc: "La sécurité n'est pas une option. Je conçois des architectures où les vulnérabilités sont minimisées dès le départ et où l'intégrité des données est garantie."
+      },
+      {
+        title: "Automatisation par l'IA",
+        desc: "J'intègre des agents IA autonomes dans vos flux de travail pour réduire les tâches manuelles, éliminer les erreurs et accélérer vos processus — sans compromettre le contrôle ou la sécurité."
+      },
+      {
+        title: "Leadership technique",
+        desc: "En tant que Tech Lead / Architecte Solution, j'aligne vos équipes, définis des patterns clairs et assure une évolution saine et propre du système dans le temps."
+      }
     ],
   },
   work: {

@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import Image from "next/image";
-import { ArrowUpRight, Mail, Code2, ShieldCheck, Bot, CalendarDays } from "lucide-react";
+import { ArrowUpRight, Mail, Code2, ShieldCheck, Bot, CalendarDays, Users } from "lucide-react";
 import { workSource, getWritingPages } from "@/lib/source";
 import { leafSlug } from "@/lib/slug";
 import { ProjectCard, sortByFeaturedAndDate } from "@/components/project-card";
@@ -181,10 +181,14 @@ export default async function HomePage({ params }: PageProps) {
               <ul className="mt-6 flex flex-col gap-5">
                 {t.about.services.map((service, i) => (
                 <li key={i} className="flex items-start gap-3.5">
-                  {i === 0 && <Code2 className="mt-0.5 h-4.5 w-4.5 shrink-0 text-accent" />}
-                  {i === 1 && <ShieldCheck className="mt-0.5 h-4.5 w-4.5 shrink-0 text-accent" />}
-                  {i === 2 && <Bot className="mt-0.5 h-4.5 w-4.5 shrink-0 text-accent" />}
-                  <span className="text-sm leading-relaxed text-ink-soft">{service}</span>
+                  {i === 0 && <Code2 className="mt-1 h-4.5 w-4.5 shrink-0 text-accent" />}
+                  {i === 1 && <ShieldCheck className="mt-1 h-4.5 w-4.5 shrink-0 text-accent" />}
+                  {i === 2 && <Bot className="mt-1 h-4.5 w-4.5 shrink-0 text-accent" />}
+                  {i === 3 && <Users className="mt-1 h-4.5 w-4.5 shrink-0 text-accent" />}
+                  <div className="flex-1 min-w-0">
+                    <h4 className="text-sm font-semibold text-ink leading-tight">{service.title}</h4>
+                    <p className="mt-1.5 text-xs leading-relaxed text-ink-soft">{service.desc}</p>
+                  </div>
                 </li>
                 ))}
               </ul>
