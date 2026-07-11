@@ -107,7 +107,7 @@ export const fr = {
       {
         quote: "Steeve a conçu notre infrastructure hybride de microservices de A à Z. La synchronisation offline-first a résolu des années d'échecs de synchronisation pour nos agents de terrain. Un architecte exceptionnel.",
         author: "Jean-Pierre Ndongo",
-        role: "Directeur des Systèmes d'Information",
+        role: "DSI",
         company: "AGROCAM S.A."
       },
       {
