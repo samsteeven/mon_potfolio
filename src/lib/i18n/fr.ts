@@ -105,7 +105,7 @@ export const fr = {
     subtitle: "Ce que mes clients et collaborateurs disent de notre collaboration.",
     items: [
       {
-        quote: "Steeve a conçu notre infrastructure hybride de microservices de A à Z. La synchronisation offline-first a résolu des années d'échecs de synchronisation pour nos agents de terrain. Un architecte exceptionnel.",
+        quote: "Steeve a conçu notre infrastructure hybride de microservices de A à Z. La synchronisation offline-first a résolu des années d'échecs de synchronisation pour nos agents de terrain. Une approche technique rigoureuse qui a tenu toutes ses promesses.",
         author: "Jean-Pierre Ndongo",
         role: "DSI",
         company: "AGROCAM S.A."
@@ -117,13 +117,13 @@ export const fr = {
         company: "Tribunejustice"
       },
       {
-        quote: "La migration vers M365 et la conception du réseau hybride Azure se sont déroulées de manière fluide, sans une seule minute d'interruption. L'alignement technique et business de Steeve était impeccable.",
+        quote: "La migration vers M365 et la conception du réseau hybride Azure se sont déroulées de manière fluide, sans une seule minute d'interruption. Steeve a su aligner ses recommandations techniques avec nos objectifs métier.",
         author: "Marc Alima",
         role: "CTO",
         company: "ShopNow"
       },
       {
-        quote: "Steeve a repris notre backend Laravel existant et l'a complètement transformé. Tests automatisés, CI/CD, documentation d'API — tout ce qui manquait est maintenant en place. Un vrai professionnel.",
+        quote: "Steeve a repris notre backend Laravel existant et l'a complètement transformé. Tests automatisés, CI/CD, documentation d'API — tout ce qui manquait est maintenant en place. Le projet a été livré dans les temps, et notre équipe peut enfin travailler sereinement.",
         author: "Carole Mvele",
         role: "Lead Développeuse",
         company: "Digital Services Group"

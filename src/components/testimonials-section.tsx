@@ -84,7 +84,7 @@ export function TestimonialsSection({ items }: Props) {
       {/* ── Gauche : liste d'auteurs ─────────────────────────── */}
       <div
         ref={containerRef}
-        className="no-scrollbar flex flex-row md:flex-col overflow-x-auto md:overflow-x-hidden md:overflow-y-auto gap-2 md:gap-0 pb-2 md:pb-0 md:w-2/5 shrink-0 md:max-h-[16rem] -mx-6 px-6 md:mx-0 md:px-0"
+        className="no-scrollbar relative flex flex-row md:flex-col overflow-x-auto md:overflow-x-hidden md:overflow-y-auto gap-2 md:gap-0 pb-2 md:pb-0 md:w-2/5 shrink-0 md:max-h-[16rem] -mx-6 px-6 md:mx-0 md:px-0"
         onMouseEnter={() => setPaused(true)}
         onMouseLeave={handleMouseLeave}
         style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
