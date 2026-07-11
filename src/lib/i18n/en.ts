@@ -121,6 +121,18 @@ export const en = {
         author: "Marc Alima",
         role: "CTO",
         company: "ShopNow"
+      },
+      {
+        quote: "Steeve took over our existing Laravel backend and completely transformed it. Automated tests, CI/CD, API documentation — everything that was missing is now in place. A true professional.",
+        author: "Carole Mvele",
+        role: "Lead Developer",
+        company: "Digital Services Group"
+      },
+      {
+        quote: "The security audit he conducted on our platform uncovered critical vulnerabilities we would never have caught on our own. His report was clear, actionable, and he stayed with us through full remediation.",
+        author: "Hervé Nkili",
+        role: "CEO",
+        company: "OpenCode Labs"
       }
     ]
   }
