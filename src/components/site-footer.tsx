@@ -54,7 +54,7 @@ export function SiteFooter({ lang }: { lang: Language }) {
               <GithubIcon className="h-6 w-6" />
             </a>
             <a
-              href="https://wa.me/237654557446"
+              href="https://wa.me/237654557446?text=Bonjour%20%21%20Je%20souhaite%20discuter%20d%27un%20projet."
               target="_blank"
               rel="noopener noreferrer me"
               className="transition-all duration-200 hover:text-accent hover:scale-110 active:scale-[0.96]"
