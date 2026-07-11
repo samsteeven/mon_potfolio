@@ -130,7 +130,7 @@ export default async function HomePage({ params }: PageProps) {
               <Mail className="h-7 w-7" />
             </a>
             <a
-              href="https://linkedin.com/in/samsteeven"
+              href="https://linkedin.com/in/samensteeve"
               target="_blank"
               rel="noopener noreferrer me"
               className="transition-all duration-200 hover:text-accent hover:scale-110 active:scale-[0.96]"

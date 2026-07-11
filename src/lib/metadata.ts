@@ -47,7 +47,7 @@ export function createPageMetadata({
       languages: {
         [lang]: canonicalUrl,
         [altLang]: altUrl,
-        "x-default": `${BASE_URL}/fr${path}`,
+        "x-default": `${BASE_URL}/en${path}`,
       },
     },
     openGraph: {
