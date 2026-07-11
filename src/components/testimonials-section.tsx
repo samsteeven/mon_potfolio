@@ -61,6 +61,7 @@ export function TestimonialsSection({ items }: Props) {
 
   const handleTouchStart = (e: React.TouchEvent) => {
     touchStartX.current = e.changedTouches[0].clientX;
+    setPaused(true);
   };
 
   const handleTouchEnd = (e: React.TouchEvent) => {
@@ -71,15 +72,20 @@ export function TestimonialsSection({ items }: Props) {
         ? (prev + 1) % items.length
         : (prev - 1 + items.length) % items.length
       );
-      setTick((t) => t + 1);
     }
     touchStartX.current = null;
+    setPaused(false);
+    setTick((t) => t + 1);
   };
 
   const item = items[active];
 
   return (
-    <div className="mt-12 flex flex-col gap-8 md:flex-row md:gap-16">
+    <div
+      className="mt-12 flex flex-col gap-8 md:flex-row md:gap-16"
+      onTouchStart={handleTouchStart}
+      onTouchEnd={handleTouchEnd}
+    >
 
       {/* ── Gauche : liste d'auteurs ─────────────────────────── */}
       <div
