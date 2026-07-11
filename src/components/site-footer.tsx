@@ -1,6 +1,6 @@
 import { Calendar, Mail } from "lucide-react";
 import { getT, type Language } from "@/lib/translations";
-import { LinkedinIcon, GithubIcon } from "@/components/icons";
+import { LinkedinIcon, GithubIcon, WhatsappIcon } from "@/components/icons";
 
 export function SiteFooter({ lang }: { lang: Language }) {
   const t = getT(lang);
@@ -52,6 +52,15 @@ export function SiteFooter({ lang }: { lang: Language }) {
               aria-label="GitHub"
             >
               <GithubIcon className="h-6 w-6" />
+            </a>
+            <a
+              href="https://wa.me/237654557446"
+              target="_blank"
+              rel="noopener noreferrer me"
+              className="transition-all duration-200 hover:text-accent hover:scale-110 active:scale-[0.96]"
+              aria-label="WhatsApp"
+            >
+              <WhatsappIcon className="h-6 w-6" />
             </a>
           </div>
 
