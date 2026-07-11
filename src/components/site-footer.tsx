@@ -5,6 +5,7 @@ import { LinkedinIcon, GithubIcon, WhatsappIcon } from "@/components/icons";
 export function SiteFooter({ lang }: { lang: Language }) {
   const t = getT(lang);
   const year = new Date().getFullYear();
+  const waMsg = lang === "en" ? "Hello%21%20I%27d%20like%20to%20discuss%20a%20project." : "Bonjour%20%21%20Je%20souhaite%20discuter%20d%27un%20projet.";
 
   return (
     <footer className="border-t border-line bg-paper relative z-10">
@@ -54,7 +55,7 @@ export function SiteFooter({ lang }: { lang: Language }) {
               <GithubIcon className="h-6 w-6" />
             </a>
             <a
-              href="https://wa.me/237654557446?text=Bonjour%20%21%20Je%20souhaite%20discuter%20d%27un%20projet."
+              href={`https://wa.me/237654557446?text=${waMsg}`}
               target="_blank"
               rel="noopener noreferrer me"
               className="transition-all duration-200 hover:text-accent hover:scale-110 active:scale-[0.96]"
