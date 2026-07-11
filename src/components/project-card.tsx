@@ -47,7 +47,7 @@ export function ProjectCard({
             </span>
           ))}
         </div>
-        <div className="flex items-center gap-3">
+        <div className="flex flex-wrap items-center gap-x-4 gap-y-1.5 justify-end">
           {project.url && (
             <a
               href={project.url}

@@ -114,6 +114,12 @@ body {
   animation: fade-up 0.6s ease-out both;
 }
 
+/* Barre de progression pour l'auto-défilement des témoignages */
+@keyframes testimonialProgress {
+  from { width: 0%; }
+  to { width: 100%; }
+}
+
 /* Styles pour le code en ligne (uniquement hors bloc pre) */
 code:not(pre code) {
   background-color: var(--paper-raised);
@@ -140,6 +146,8 @@ article [data-rehype-pretty-code-figure] {
   max-width: 100% !important;
   overflow: visible !important;
 }
+
+.no-scrollbar::-webkit-scrollbar { display: none; }
 
 pre code {
   display: block !important;

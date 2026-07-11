@@ -1,6 +1,6 @@
 "use client";
 
-import type { ReactNode } from "react";
+import React, { type ReactNode } from "react";
 import Image from "next/image";
 import { useState, useEffect } from "react";
 import { 
@@ -67,7 +67,7 @@ export function CopyButton({ text }: { text: string }) {
 }
 
 // Wrapper de bloc pre pour afficher le bouton au survol
-export function PreBlock({ children, ...props }: { children: ReactNode; [key: string]: any }) {
+export function PreBlock({ children, ...props }: { children: ReactNode } & React.HTMLAttributes<HTMLPreElement>) {
   const codeText = getTextContent(children);
   return (
     <div className="group relative my-6 w-full max-w-full">
@@ -87,7 +87,12 @@ export function PreBlock({ children, ...props }: { children: ReactNode; [key: st
 // -------------------------------------------------------------
 // COMPOSANT IMAGE INTERACTIVE AVEC LIGHTBOX DE ZOOM PLEIN ÉCRAN
 // -------------------------------------------------------------
-export function ZoomableImage({ src, alt, ...props }: { src: string; alt?: string; [key: string]: any }) {
+export function ZoomableImage({ 
+  src, 
+  alt, 
+  priority, 
+  ...props 
+}: { src: string; alt?: string; priority?: boolean } & Omit<React.ImgHTMLAttributes<HTMLImageElement>, "width" | "height" | "priority">) {
   const [isOpen, setIsOpen] = useState(false);
 
   useEffect(() => {
@@ -112,6 +117,7 @@ export function ZoomableImage({ src, alt, ...props }: { src: string; alt?: strin
           alt={alt || ""}
           width={1200}
           height={675}
+          priority={priority}
           className="h-auto w-full transition-transform duration-300 group-hover:scale-[1.01]"
           sizes="(max-width: 768px) 100vw, 672px"
           {...props}

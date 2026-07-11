@@ -26,10 +26,10 @@ export const en = {
     q3: "What I bring to your project",
     a3: "I take ownership of the full technical scope — architecture decisions, backend reliability, systems security, and automation workflows. I'm most useful on projects where stability, scalability, and operational security are critical.",
     q4: "How to get started",
-    a4: "Have a project or a technical challenge? Schedule a brief call via Cal.com or write to contact@samensteeve.com — I'll respond with a concrete take on how to move forward.",
-    ctaTitle: "Have a project or a technical challenge?",
+    a4: "Need to build, secure, or automate a system? I work with companies on a freelance basis to design, build, and audit production systems. Schedule a free 30-minute discovery call to discuss your roadmap, and I'll follow up with a concrete proposal.",
+    ctaTitle: "Need to build, secure, or automate a system?",
     ctaSubtitle: "Let's talk. I'll respond with a concrete proposal.",
-    ctaButton: "Book a 30-min call",
+    ctaButton: "Book a free discovery call",
     services: [
       {
         title: "Fast, reliable delivery",
@@ -100,4 +100,28 @@ export const en = {
       { name: "Docker", url: "https://docker.com", desc: "Consistent environments from dev to production. Every project I ship runs in containers." },
     ]
   },
+  testimonials: {
+    title: "Recommendations",
+    subtitle: "What clients and colleagues say about our collaboration.",
+    items: [
+      {
+        quote: "Steeve designed our hybrid microservices infrastructure from scratch. The offline-first synchronization resolved years of sync failures for our field agents. An outstanding architect.",
+        author: "Jean-Pierre Ndongo",
+        role: "Director of Information Systems",
+        company: "AGROCAM S.A."
+      },
+      {
+        quote: "As Tech Lead, Steeve not only secured our entire platform but also structured our Angular codebase for scale. His leadership and security-first approach saved us months of rework.",
+        author: "Sandrine Eboa",
+        role: "Tech Lead & Co-founder",
+        company: "Tribunejustice"
+      },
+      {
+        quote: "The migration to M365 and the hybrid Azure network design went seamlessly without a single minute of downtime. Steeve's technical recommendations and business alignment were perfect.",
+        author: "Marc Alima",
+        role: "CTO",
+        company: "ShopNow"
+      }
+    ]
+  }
 } as const;

@@ -1,7 +1,6 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import type { Metadata } from "next";
-import Image from "next/image";
 import { ArrowLeft, ArrowUpRight } from "lucide-react";
 import { workSource } from "@/lib/source";
 import { leafSlug } from "@/lib/slug";
@@ -9,7 +8,6 @@ import { getMDXComponents, ZoomableImage } from "@/components/mdx/mdx-components
 import { StatusDot } from "@/components/status-dot";
 import { getT, type Language } from "@/lib/translations";
 import { createPageMetadata } from "@/lib/metadata";
-import { BLUR_DATA_URL } from "@/lib/blur";
 import { TableOfContents, type TocItem } from "@/components/table-of-contents";
 import { LanguageFlag } from "@/components/language-flag";
 

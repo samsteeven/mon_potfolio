@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import Image from "next/image";
 import { ArrowUpRight, Mail, Code2, ShieldCheck, Bot, CalendarDays, Users } from "lucide-react";
+import { TestimonialsSection } from "@/components/testimonials-section";
 import { workSource, getWritingPages } from "@/lib/source";
 import { leafSlug } from "@/lib/slug";
 import { ProjectCard, sortByFeaturedAndDate } from "@/components/project-card";
@@ -301,6 +302,15 @@ export default async function HomePage({ params }: PageProps) {
               </ScrollReveal>
             ))}
         </div>
+      </section>
+
+      {/* ---------- TESTIMONIALS ---------- */}
+      <section id="testimonials" className="border-t border-line py-28 sm:py-36">
+        <ScrollReveal>
+          <h2 className="font-display text-2xl font-semibold">{t.testimonials.title}</h2>
+          <p className="mt-2 text-sm text-ink-soft">{t.testimonials.subtitle}</p>
+        </ScrollReveal>
+        <TestimonialsSection items={t.testimonials.items} />
       </section>
 
       {/* ---------- WRITING ---------- */}
