@@ -67,8 +67,8 @@ export function SiteFooter({ lang }: { lang: Language }) {
 
         </div>
 
-        {/* CTA meeting */}
-        <div className="mt-8 flex justify-center sm:justify-start">
+        {/* CTA meeting & Services link */}
+        <div className="mt-8 flex flex-col sm:flex-row items-center justify-between gap-4">
           <a
             href="https://cal.com/samen-steeve/30min"
             target="_blank"
@@ -77,6 +77,12 @@ export function SiteFooter({ lang }: { lang: Language }) {
           >
             <Calendar className="h-3.5 w-3.5" />
             {t.footer.bookCall}
+          </a>
+          <a
+            href={`https://services.samensteeve.com/${lang}`}
+            className="font-mono text-xs font-bold text-accent hover:underline flex items-center gap-1.5 transition duration-200"
+          >
+            {t.nav.services} &rarr;
           </a>
         </div>
       </div>

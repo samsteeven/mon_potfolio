@@ -33,13 +33,16 @@ export function SiteHeader({ lang }: { lang: Language }) {
 
   const navLinks = [
     { href: `/${lang}/#about`, label: t.nav.about, key: "about" as const },
-    { href: `/${lang}/#work`, label: t.nav.work, key: "work" as const },
+    { href: `https://services.samensteeve.com/${lang}`, label: t.nav.services, key: "services" as const },
     { href: `/${lang}/writing`, label: t.nav.writing, key: "writing" as const },
   ];
 
-  const ariaCurrentOf = (linkKey: "work" | "about" | "writing") => {
+  const ariaCurrentOf = (linkKey: "services" | "about" | "writing") => {
     if (linkKey === "writing") {
       return pathname.startsWith(`/${lang}/writing`) || pathname.startsWith("/writing") ? "page" : undefined;
+    }
+    if (linkKey === "services") {
+      return undefined;
     }
     return section === linkKey ? "true" : undefined;
   };

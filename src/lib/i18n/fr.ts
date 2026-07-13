@@ -4,6 +4,7 @@ export const fr = {
     about: "À propos",
     writing: "Écrits",
     opposite: "EN",
+    services: "Services",
   },
   hero: {
     location: "Disponible en remote",

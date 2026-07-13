@@ -4,6 +4,7 @@ export const en = {
     about: "About",
     writing: "Writing",
     opposite: "FR",
+    services: "Services",
   },
   hero: {
     location: "Open to remote opportunities",
