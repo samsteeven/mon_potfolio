@@ -136,5 +136,19 @@ export const en = {
         company: "OpenCode Labs"
       }
     ]
+  },
+  serviceCta: {
+    eyebrow: "Need an engineer?",
+    title: "From code to deployment — I own the entire system.",
+    subtitle: "Full-stack development, cloud architecture, security auditing, AI agents. Every engagement is delivered with rigour, full documentation, and zero compromise on reliability.",
+    services: [
+      { icon: "code", label: "Full-Stack Web Development" },
+      { icon: "shield", label: "Security Audit \u0026 Hardening" },
+      { icon: "cloud", label: "Cloud \u0026 Hybrid Architecture" },
+      { icon: "bot", label: "AI Agents \u0026 Automation" }
+    ],
+    primaryCta: "View all my services",
+    secondaryCta: "Book a discovery call",
+    badge: "Available \u00b7 Responds within 24h"
   }
 } as const;

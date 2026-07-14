@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import Image from "next/image";
-import { ArrowUpRight, Mail, Code2, ShieldCheck, Bot, CalendarDays, Users } from "lucide-react";
+import { ArrowUpRight, Mail, Code2, ShieldCheck, Bot, CalendarDays, Users, Cloud, ExternalLink } from "lucide-react";
 import { TestimonialsSection } from "@/components/testimonials-section";
 import { workSource, getWritingPages } from "@/lib/source";
 import { leafSlug } from "@/lib/slug";
@@ -397,6 +397,99 @@ export default async function HomePage({ params }: PageProps) {
         </div>
       </section>
       )}
+
+      {/* ---------- SERVICES CTA ---------- */}
+      <ScrollReveal>
+        <section
+          id="hire-me"
+          className="relative mt-4 mb-8 overflow-hidden rounded-3xl border border-line"
+          style={{
+            background: "linear-gradient(145deg, hsl(var(--ink)) 0%, hsl(220 15% 10%) 100%)",
+          }}
+        >
+          {/* Grille technique en arrière-plan */}
+          <div
+            aria-hidden="true"
+            className="pointer-events-none absolute inset-0 opacity-[0.04]"
+            style={{
+              backgroundImage:
+                "linear-gradient(hsl(var(--accent)) 1px, transparent 1px), linear-gradient(90deg, hsl(var(--accent)) 1px, transparent 1px)",
+              backgroundSize: "40px 40px",
+            }}
+          />
+          {/* Halo lumineux accent */}
+          <div
+            aria-hidden="true"
+            className="pointer-events-none absolute -top-24 -right-24 h-64 w-64 rounded-full opacity-10"
+            style={{ background: "radial-gradient(circle, hsl(var(--accent)) 0%, transparent 70%)" }}
+          />
+          <div
+            aria-hidden="true"
+            className="pointer-events-none absolute -bottom-32 -left-16 h-64 w-64 rounded-full opacity-[0.06]"
+            style={{ background: "radial-gradient(circle, hsl(var(--accent)) 0%, transparent 70%)" }}
+          />
+
+          <div className="relative z-10 px-8 py-12 sm:px-12 sm:py-16">
+
+            {/* Eyebrow + badge */}
+            <div className="flex flex-wrap items-center gap-3 mb-6">
+              <span className="font-mono text-[10px] uppercase tracking-[0.2em] text-paper/40">
+                {t.serviceCta.eyebrow}
+              </span>
+              <span className="inline-flex items-center gap-1.5 rounded-full border border-emerald-500/30 bg-emerald-500/10 px-3 py-1 font-mono text-[10px] text-emerald-400">
+                <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                {t.serviceCta.badge}
+              </span>
+            </div>
+
+            {/* Titre + sous-titre */}
+            <h2 className="font-display text-2xl font-extrabold leading-snug tracking-tight text-paper sm:text-3xl max-w-2xl">
+              {t.serviceCta.title}
+            </h2>
+            <p className="mt-4 max-w-xl text-sm leading-relaxed text-paper/55">
+              {t.serviceCta.subtitle}
+            </p>
+
+            {/* 4 domaines de compétences */}
+            <ul className="mt-8 grid grid-cols-1 sm:grid-cols-2 gap-3">
+              {t.serviceCta.services.map((service) => (
+                <li
+                  key={service.label}
+                  className="flex items-center gap-3 rounded-xl border border-paper/8 bg-paper/5 px-4 py-3 text-paper/75 transition-colors duration-200 hover:border-accent/30 hover:bg-accent/5 hover:text-paper"
+                >
+                  {service.icon === "code" && <Code2 className="h-4 w-4 shrink-0 text-accent" />}
+                  {service.icon === "shield" && <ShieldCheck className="h-4 w-4 shrink-0 text-accent" />}
+                  {service.icon === "cloud" && <Cloud className="h-4 w-4 shrink-0 text-accent" />}
+                  {service.icon === "bot" && <Bot className="h-4 w-4 shrink-0 text-accent" />}
+                  <span className="text-sm font-medium">{service.label}</span>
+                </li>
+              ))}
+            </ul>
+
+            {/* CTAs */}
+            <div className="mt-10 flex flex-wrap gap-3">
+              <a
+                href={`https://services.samensteeve.com/${lang}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-2 rounded-xl bg-accent px-6 py-3 font-mono text-xs uppercase tracking-wider text-white shadow-lg shadow-accent/25 transition-all duration-200 hover:opacity-90 hover:shadow-xl hover:shadow-accent/35 hover:scale-[1.02] active:scale-[0.97]"
+              >
+                <ExternalLink className="h-3.5 w-3.5" />
+                {t.serviceCta.primaryCta}
+              </a>
+              <a
+                href="https://cal.com/samen-steeve/30min"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-2 rounded-xl border border-paper/20 bg-paper/5 px-6 py-3 font-mono text-xs uppercase tracking-wider text-paper/70 transition-all duration-200 hover:border-paper/40 hover:text-paper hover:bg-paper/10 active:scale-[0.97]"
+              >
+                <CalendarDays className="h-3.5 w-3.5" />
+                {t.serviceCta.secondaryCta}
+              </a>
+            </div>
+          </div>
+        </section>
+      </ScrollReveal>
     </main>
   );
 }
