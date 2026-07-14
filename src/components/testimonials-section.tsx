@@ -116,10 +116,18 @@ export function TestimonialsSection({ items }: Props) {
                 }`}
             >
               {/* Avatar */}
-              <div className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-full font-mono text-[11px] font-bold transition-all duration-300 ${
+              <div className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-full font-mono text-[11px] font-bold transition-all duration-300 overflow-hidden relative ${
                 isActive ? "bg-accent text-white scale-105" : "bg-paper-raised text-ink-soft"
               }`}>
-                {initials}
+                {t.author === "Sandrine Eboa" ? (
+                  <img
+                    src="/TJ-Logo.png"
+                    alt="TribuneJustice"
+                    className="h-full w-full object-cover filter dark:brightness-110 z-10"
+                  />
+                ) : (
+                  initials
+                )}
               </div>
 
               {/* Infos */}
