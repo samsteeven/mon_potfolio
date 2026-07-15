@@ -137,18 +137,9 @@ export const fr = {
       }
     ]
   },
-  serviceCta: {
-    eyebrow: "Besoin d'un ingénieur ?",
-    title: "Du code au déploiement — je prends en charge l'ensemble du système.",
-    subtitle: "Développement full-stack, architecture cloud, audit de sécurité, agents IA. Chaque mission est livrée avec rigueur, documentation complète et zéro compromis sur la fiabilité.",
-    services: [
-      { icon: "code", label: "Développement Web Full-Stack" },
-      { icon: "shield", label: "Audit \u0026 Sécurité" },
-      { icon: "cloud", label: "Architecture Cloud \u0026 Hybride" },
-      { icon: "bot", label: "Agents IA \u0026 Automatisation" }
-    ],
-    primaryCta: "Voir tous mes services",
-    secondaryCta: "Réserver un appel de cadrage",
-    badge: "Disponible · Réponse sous 24h"
+  servicesCta: {
+    title: "Besoin de lancer, sécuriser ou automatiser un projet ?",
+    subtitle: "Découvrez mon offre détaillée, mon processus d'ingénierie et mon catalogue de services.",
+    button: "Découvrir mes Services",
   }
 } as const;
