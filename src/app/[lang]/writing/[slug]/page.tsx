@@ -2,12 +2,12 @@ import { notFound } from "next/navigation";
 import Link from "next/link";
 import type { Metadata } from "next";
 import { ArrowLeft } from "lucide-react";
-import { writingSource, getWritingPageContent } from "@/lib/source";
+import { writingSource, getWritingPageContent, extractTocItems } from "@/lib/source";
 import { leafSlug } from "@/lib/slug";
 import { getMDXComponents, ZoomableImage } from "@/components/mdx/mdx-components";
 import { getT, type Language } from "@/lib/translations";
 import { createPageMetadata } from "@/lib/metadata";
-import { TableOfContents, type TocItem } from "@/components/table-of-contents";
+import { TableOfContents } from "@/components/table-of-contents";
 import { CopyButtons } from "@/components/copy-buttons";
 
 interface PageProps {
@@ -64,13 +64,7 @@ export default async function WritingPage({ params }: PageProps) {
 
   const readLabel = `${content.readTime} ${t.writing.minRead}`;
 
-  const tocItems: TocItem[] = (content.toc ?? [])
-    .filter((item) => item.depth === 2 || item.depth === 3)
-    .map((item) => ({
-      id: item.url.replace(/^#/, ""),
-      title: item.title,
-      depth: item.depth,
-    }));
+  const tocItems = extractTocItems(content.toc);
 
   const articleJsonLd = {
     "@context": "https://schema.org",

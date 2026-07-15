@@ -1,13 +1,11 @@
 import Link from "next/link";
 import type { Metadata } from "next";
 import { ArrowLeft, ArrowUpRight } from "lucide-react";
-import { workSource } from "@/lib/source";
-import { leafSlug } from "@/lib/slug";
+import { getWorkPages } from "@/lib/source";
 import { StatusDot } from "@/components/status-dot";
 import { ScrollReveal } from "@/components/scroll-reveal";
 import { getT, type Language } from "@/lib/translations";
 import { createPageMetadata } from "@/lib/metadata";
-import { sortByFeaturedAndDate } from "@/components/project-card";
 
 interface PageProps {
   params: Promise<{ lang: Language }>;
@@ -28,19 +26,7 @@ export default async function WorkIndexPage({ params }: PageProps) {
   const { lang } = await params;
   const t = getT(lang);
 
-  const projects = workSource
-    .getPages()
-    .filter((p) => (p.data.lang || "fr") === lang)
-    .sort(sortByFeaturedAndDate)
-    .map((page) => ({
-      slug: leafSlug(page.slugs),
-      title: page.data.title,
-      description: page.data.description,
-      role: page.data.role,
-      date: page.data.date,
-      stack: page.data.stack,
-      status: page.data.status,
-    }));
+  const projects = getWorkPages(lang);
 
   return (
     <main id="main-content" className="mx-auto max-w-2xl px-6 py-20">

@@ -2,13 +2,13 @@ import { notFound } from "next/navigation";
 import Link from "next/link";
 import type { Metadata } from "next";
 import { ArrowLeft, ArrowUpRight } from "lucide-react";
-import { workSource } from "@/lib/source";
+import { workSource, extractTocItems } from "@/lib/source";
 import { leafSlug } from "@/lib/slug";
 import { getMDXComponents, ZoomableImage } from "@/components/mdx/mdx-components";
 import { StatusDot } from "@/components/status-dot";
 import { getT, type Language } from "@/lib/translations";
 import { createPageMetadata } from "@/lib/metadata";
-import { TableOfContents, type TocItem } from "@/components/table-of-contents";
+import { TableOfContents } from "@/components/table-of-contents";
 import { LanguageFlag } from "@/components/language-flag";
 
 interface PageProps {
@@ -51,13 +51,7 @@ export default async function WorkPage({ params }: PageProps) {
   const postLabel = page.data.lang === "en" ? t.details.writtenInEn : t.details.writtenInFr;
 
   // Extraction des headings depuis le TOC généré par Fumadocs
-  const tocItems: TocItem[] = (page.data.toc ?? [])
-    .filter((item) => item.depth === 2 || item.depth === 3)
-    .map((item) => ({
-      id: item.url.replace(/^#/, ""),
-      title: item.title,
-      depth: item.depth,
-    }));
+  const tocItems = extractTocItems(page.data.toc ?? []);
 
   const canonicalUrl = `${BASE_URL}/${lang}/work/${slug}`;
   const projectJsonLd = {

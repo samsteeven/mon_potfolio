@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { readFileSync, existsSync } from "fs";
 import { join } from "path";
 import { getT, type Language } from "@/lib/translations";
+import { parseFrontmatter } from "@/lib/mdx";
 
 const CONTENT_DIR = join(process.cwd(), "src/content");
 
@@ -89,9 +90,10 @@ export async function GET(
       const items = files.map(file => {
         const raw = readMdxFile(join(workDir, `${file}.mdx`));
         if (!raw) return null;
-        const title = raw.match(/title:\s*"([^"]+)"/)?.[1] || file;
-        const desc = raw.match(/description:\s*"([^"]+)"/)?.[1] || "";
-        const status = raw.match(/status:\s*"([^"]+)"/)?.[1] || "";
+        const fm = parseFrontmatter(raw);
+        const title = fm?.title || file;
+        const desc = fm?.description || "";
+        const status = fm?.status || "";
         return { title, desc, status, slug: file };
       }).filter(Boolean);
 
@@ -135,10 +137,11 @@ export async function GET(
       const items = files.map(file => {
         const raw = readMdxFile(join(writingDir, `${file}.mdx`));
         if (!raw) return null;
-        const title = raw.match(/title:\s*"([^"]+)"/)?.[1] || file;
-        const desc = raw.match(/description:\s*"([^"]+)"/)?.[1] || "";
-        const date = raw.match(/date:\s*"([^"]+)"/)?.[1] || "";
-        const tags = raw.match(/tags:\s*\[([^\]]+)\]/)?.[1] || "";
+        const fm = parseFrontmatter(raw);
+        const title = fm?.title || file;
+        const desc = fm?.description || "";
+        const date = fm?.date || "";
+        const tags = fm?.tags || "";
         return { title, desc, date, tags, slug: file };
       }).filter(Boolean);
 

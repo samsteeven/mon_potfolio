@@ -4,6 +4,7 @@ import { toFumadocsSource } from "fumadocs-mdx/runtime/server";
 import { loader } from "fumadocs-core/source";
 import { leafSlug } from "@/lib/slug";
 import { getPageContent } from "@/lib/reading-time";
+import type { TocItem } from "@/components/table-of-contents";
 
 export const workSource = loader({
   baseUrl: "/work",
@@ -14,6 +15,71 @@ export const writingSource = loader({
   baseUrl: "/writing",
   source: toFumadocsSource(writing, []),
 });
+
+// ─── Types partagés pour le pipeline d'écriture ───
+
+// ─── Types partagés pour les pages Work ───
+
+export interface WorkItem {
+  slug: string;
+  title: string;
+  description: string;
+  date: string;
+  role: string;
+  stack: string[];
+  status?: "shipped" | "in-progress";
+  url?: string;
+  cover?: string;
+}
+
+/** Trie les projets : featured en premier, puis par date décroissante. */
+export function sortByFeaturedAndDate(
+  a: { data: { featured: boolean; date: string } },
+  b: { data: { featured: boolean; date: string } },
+): number {
+  if (b.data.featured !== a.data.featured) {
+    return Number(b.data.featured) - Number(a.data.featured);
+  }
+  return new Date(b.data.date).getTime() - new Date(a.data.date).getTime();
+}
+
+/**
+ * Retourne tous les projets d'une langue, triés par featured puis date.
+ * Centralise le filtre + tri + map dupliqué dans page.tsx et work/page.tsx.
+ */
+export function getWorkPages(lang: string): WorkItem[] {
+  return workSource
+    .getPages()
+    .filter((p) => (p.data.lang || "fr") === lang)
+    .sort(sortByFeaturedAndDate)
+    .map((page) => ({
+      slug: leafSlug(page.slugs),
+      title: page.data.title,
+      description: page.data.description,
+      date: page.data.date,
+      role: page.data.role,
+      stack: page.data.stack,
+      status: page.data.status,
+      url: page.data.url,
+      cover: page.data.cover,
+    }));
+}
+
+/**
+ * Extrait les items de table des matières (h2/h3) depuis le toc Fumadocs,
+ * en les mappant au format TocItem du composant TableOfContents.
+ */
+export function extractTocItems(
+  toc: { url: string; title: React.ReactNode; depth: number }[],
+): TocItem[] {
+  return (toc ?? [])
+    .filter((item) => item.depth === 2 || item.depth === 3)
+    .map((item) => ({
+      id: item.url.replace(/^#/, ""),
+      title: item.title,
+      depth: item.depth,
+    }));
+}
 
 // ─── Types partagés pour le pipeline d'écriture ───
 

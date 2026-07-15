@@ -3,9 +3,8 @@ import Link from "next/link";
 import Image from "next/image";
 import { ArrowUpRight, Mail, Code2, ShieldCheck, Bot, CalendarDays, Users } from "lucide-react";
 import { TestimonialsSection } from "@/components/testimonials-section";
-import { workSource, getWritingPages } from "@/lib/source";
-import { leafSlug } from "@/lib/slug";
-import { ProjectCard, sortByFeaturedAndDate } from "@/components/project-card";
+import { getWorkPages, getWritingPages } from "@/lib/source";
+import { ProjectCard } from "@/components/project-card";
 import { getT, type Language } from "@/lib/translations";
 import { createPageMetadata } from "@/lib/metadata";
 import { ScrollReveal } from "@/components/scroll-reveal";
@@ -31,21 +30,7 @@ export default async function HomePage({ params }: PageProps) {
   const { lang } = await params;
   const t = getT(lang);
 
-  const work = workSource
-    .getPages()
-    .filter((p) => (p.data.lang || "fr") === lang)
-    .sort(sortByFeaturedAndDate)
-    .map((page) => ({
-      slug: leafSlug(page.slugs),
-      title: page.data.title,
-      description: page.data.description,
-      date: page.data.date,
-      role: page.data.role,
-      stack: page.data.stack,
-      status: page.data.status,
-      url: page.data.url,
-      cover: page.data.cover,
-    }));
+  const work = getWorkPages(lang);
 
   const writing = getWritingPages(lang).slice(0, 5);
 

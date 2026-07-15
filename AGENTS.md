@@ -68,10 +68,15 @@ polices). Ils sont exposés comme utilitaires Tailwind via `@theme inline` :
   le temps de lecture et extraire le corps d'un fichier MDX. **Source unique de vérité** —
   ne pas dupliquer cette logique dans les pages, toujours importer depuis ce module.
 - `src/lib/mdx.ts` — Fonction `parseFrontmatter()` partagée par les API routes
-  (`articles`, `projects`, `llms.txt`). **Source unique de vérité** — ne pas dupliquer.
+  (`articles`, `projects`, `md`). **Source unique de vérité** — ne pas dupliquer.
+- `src/lib/text.ts` — Fonction `getTextContent()` pour extraire récursivement le texte brut
+  d'un `ReactNode`. Utilisée par les composants MDX (`mdx-components.tsx`, `mdx-client.tsx`).
+  **Source unique de vérité** — ne pas dupliquer.
 - `src/lib/blur.ts` — Constante `BLUR_DATA_URL` pour `placeholder="blur"` sur les images.
 - `src/lib/source.ts` — Connecte les collections de contenu aux routes (via
   `toFumadocsSource` + `loader` de `fumadocs-core/source`, pas `fumadocs-ui`).
+  Exporte aussi `getWorkPages(lang)`, `getWritingPages(lang)`, `extractTocItems(toc)`,
+  `sortByFeaturedAndDate` et les types `WorkItem`, `WritingItem`, `WritingPageContent`.
 
 ## Mouvement
 
@@ -131,8 +136,8 @@ des listes en dur (manuel uniquement).
 
 | Fichier | Source | Auto-sync ? |
 |---|---|---|
-| `src/app/[lang]/page.tsx` | `workSource.getPages()` | ✅ auto |
-| `src/app/[lang]/work/page.tsx` | `workSource.getPages()` | ✅ auto |
+| `src/app/[lang]/page.tsx` | `getWorkPages(lang)` via `lib/source.ts` | ✅ auto |
+| `src/app/[lang]/work/page.tsx` | `getWorkPages(lang)` via `lib/source.ts` | ✅ auto |
 | `src/app/[lang]/work/[slug]/page.tsx` | Fumadocs loader | ✅ auto |
 | `src/app/sitemap.ts` | `workSource.getPages()` | ✅ auto |
 | `src/app/api/data/projects/route.ts` | `readdirSync(src/content/work/)` | ✅ auto |
@@ -313,6 +318,7 @@ public function index(): Response
   au root layout `src/app/layout.tsx`.
 - Ne pas renommer `src/proxy.ts` en `middleware.ts` — convention Next.js 16+.
 - Ne pas dupliquer la logique de temps de lecture — utiliser `src/lib/reading-time.ts`.
+- Ne pas dupliquer `getTextContent()` — utiliser `src/lib/text.ts`.
 - Le site est bilingue (fr/en), dans un ton direct et professionnel (pas de marketing
   ronflant). Garder cette voix dans tout nouveau contenu généré.
 

@@ -1,12 +1,12 @@
 import type { MDXComponents } from "mdx/types";
-import type { ReactNode } from "react";
+import { getTextContent } from "@/lib/text";
 import { 
   ZoomableImage,
   PreBlock,
   Callout,
   CodeWindow,
   CardGrid,
-  Card 
+  Card,
 } from "./mdx-client";
 
 // Génère un id slugifié à partir du texte enfant d'un heading
@@ -19,22 +19,6 @@ function slugify(text: string): string {
     .replace(/\s+/g, "-")
     .replace(/-+/g, "-")
     .trim();
-}
-
-function getTextContent(children: ReactNode): string {
-  if (typeof children === "string") return children;
-  if (typeof children === "number") return String(children);
-  if (Array.isArray(children)) return children.map(getTextContent).join("");
-  if (
-    children !== null &&
-    typeof children === "object" &&
-    "props" in (children as object)
-  ) {
-    return getTextContent(
-      (children as { props: { children?: ReactNode } }).props.children
-    );
-  }
-  return "";
 }
 
 // Mapping des balises MDX par défaut vers les styles du design retenu.

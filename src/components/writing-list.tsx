@@ -6,17 +6,7 @@ import Image from "next/image";
 import { Search, X } from "lucide-react";
 import { getT, type Language } from "@/lib/translations";
 import { BLUR_DATA_URL } from "@/lib/blur";
-
-interface WritingItem {
-  url: string;
-  title: string;
-  description: string;
-  date: string;
-  tags: string[];
-  lang: string;
-  cover?: string;
-  readTime: number;
-}
+import type { WritingItem } from "@/lib/source";
 
 export function WritingList({ items, lang }: { items: WritingItem[]; lang: Language }) {
   const t = getT(lang);
