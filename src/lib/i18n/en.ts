@@ -86,6 +86,8 @@ export const en = {
     specialty: "Software Engineer · AI Automation",
     rights: "All rights reserved",
     bookCall: "Book a 30-min call",
+    cv: "CV",
+    downloadCv: "Download CV",
   },
   stack: {
     title: "Tech Stack",

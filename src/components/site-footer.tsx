@@ -1,4 +1,4 @@
-import { Calendar, Mail } from "lucide-react";
+import { Calendar, Download, Mail } from "lucide-react";
 import { getT, type Language } from "@/lib/translations";
 import { LinkedinIcon, GithubIcon, WhatsappIcon } from "@/components/icons";
 
@@ -19,8 +19,18 @@ export function SiteFooter({ lang }: { lang: Language }) {
             >
               Samen Steeve
             </span>
-            <span className="font-mono text-[10px] text-ink-soft/70">
-              {t.footer.specialty}
+            <span className="flex flex-wrap items-center gap-x-2 gap-y-1 font-mono text-[10px] text-ink-soft/70">
+              <span>{t.footer.specialty}</span>
+              <span className="text-ink-soft/25" aria-hidden="true">·</span>
+              <a
+                href="/cv-samen-steeve.pdf"
+                download
+                className="inline-flex items-center gap-1 font-semibold text-ink-soft/65 transition duration-200 hover:text-accent"
+                aria-label={t.footer.downloadCv}
+              >
+                <Download className="h-3 w-3" />
+                {t.footer.cv}
+              </a>
             </span>
             <span className="font-mono text-[10px] text-ink-soft/40">
               © {year} Samen Steeve — {t.footer.rights}

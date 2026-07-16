@@ -86,6 +86,8 @@ export const fr = {
     specialty: "Ingénieur Logiciel · Automatisation IA",
     rights: "Tous droits réservés",
     bookCall: "Réserver un appel de 30 min",
+    cv: "CV",
+    downloadCv: "Télécharger le CV",
   },
   stack: {
     title: "Stack technique",
