@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { readFileSync, existsSync } from "fs";
+import { readFileSync, existsSync, readdirSync } from "fs";
 import { join } from "path";
 import { getT, type Language } from "@/lib/translations";
 import { parseFrontmatter } from "@/lib/mdx";
@@ -81,8 +81,7 @@ export async function GET(
       if (!existsSync(workDir)) {
         return NextResponse.json({ error: "Not found" }, { status: 404 });
       }
-      const files = readFileSync(workDir, "utf-8")
-        .split("\n")
+      const files = readdirSync(workDir)
         .filter(Boolean)
         .filter(f => f.endsWith(".mdx"))
         .map(f => f.replace(".mdx", ""));
@@ -128,8 +127,7 @@ export async function GET(
       if (!existsSync(writingDir)) {
         return NextResponse.json({ error: "Not found" }, { status: 404 });
       }
-      const files = readFileSync(writingDir, "utf-8")
-        .split("\n")
+      const files = readdirSync(writingDir)
         .filter(Boolean)
         .filter(f => f.endsWith(".mdx"))
         .map(f => f.replace(".mdx", ""));
@@ -150,7 +148,7 @@ export async function GET(
         "",
         items.map(i => {
           const tagStr = i!.tags ? ` [${i!.tags.replace(/"/g, "").replace(/,/g, ", ")}]` : "";
-          return `- [${i!.title}](/en/writing/${i!.slug})${i!.date ? ` (${i!.date})` : ""}${tagStr}${i!.desc ? ` — ${i!.desc}` : ""}`;
+          return `- [${i!.title}](/${lang}/writing/${i!.slug})${i!.date ? ` (${i!.date})` : ""}${tagStr}${i!.desc ? ` — ${i!.desc}` : ""}`;
         }).join("\n"),
         "",
         `_${items.length} article${items.length > 1 ? "s" : ""}_`,
