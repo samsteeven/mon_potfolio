@@ -107,7 +107,7 @@ export default async function WritingPage({ params }: PageProps) {
       )}
 
       <header className={`mb-12 border-b border-line pb-8 ${content.cover ? "mt-8" : "mt-8"}`}>
-        <div className="flex items-center gap-3 font-mono text-xs text-ink-soft/60">
+        <div className="flex items-center gap-3 font-mono text-xs text-ink-soft">
           <p className="text-accent font-medium">{content.date}</p>
           <span>·</span>
           <span>{readLabel}</span>

@@ -127,10 +127,10 @@ export function WritingList({ items, lang }: { items: WritingItem[]; lang: Langu
                 {/* Contenu à droite */}
                 <div className="flex-1 min-w-0">
                   {/* Date + temps de lecture */}
-                  <div className="flex items-center gap-2 mb-1.5 font-mono text-xs text-ink-soft/60">
+                  <div className="flex items-center gap-2 mb-1.5 font-mono text-xs text-ink-soft">
                     <span>{item.date}</span>
                     <span>·</span>
-                    <span className="text-ink-soft/50">{readLabel}</span>
+                    <span className="text-ink-soft">{readLabel}</span>
                   </div>
 
                   {/* Titre */}

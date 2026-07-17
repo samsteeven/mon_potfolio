@@ -104,7 +104,7 @@ export function TableOfContents({ items, lang }: TableOfContentsProps) {
       <details className="group mb-8 rounded-xl border border-line bg-paper/80 p-4 shadow-sm backdrop-blur-sm xl:hidden">
         <summary className="flex cursor-pointer list-none items-center justify-between font-mono text-[11px] uppercase tracking-widest text-ink-soft hover:text-ink transition-colors">
           <span>{menuLabel}</span>
-          <span className="text-ink-soft/60 transition-transform duration-200 group-open:rotate-180">▾</span>
+          <span className="text-ink-soft transition-transform duration-200 group-open:rotate-180">▾</span>
         </summary>
         <nav className="mt-4">{renderItems()}</nav>
       </details>

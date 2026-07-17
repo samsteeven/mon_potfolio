@@ -58,7 +58,7 @@ export default async function NotFound({
 
         {/* Liens de navigation rapides */}
         <div className="mt-12 text-left w-full rounded-2xl border border-line bg-paper-raised/40 p-4 sm:p-6 shadow-sm">
-          <p className="font-mono text-[10px] font-semibold uppercase tracking-widest text-ink-soft/60 px-2 mb-4">
+          <p className="font-mono text-[10px] font-semibold uppercase tracking-widest text-ink-soft px-2 mb-4">
             {lang === "fr" ? "Où souhaitez-vous aller ?" : "Where would you like to go?"}
           </p>
           <div className="flex flex-col gap-2">
