@@ -48,6 +48,7 @@ export const fr = {
   work: {
     title: "Travail",
     caseStudy: "Lire l'étude de cas",
+    seeAll: "Voir tout le travail",
     seoDescription: "Études de cas sélectionnées par Samen Steeve — ingénierie logicielle, architecture système et systèmes de production.",
   },
   writing: {

@@ -16,6 +16,7 @@ export const en = {
   work: {
     title: "Work",
     caseStudy: "Read case study",
+    seeAll: "See all work",
     seoDescription: "Selected case studies by Samen Steeve — software engineering, system architecture, and production systems.",
   },
   about: {

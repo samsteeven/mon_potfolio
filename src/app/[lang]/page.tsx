@@ -273,7 +273,7 @@ export default async function HomePage({ params }: PageProps) {
               href={`/${lang}/work`}
               className="inline-flex items-center gap-1 font-mono text-xs uppercase tracking-wider text-ink-soft transition hover:text-accent"
             >
-              {t.writing.seeAll} <ArrowUpRight className="h-3.5 w-3.5" />
+              {t.work.seeAll} <ArrowUpRight className="h-3.5 w-3.5" />
             </Link>
           </div>
         </ScrollReveal>
