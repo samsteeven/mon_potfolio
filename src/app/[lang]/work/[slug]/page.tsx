@@ -64,6 +64,33 @@ export default async function WorkPage({ params }: PageProps) {
   const tocItems = extractTocItems(page.data.toc ?? []);
 
   const canonicalUrl = `${BASE_URL}/${lang}/work/${slug}`;
+  
+  // BreadcrumbList JSON-LD pour Google
+  const breadcrumbJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      {
+        "@type": "ListItem",
+        position: 1,
+        name: lang === "fr" ? "Accueil" : "Home",
+        item: `${BASE_URL}/${lang}`,
+      },
+      {
+        "@type": "ListItem",
+        position: 2,
+        name: lang === "fr" ? "Projets" : "Work",
+        item: `${BASE_URL}/${lang}/work`,
+      },
+      {
+        "@type": "ListItem",
+        position: 3,
+        name: page.data.title,
+        item: canonicalUrl,
+      },
+    ],
+  };
+  
   const projectJsonLd = {
     "@context": "https://schema.org",
     "@type": "CreativeWork",
@@ -80,6 +107,11 @@ export default async function WorkPage({ params }: PageProps) {
 
   return (
     <main id="main-content" className="mx-auto max-w-2xl px-6 py-20">
+      {/* JSON-LD BreadcrumbList Schema pour Google */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
+      />
       {/* JSON-LD CreativeWork Schema pour Google Rich Snippets */}
       <script
         type="application/ld+json"

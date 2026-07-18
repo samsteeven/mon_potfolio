@@ -92,8 +92,9 @@ export default async function HomePage({ params }: PageProps) {
             href="https://cal.com/samen-steeve/30min"
             target="_blank"
             rel="noopener noreferrer"
-            className="rounded-full bg-ink px-5 py-2.5 font-mono text-xs uppercase tracking-wide text-paper transition-all duration-300 hover:scale-105 hover:bg-accent hover:text-white hover:shadow-lg hover:shadow-accent/15 active:scale-[0.96]"
+            className="inline-flex items-center gap-2 rounded-full bg-ink px-5 py-2.5 font-mono text-xs uppercase tracking-wide text-paper transition-all duration-300 hover:scale-105 hover:bg-accent hover:text-white hover:shadow-lg hover:shadow-accent/15 active:scale-[0.96]"
           >
+            <CalendarDays className="h-3.5 w-3.5" />
             {t.hero.scheduleMeeting}
           </a>
         </div>
@@ -266,7 +267,15 @@ export default async function HomePage({ params }: PageProps) {
       {/* ---------- WORK ---------- */}
       <section id="work" className="border-t border-line py-28 sm:py-36">
         <ScrollReveal>
-          <h2 className="font-display text-2xl font-semibold">{t.work.title}</h2>
+          <div className="flex items-end justify-between mb-10">
+            <h2 className="font-display text-2xl font-semibold">{t.work.title}</h2>
+            <Link
+              href={`/${lang}/work`}
+              className="inline-flex items-center gap-1 font-mono text-xs uppercase tracking-wider text-ink-soft transition hover:text-accent"
+            >
+              {t.writing.seeAll} <ArrowUpRight className="h-3.5 w-3.5" />
+            </Link>
+          </div>
         </ScrollReveal>
          <div className="mt-8 flex flex-col gap-4">
           {work.map((p, i) => (

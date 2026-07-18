@@ -66,6 +66,32 @@ export default async function WritingPage({ params }: PageProps) {
 
   const tocItems = extractTocItems(content.toc);
 
+  // BreadcrumbList JSON-LD pour Google
+  const breadcrumbJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      {
+        "@type": "ListItem",
+        position: 1,
+        name: lang === "fr" ? "Accueil" : "Home",
+        item: `${BASE_URL}/${lang}`,
+      },
+      {
+        "@type": "ListItem",
+        position: 2,
+        name: lang === "fr" ? "Écrits" : "Writing",
+        item: `${BASE_URL}/${lang}/writing`,
+      },
+      {
+        "@type": "ListItem",
+        position: 3,
+        name: content.title,
+        item: canonicalUrl,
+      },
+    ],
+  };
+
   const articleJsonLd = {
     "@context": "https://schema.org",
     "@type": "BlogPosting",
@@ -84,6 +110,12 @@ export default async function WritingPage({ params }: PageProps) {
 
   return (
     <main id="main-content" className="mx-auto max-w-2xl px-6 py-20">
+      {/* JSON-LD BreadcrumbList Schema pour Google */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
+      />
+      {/* JSON-LD BlogPosting Schema pour Google Rich Snippets */}
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(articleJsonLd) }}
