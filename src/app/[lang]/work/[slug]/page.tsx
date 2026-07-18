@@ -29,7 +29,8 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   const { lang, slug } = await params;
   const page = workSource.getPage([lang, slug]);
   if (!page) return {};
-  return createPageMetadata({
+  
+  const metadata = createPageMetadata({
     lang,
     title: page.data.title,
     description: page.data.description,
@@ -37,6 +38,15 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     image: page.data.cover || "/profile/profil.png",
     type: "article",
   });
+  
+  // Canonical cross-domain pour éviter le contenu dupliqué avec services.samensteeve.com
+  return {
+    ...metadata,
+    alternates: {
+      ...metadata.alternates,
+      canonical: `${BASE_URL}/${lang}/work/${slug}`,
+    },
+  };
 }
 
 
