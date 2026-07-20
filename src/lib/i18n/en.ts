@@ -17,7 +17,7 @@ export const en = {
     title: "Work",
     caseStudy: "Read case study",
     seeAll: "See all work",
-    seoDescription: "Selected case studies by Samen Steeve — software engineering, system architecture, and production systems.",
+    seoDescription: "Software engineering case studies: Laravel applications, React/Angular frontends, microservices architecture, and production systems. Real-world projects by a freelance software engineer.",
   },
   about: {
     title: "About me",
@@ -53,7 +53,7 @@ export const en = {
   },
   writing: {
     title: "Writing",
-    seoDescription: "Articles by Samen Steeve on software engineering, system architecture, and the craft of building things that last.",
+    seoDescription: "Technical articles on software engineering, Laravel, React, cloud architecture, AI automation, and security. Practical guides and tutorials for developers.",
     seeAll: "See all posts",
     all: "All",
     empty: "No posts found for this filter.",

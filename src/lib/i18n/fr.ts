@@ -49,11 +49,11 @@ export const fr = {
     title: "Travail",
     caseStudy: "Lire l'étude de cas",
     seeAll: "Voir tout le travail",
-    seoDescription: "Études de cas sélectionnées par Samen Steeve — ingénierie logicielle, architecture système et systèmes de production.",
+    seoDescription: "Études de cas en ingénierie logicielle : applications Laravel, frontends React/Angular, architecture microservices et systèmes de production. Projets réels d'un ingénieur logiciel freelance.",
   },
   writing: {
     title: "Écrits",
-    seoDescription: "Articles de Samen Steeve sur le génie logiciel, l'architecture système et le soin de construire des choses qui tiennent dans le temps.",
+    seoDescription: "Articles techniques sur l'ingénierie logicielle, Laravel, React, architecture cloud, automatisation IA et sécurité. Guides pratiques et tutoriels pour développeurs.",
     seeAll: "Voir tous les écrits",
     all: "Tous",
     empty: "Aucun écrit pour ce filtre.",
