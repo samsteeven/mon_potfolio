@@ -23,12 +23,15 @@ On TribuneJustice, I needed a workflow orchestrator for recurring tasks: notific
 
 ## Step-by-Step Deployment
 
+<CodeWindow filename="Terminal — Bash">
 ```bash
 sudo mkdir -p /opt/n8n
 cd /opt/n8n
 sudo mkdir -p n8n_data postgres_data
 ```
+</CodeWindow>
 
+<CodeWindow filename=".env">
 ```ini
 N8N_HOST=n8n.samensteeve.com
 N8N_PROTOCOL=https
@@ -47,6 +50,46 @@ POSTGRES_USER=n8n_user
 POSTGRES_PASSWORD=<same_strong_password>
 POSTGRES_DB=n8n
 ```
+</CodeWindow>
+
+<CodeWindow filename="docker-compose.yml">
+```yaml
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: n8n_postgres
+    restart: always
+    env_file: .env
+    volumes:
+      - ./postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    networks:
+      - n8n_net
+
+  n8n:
+    image: n8nio/n8n:latest
+    container_name: n8n
+    restart: always
+    env_file: .env
+    ports:
+      - "127.0.0.1:5678:5678"
+    volumes:
+      - ./n8n_data:/home/node/.n8n
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - n8n_net
+
+networks:
+  n8n_net:
+    driver: bridge
+```
+</CodeWindow>
 
 ## Real-World Debugging Lessons
 

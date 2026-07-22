@@ -31,24 +31,29 @@ Cette isolation garantit qu'un problème sur n8n (crash, faille, usage disque ex
 
 ### 1. Préparer l'arborescence dédiée
 
+<CodeWindow filename="Terminal — Bash">
 ```bash
 sudo mkdir -p /opt/n8n
 cd /opt/n8n
 sudo mkdir -p n8n_data postgres_data
 ```
+</CodeWindow>
 
 ### 2. Générer la clé de chiffrement
 
 Cette clé chiffre tous les credentials stockés par n8n (mots de passe d'API, tokens OAuth). Sans elle, impossible de restaurer un backup sur une nouvelle instance.
 
+<CodeWindow filename="Terminal — OpenSSL">
 ```bash
 openssl rand -hex 32
 ```
+</CodeWindow>
 
 ### 3. Définir les variables d'environnement
 
 Un fichier `.env` centralise la configuration. Point de vigilance important que j'aborderai dans la section debugging : `POSTGRES_USER` et `DB_POSTGRESDB_USER` doivent être **strictement identiques**.
 
+<CodeWindow filename=".env">
 ```ini
 N8N_HOST=n8n.samensteeve.com
 N8N_PROTOCOL=https
@@ -67,11 +72,13 @@ POSTGRES_USER=n8n_user
 POSTGRES_PASSWORD=<le même mot de passe fort>
 POSTGRES_DB=n8n
 ```
+</CodeWindow>
 
 ### 4. Écrire le `docker-compose.yml`
 
 Deux services : Postgres (dédié, isolé) et n8n, reliés par un réseau Docker privé. La condition `service_healthy` sur Postgres garantit que n8n ne démarre qu'une fois la base réellement prête — pas juste le conteneur lancé.
 
+<CodeWindow filename="docker-compose.yml">
 ```yaml
 services:
   postgres:
@@ -108,11 +115,13 @@ networks:
   n8n_net:
     driver: bridge
 ```
+</CodeWindow>
 
 ### 5. Configurer nginx en reverse proxy
 
 Les en-têtes `Upgrade` et `Connection` sont essentiels pour que les WebSockets de l'interface n8n fonctionnent correctement.
 
+<CodeWindow filename="/etc/nginx/sites-available/n8n.samensteeve.com">
 ```nginx
 server {
     listen 80;
@@ -130,19 +139,16 @@ server {
     }
 }
 ```
+</CodeWindow>
 
+<CodeWindow filename="Terminal — Activation & SSL">
 ```bash
 sudo ln -s /etc/nginx/sites-available/n8n.samensteeve.com /etc/nginx/sites-enabled/
 sudo nginx -t
 sudo systemctl reload nginx
-```
-
-### 6. Activer le HTTPS avec Let's Encrypt
-
-```bash
-sudo apt install -y certbot python3-certbot-nginx
 sudo certbot --nginx -d n8n.samensteeve.com
 ```
+</CodeWindow>
 
 ## Ce que le déploiement "propre" ne dit pas : le debugging réel
 
@@ -150,9 +156,9 @@ La théorie d'un déploiement Docker + nginx + SSL est bien documentée. La prat
 
 ### 1. Erreur de permissions sur le volume monté
 
-```
-Error: EACCES: permission denied, open '/home/node/.n8n/config'
-```
+<Callout type="danger">
+  **Permission Denied :** `Error: EACCES: permission denied, open '/home/node/.n8n/config'`
+</Callout>
 
 Le processus n8n dans le conteneur tourne sous l'UID `1000` (utilisateur `node`), mais le dossier créé côté hôte appartenait à `root`. Diagnostic : `chown -R 1000:1000` sur le volume a résolu le blocage.
 
@@ -176,8 +182,13 @@ Une fois le faux positif levé par Google et les permissions de volumes corrigé
 
 ## La sécurisation finale & Ce que je retiens
 
-- **2FA** activée sur le compte administrateur
-- **Backups automatisés** (dump PostgreSQL quotidien) via script cron, rotation sur 7 jours
-- Compte owner **verrouillé après création** — tout nouvel utilisateur doit être invité explicitement
+<CardGrid>
+  <Card title="Authentification forte">
+    2FA activée sur le compte administrateur et compte owner verrouillé.
+  </Card>
+  <Card title="Sauvegardes automatiques">
+    Dump PostgreSQL quotidien automatisé via script cron avec rotation sur 7 jours.
+  </Card>
+</CardGrid>
 
 Ce type de déploiement — modeste en apparence — mobilise tout un spectre de compétences : architecture système (isolation, réseaux Docker), sécurité (permissions, chiffrement, authentification), réseau (DNS, reverse proxy, certificats SSL), et une méthode rigoureuse pour diagnostiquer des pannes réelles.
