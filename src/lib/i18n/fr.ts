@@ -77,6 +77,9 @@ export const fr = {
     shareText: "Lire en ligne :",
     english: "Anglais",
     french: "Français",
+    prevProject: "Projet précédent",
+    nextProject: "Projet suivant",
+    continueReading: "Continuer la lecture",
   },
   toc: {
     contents: "Sommaire",

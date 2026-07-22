@@ -77,6 +77,9 @@ export const en = {
     shareText: "Read online:",
     english: "English",
     french: "French",
+    prevProject: "Previous project",
+    nextProject: "Next project",
+    continueReading: "Continue reading",
   },
   toc: {
     contents: "Contents",

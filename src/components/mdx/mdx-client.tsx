@@ -68,6 +68,8 @@ export function PreBlock({ children, ...props }: { children: ReactNode } & React
   );
 }
 
+import { createPortal } from "react-dom";
+
 // -------------------------------------------------------------
 // COMPOSANT IMAGE INTERACTIVE AVEC LIGHTBOX DE ZOOM PLEIN ÉCRAN
 // -------------------------------------------------------------
@@ -78,6 +80,11 @@ export function ZoomableImage({
   ...props 
 }: { src: string; alt?: string; priority?: boolean } & Omit<React.ImgHTMLAttributes<HTMLImageElement>, "width" | "height" | "priority">) {
   const [isOpen, setIsOpen] = useState(false);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   useEffect(() => {
     if (isOpen) {
@@ -90,11 +97,25 @@ export function ZoomableImage({
     };
   }, [isOpen]);
 
+  useEffect(() => {
+    const handleKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setIsOpen(false);
+    };
+    if (isOpen) {
+      window.addEventListener("keydown", handleKey);
+      return () => window.removeEventListener("keydown", handleKey);
+    }
+  }, [isOpen]);
+
   return (
     <>
       <span 
         className="block group relative my-6 cursor-zoom-in overflow-hidden rounded-lg border border-line bg-paper-raised"
-        onClick={() => setIsOpen(true)}
+        onClick={(e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          setIsOpen(true);
+        }}
       >
         <Image
           src={src}
@@ -106,18 +127,19 @@ export function ZoomableImage({
           sizes="(max-width: 768px) 100vw, 672px"
           {...props}
         />
-        <span className="absolute top-3 right-3 flex items-center justify-center rounded-full bg-black/55 p-2 text-white opacity-0 transition-opacity duration-200 group-hover:opacity-100 backdrop-blur-sm">
+        <span className="absolute top-3 right-3 flex items-center justify-center rounded-full bg-black/55 p-2 text-white opacity-0 transition-opacity duration-200 group-hover:opacity-100 backdrop-blur-sm pointer-events-none z-10">
           <ZoomIn className="h-4 w-4" />
         </span>
       </span>
 
-      {isOpen && (
+      {isOpen && mounted && createPortal(
         <div 
-          className="fixed inset-0 z-50 flex items-center justify-center bg-black/90 p-4 backdrop-blur-md transition-opacity duration-300 animate-in fade-in"
+          className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/90 p-4 backdrop-blur-md transition-opacity duration-300 animate-in fade-in"
           onClick={() => setIsOpen(false)}
         >
           <button 
-            className="absolute top-4 right-4 rounded-full bg-white/10 p-2.5 text-white hover:bg-white/20 transition duration-200"
+            type="button"
+            className="absolute top-4 right-4 rounded-full bg-white/10 p-2.5 text-white hover:bg-white/20 transition duration-200 z-[10000]"
             onClick={(e) => { e.stopPropagation(); setIsOpen(false); }}
             aria-label="Close zoom"
           >
@@ -131,7 +153,8 @@ export function ZoomableImage({
               className="max-h-[90vh] max-w-[95vw] object-contain rounded-lg shadow-2xl animate-in zoom-in-95 duration-200"
             />
           </div>
-        </div>
+        </div>,
+        document.body
       )}
     </>
   );
