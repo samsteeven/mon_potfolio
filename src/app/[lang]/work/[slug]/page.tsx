@@ -201,34 +201,23 @@ export default async function WorkPage({ params }: PageProps) {
           aria-label={t.details.continueReading}
           className="mt-20 pt-8 border-t border-line"
         >
-          <p className="font-mono text-[10px] uppercase tracking-widest text-ink-soft/50 mb-6">
-            {t.details.continueReading}
-          </p>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             {/* Prev */}
             {prevProject ? (
               <Link
                 href={`/${lang}/work/${prevProject.slug}`}
-                className="group flex flex-col gap-3 rounded-2xl border border-line bg-paper-raised/40 p-5 transition-all duration-300 hover:-translate-y-0.5 hover:border-accent/40 hover:bg-paper-raised/70 hover:shadow-md"
+                className="group flex flex-col justify-between rounded-xl border border-line bg-paper-raised/40 p-5 transition-all duration-300 hover:-translate-y-0.5 hover:border-accent/40 hover:bg-paper-raised/70 hover:shadow-md"
               >
-                <div className="flex items-center gap-2 font-mono text-[9px] uppercase tracking-widest text-ink-soft/50">
-                  <ArrowLeft className="h-3 w-3 transition-transform duration-200 group-hover:-translate-x-0.5" />
-                  {t.details.prevProject}
-                </div>
-                {prevProject.cover && (
-                  <div className="overflow-hidden rounded-lg border border-line" style={{ aspectRatio: '16/9' }}>
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img
-                      src={prevProject.cover}
-                      alt={prevProject.title}
-                      className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-[1.02]"
-                    />
-                  </div>
-                )}
                 <div>
-                  <p className="font-mono text-[9px] uppercase tracking-wider text-accent">{prevProject.role}</p>
-                  <p className="mt-1 font-display text-sm font-semibold text-ink group-hover:text-accent transition-colors duration-200 leading-snug">
+                  <div className="flex items-center gap-1.5 font-mono text-[10px] uppercase font-bold tracking-widest text-accent mb-2">
+                    <ArrowLeft className="h-3 w-3 transition-transform duration-200 group-hover:-translate-x-1" />
+                    {t.details.prevProject}
+                  </div>
+                  <h3 className="font-display text-base font-bold text-ink group-hover:text-accent transition-colors duration-200 leading-snug">
                     {prevProject.title}
+                  </h3>
+                  <p className="mt-1.5 text-xs text-ink-soft line-clamp-2 leading-relaxed">
+                    {prevProject.description}
                   </p>
                 </div>
               </Link>
@@ -240,26 +229,18 @@ export default async function WorkPage({ params }: PageProps) {
             {nextProject ? (
               <Link
                 href={`/${lang}/work/${nextProject.slug}`}
-                className="group flex flex-col gap-3 rounded-2xl border border-line bg-paper-raised/40 p-5 transition-all duration-300 hover:-translate-y-0.5 hover:border-accent/40 hover:bg-paper-raised/70 hover:shadow-md sm:text-right"
+                className="group flex flex-col justify-between rounded-xl border border-line bg-paper-raised/40 p-5 transition-all duration-300 hover:-translate-y-0.5 hover:border-accent/40 hover:bg-paper-raised/70 hover:shadow-md sm:text-right"
               >
-                <div className="flex items-center gap-2 font-mono text-[9px] uppercase tracking-widest text-ink-soft/50 sm:justify-end">
-                  {t.details.nextProject}
-                  <ArrowRight className="h-3 w-3 transition-transform duration-200 group-hover:translate-x-0.5" />
-                </div>
-                {nextProject.cover && (
-                  <div className="overflow-hidden rounded-lg border border-line" style={{ aspectRatio: '16/9' }}>
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img
-                      src={nextProject.cover}
-                      alt={nextProject.title}
-                      className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-[1.02]"
-                    />
-                  </div>
-                )}
                 <div>
-                  <p className="font-mono text-[9px] uppercase tracking-wider text-accent">{nextProject.role}</p>
-                  <p className="mt-1 font-display text-sm font-semibold text-ink group-hover:text-accent transition-colors duration-200 leading-snug">
+                  <div className="flex items-center gap-1.5 font-mono text-[10px] uppercase font-bold tracking-widest text-accent mb-2 sm:justify-end">
+                    {t.details.nextProject}
+                    <ArrowRight className="h-3 w-3 transition-transform duration-200 group-hover:translate-x-1" />
+                  </div>
+                  <h3 className="font-display text-base font-bold text-ink group-hover:text-accent transition-colors duration-200 leading-snug">
                     {nextProject.title}
+                  </h3>
+                  <p className="mt-1.5 text-xs text-ink-soft line-clamp-2 leading-relaxed">
+                    {nextProject.description}
                   </p>
                 </div>
               </Link>
