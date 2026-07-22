@@ -1,0 +1,190 @@
+---
+title: "Déployer n8n en production sur un VPS partagé : retour d'expérience"
+description: "Comment j'ai auto-hébergé n8n sur un VPS déjà en production sans rien casser : isolation Docker, reverse proxy nginx, HTTPS, et les trois incidents de debugging que les tutoriels ne mentionnent pas."
+date: "2026-07-21"
+tags: ["DevOps", "Docker", "Automatisation", "n8n", "Infrastructure"]
+published: true
+lang: "fr"
+---
+
+L'outil d'automatisation autopilote peut lui-même mal tourner : une mauvaise isolation sur un VPS partagé, et c'est votre base de production qui paie les frais. Voici comment j'ai déployé n8n en production pour le projet [TribuneJustice](/fr/work/tribunejustice) — une plateforme legaltech que je pilote en tant que Tech Lead — sans rien casser de l'infrastructure existante.
+
+## Le contexte : rentabiliser un VPS déjà en place
+
+Sur TribuneJustice, j'avais besoin d'un orchestrateur de tâches récurrentes : notifications, synchronisations entre services, jobs planifiés. Plutôt que de payer un abonnement cloud facturé à l'exécution, j'ai choisi d'auto-héberger [n8n](https://n8n.io) sur un VPS déjà utilisé pour le projet — histoire de rentabiliser des ressources disponibles plutôt que de multiplier les infrastructures.
+
+Le VPS tournait déjà sous Ubuntu, avec Docker, nginx, Redis et une base MySQL locale. L'objectif : ajouter n8n proprement, via un sous-domaine dédié, sans affecter la disponibilité du reste.
+
+## L'architecture retenue : isolation complète
+
+La tentation était de faire cohabiter n8n avec la base MySQL de production. J'ai refusé — un crash ou une saturation de disque côté n8n aurait eu un impact direct sur le site principal. L'architecture retenue repose sur une isolation stricte :
+
+- Un conteneur **PostgreSQL 16 dédié** (n8n recommande officiellement Postgres, pas MySQL, en production)
+- Un **réseau Docker isolé** reliant uniquement n8n et sa base
+- n8n exposé uniquement sur `127.0.0.1:5678`, jamais directement sur internet
+- Le nginx existant configuré avec un `server_block` dédié pour `n8n.samensteeve.com`
+- Des **limites CPU/mémoire** sur les conteneurs pour ne pas empiéter sur le projet principal
+
+Cette isolation garantit qu'un problème sur n8n (crash, faille, usage disque excessif) n'affecte jamais la disponibilité du site principal ni l'intégrité de sa base de données.
+
+## Le déploiement, étape par étape
+
+### 1. Préparer l'arborescence dédiée
+
+```bash
+sudo mkdir -p /opt/n8n
+cd /opt/n8n
+sudo mkdir -p n8n_data postgres_data
+```
+
+### 2. Générer la clé de chiffrement
+
+Cette clé chiffre tous les credentials stockés par n8n (mots de passe d'API, tokens OAuth). Sans elle, impossible de restaurer un backup sur une nouvelle instance.
+
+```bash
+openssl rand -hex 32
+```
+
+### 3. Définir les variables d'environnement
+
+Un fichier `.env` centralise la configuration. Point de vigilance important que j'aborderai dans la section debugging : `POSTGRES_USER` et `DB_POSTGRESDB_USER` doivent être **strictement identiques**.
+
+```ini
+N8N_HOST=n8n.samensteeve.com
+N8N_PROTOCOL=https
+N8N_WEBHOOK_URL=https://n8n.samensteeve.com/
+N8N_ENCRYPTION_KEY=<clé générée à l'étape précédente>
+GENERIC_TIMEZONE=Africa/Douala
+TZ=Africa/Douala
+
+DB_TYPE=postgresdb
+DB_POSTGRESDB_HOST=postgres
+DB_POSTGRESDB_DATABASE=n8n
+DB_POSTGRESDB_USER=n8n_user
+DB_POSTGRESDB_PASSWORD=<mot de passe fort>
+
+POSTGRES_USER=n8n_user
+POSTGRES_PASSWORD=<le même mot de passe fort>
+POSTGRES_DB=n8n
+```
+
+### 4. Écrire le `docker-compose.yml`
+
+Deux services : Postgres (dédié, isolé) et n8n, reliés par un réseau Docker privé. La condition `service_healthy` sur Postgres garantit que n8n ne démarre qu'une fois la base réellement prête — pas juste le conteneur lancé.
+
+```yaml
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: n8n_postgres
+    restart: always
+    env_file: .env
+    volumes:
+      - ./postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    networks:
+      - n8n_net
+
+  n8n:
+    image: n8nio/n8n:latest
+    container_name: n8n
+    restart: always
+    env_file: .env
+    ports:
+      - "127.0.0.1:5678:5678"
+    volumes:
+      - ./n8n_data:/home/node/.n8n
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - n8n_net
+
+networks:
+  n8n_net:
+    driver: bridge
+```
+
+### 5. Lancer la stack
+
+```bash
+sudo docker compose up -d
+sudo docker compose logs -f n8n
+```
+
+### 6. Configurer nginx en reverse proxy
+
+Les en-têtes `Upgrade` et `Connection` sont essentiels pour que les WebSockets de l'interface n8n fonctionnent correctement.
+
+```nginx
+server {
+    listen 80;
+    server_name n8n.samensteeve.com;
+
+    location / {
+        proxy_pass http://127.0.0.1:5678;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection "upgrade";
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+    }
+}
+```
+
+```bash
+sudo ln -s /etc/nginx/sites-available/n8n.samensteeve.com /etc/nginx/sites-enabled/
+sudo nginx -t
+sudo systemctl reload nginx
+```
+
+### 7. Activer le HTTPS avec Let's Encrypt
+
+```bash
+sudo apt install -y certbot python3-certbot-nginx
+sudo certbot --nginx -d n8n.samensteeve.com
+```
+
+### 8. Premier accès et création du compte owner
+
+À la première visite de `https://n8n.samensteeve.com`, n8n affiche l'écran de setup owner : email + mot de passe. Cet écran ne s'affiche **qu'une seule fois** — une fois le compte créé, n8n désactive définitivement l'auto-inscription. Toute invitation future doit passer par *Settings → Users*.
+
+## Ce que le déploiement "propre" ne dit pas : le debugging réel
+
+La théorie d'un déploiement Docker + nginx + SSL est bien documentée. La pratique, sur un serveur qui vit déjà, l'est moins. Voici les trois incidents rencontrés et comment je les ai résolus.
+
+### 1. Erreur de permissions sur le volume monté
+
+```
+Error: EACCES: permission denied, open '/home/node/.n8n/config'
+```
+
+Le processus n8n dans le conteneur tourne sous l'UID `1000` (utilisateur `node`), mais le dossier créé côté hôte appartenait à `root`. Diagnostic : `chown -R 1000:1000` sur le volume a résolu le blocage.
+
+### 2. Incohérence entre les identifiants Postgres
+
+Les variables `POSTGRES_USER` (utilisées à l'initialisation du conteneur Postgres) et `DB_POSTGRESDB_USER` (utilisées par n8n pour s'y connecter) n'étaient pas alignées. Comme Postgres n'initialise sa base qu'au tout premier démarrage, un simple changement de `.env` après coup ne suffisait pas — il a fallu supprimer le volume de données pour repartir sur des identifiants cohérents.
+
+### 3. Le sous-domaine flaggé "site dangereux" par Google
+
+Une fois le service opérationnel, Chrome s'est mis à bloquer l'accès au sous-domaine avec un avertissement hameçonnage — alors que le contenu était parfaitement légitime. En creusant (Google Search Console, forums communautaires n8n), j'ai découvert un pattern documenté : une page de connexion nue, sur un sous-domaine tout neuf, derrière un CDN, correspond statistiquement au profil d'une page de phishing pour les classifieurs heuristiques de Google Safe Browsing.
+
+La résolution a nécessité une démarche administrative plutôt que technique : validation de la propriété du domaine via Search Console, puis demande de révision manuelle. Un rappel utile que la sécurité *perçue* par des outils automatisés n'est pas toujours corrélée à la sécurité réelle d'un système.
+
+## La sécurisation finale
+
+- **2FA** activée sur le compte administrateur
+- **Backups automatisés** (dump PostgreSQL quotidien) via script cron, rotation sur 7 jours
+- Compte owner **verrouillé après création** — tout nouvel utilisateur doit être invité explicitement depuis l'interface
+
+## Ce que je retiens
+
+Ce type de déploiement — modeste en apparence — mobilise tout un spectre de compétences : architecture système (isolation, réseaux Docker), sécurité (permissions, chiffrement, authentification), réseau (DNS, reverse proxy, certificats SSL), et une méthode rigoureuse pour diagnostiquer des pannes qui ne sont documentées nulle part de façon évidente.
+
+C'est exactement le type de problème que je rencontre au quotidien sur TribuneJustice et sur d'autres projets. Si vous avez un besoin similaire — orchestrer des automatisations sur votre infrastructure sans multiplier les abonnements cloud — c'est le type de mission sur lequel j'interviens directement.

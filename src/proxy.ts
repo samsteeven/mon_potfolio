@@ -38,6 +38,7 @@ export function proxy(request: NextRequest) {
     return NextResponse.rewrite(url);
   }
 
+  // Redirection des URLs sans préfixe de langue vers /en (ex: /work/digitram → /en/work/digitram)
   if (!hasLang) {
     const url = new URL(`/en${pathname}`, request.url);
     url.search = request.nextUrl.search;
