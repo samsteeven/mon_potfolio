@@ -1,0 +1,61 @@
+---
+title: "Deploying n8n in Production on a Shared VPS: Field Retrospective"
+description: "How I self-hosted n8n on a production VPS without breaking anything: Docker isolation, Nginx reverse proxy, HTTPS, and real-world debugging lessons."
+date: "2026-07-21"
+tags: ["DevOps", "Docker", "Automation", "n8n", "Infrastructure"]
+published: true
+lang: "en"
+---
+
+An autopilot automation tool can go wrong: poor isolation on a shared VPS can compromise your production database. Here is how I deployed n8n in production for the [TribuneJustice](/en/work/tribunejustice) project — a legaltech platform I lead as Tech Lead — without disrupting existing infrastructure.
+
+## The Context: Making the Most of an Existing VPS
+
+On TribuneJustice, I needed a workflow orchestrator for recurring tasks: notifications, service syncs, and scheduled jobs. Rather than paying for execution-based cloud subscriptions, I chose to self-host [n8n](https://n8n.io) on a VPS already running for the project — maximizing existing resources rather than multiplying infrastructure costs.
+
+The VPS was running Ubuntu with Docker, Nginx, Redis, and a local MySQL database. The goal: cleanly add n8n on a dedicated subdomain without impacting the main site.
+
+## Architecture Choice: Complete Isolation
+
+Co-locating n8n on the production MySQL database was tempting, but risky — a disk overflow or crash in n8n would directly impact the main application. The selected architecture relies on strict isolation:
+
+- Dedicated **PostgreSQL 16 container** (officially recommended by n8n over MySQL)
+- Isolated **Docker network** connecting only n8n and its PostgreSQL instance
+- n8n exposed exclusively on `127.0.0.1:5678`, never directly to the public web
+- Existing Nginx configured with a dedicated `server_block` for `n8n.samensteeve.com`
+- **CPU and memory limits** on containers to protect main project resources
+
+## Step-by-Step Deployment
+
+```bash
+sudo mkdir -p /opt/n8n
+cd /opt/n8n
+sudo mkdir -p n8n_data postgres_data
+```
+
+```ini
+N8N_HOST=n8n.samensteeve.com
+N8N_PROTOCOL=https
+N8N_WEBHOOK_URL=https://n8n.samensteeve.com/
+N8N_ENCRYPTION_KEY=<generated_key>
+GENERIC_TIMEZONE=Africa/Douala
+TZ=Africa/Douala
+
+DB_TYPE=postgresdb
+DB_POSTGRESDB_HOST=postgres
+DB_POSTGRESDB_DATABASE=n8n
+DB_POSTGRESDB_USER=n8n_user
+DB_POSTGRESDB_PASSWORD=<strong_password>
+
+POSTGRES_USER=n8n_user
+POSTGRES_PASSWORD=<same_strong_password>
+POSTGRES_DB=n8n
+```
+
+## Real-World Debugging Lessons
+
+Three specific issues arose during deployment: volume file permissions (resolved via `chown -R 1000:1000`), initial Postgres credential mismatch, and a Google Safe Browsing false positive on the newly created login subdomain.
+
+## Takeaways
+
+Proper self-hosting requires robust isolation, security hardening, and proper reverse proxy configuration. It ensures cost-effective workflow automation without compromising production reliability.
