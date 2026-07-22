@@ -13,11 +13,7 @@ An autopilot automation tool can go wrong: poor isolation on a shared VPS can co
 
 On TribuneJustice, I needed a workflow orchestrator for recurring tasks: notifications, service syncs, and scheduled jobs. Rather than paying for execution-based cloud subscriptions, I chose to self-host [n8n](https://n8n.io) on a VPS already running for the project — maximizing existing resources rather than multiplying infrastructure costs.
 
-The VPS was running Ubuntu with Docker, Nginx, Redis, and a local MySQL database. The goal: cleanly add n8n on a dedicated subdomain without impacting the main site.
-
 ## Architecture Choice: Complete Isolation
-
-Co-locating n8n on the production MySQL database was tempting, but risky — a disk overflow or crash in n8n would directly impact the main application. The selected architecture relies on strict isolation:
 
 - Dedicated **PostgreSQL 16 container** (officially recommended by n8n over MySQL)
 - Isolated **Docker network** connecting only n8n and its PostgreSQL instance
@@ -55,6 +51,14 @@ POSTGRES_DB=n8n
 ## Real-World Debugging Lessons
 
 Three specific issues arose during deployment: volume file permissions (resolved via `chown -R 1000:1000`), initial Postgres credential mismatch, and a Google Safe Browsing false positive on the newly created login subdomain.
+
+![Google Safe Browsing Warning - Dangerous Site](/blog/n8n-google-warning.png)
+*Figure 1: Heuristic Chrome / Google Safe Browsing warning upon first accessing the n8n subdomain.*
+
+Once the Google false positive was cleared via Search Console review, the n8n instance became fully accessible and ready for workflow automation.
+
+![n8n Dashboard Live](/blog/n8n-dashboard.png)
+*Figure 2: Secured, fully operational n8n instance on n8n.samensteeve.com.*
 
 ## Takeaways
 

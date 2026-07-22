@@ -109,14 +109,7 @@ networks:
     driver: bridge
 ```
 
-### 5. Lancer la stack
-
-```bash
-sudo docker compose up -d
-sudo docker compose logs -f n8n
-```
-
-### 6. Configurer nginx en reverse proxy
+### 5. Configurer nginx en reverse proxy
 
 Les en-têtes `Upgrade` et `Connection` sont essentiels pour que les WebSockets de l'interface n8n fonctionnent correctement.
 
@@ -144,16 +137,12 @@ sudo nginx -t
 sudo systemctl reload nginx
 ```
 
-### 7. Activer le HTTPS avec Let's Encrypt
+### 6. Activer le HTTPS avec Let's Encrypt
 
 ```bash
 sudo apt install -y certbot python3-certbot-nginx
 sudo certbot --nginx -d n8n.samensteeve.com
 ```
-
-### 8. Premier accès et création du compte owner
-
-À la première visite de `https://n8n.samensteeve.com`, n8n affiche l'écran de setup owner : email + mot de passe. Cet écran ne s'affiche **qu'une seule fois** — une fois le compte créé, n8n désactive définitivement l'auto-inscription. Toute invitation future doit passer par *Settings → Users*.
 
 ## Ce que le déploiement "propre" ne dit pas : le debugging réel
 
@@ -167,24 +156,28 @@ Error: EACCES: permission denied, open '/home/node/.n8n/config'
 
 Le processus n8n dans le conteneur tourne sous l'UID `1000` (utilisateur `node`), mais le dossier créé côté hôte appartenait à `root`. Diagnostic : `chown -R 1000:1000` sur le volume a résolu le blocage.
 
-### 2. Incohérence entre les identifiants Postgres
+### 2. Le sous-domaine flaggé "site dangereux" par Google
 
-Les variables `POSTGRES_USER` (utilisées à l'initialisation du conteneur Postgres) et `DB_POSTGRESDB_USER` (utilisées par n8n pour s'y connecter) n'étaient pas alignées. Comme Postgres n'initialise sa base qu'au tout premier démarrage, un simple changement de `.env` après coup ne suffisait pas — il a fallu supprimer le volume de données pour repartir sur des identifiants cohérents.
+Une fois le service opérationnel et le HTTPS activé, Chrome s'est mis à bloquer l'accès au sous-domaine avec un avertissement "hameçonnage" — alors que le contenu était parfaitement légitime.
 
-### 3. Le sous-domaine flaggé "site dangereux" par Google
+![Avertissement Google Safe Browsing - Site Dangereux](/blog/n8n-google-warning.png)
+*Figure 1 : Blocage heuristique Chrome / Google Safe Browsing lors du premier accès au sous-domaine n8n.*
 
-Une fois le service opérationnel, Chrome s'est mis à bloquer l'accès au sous-domaine avec un avertissement hameçonnage — alors que le contenu était parfaitement légitime. En creusant (Google Search Console, forums communautaires n8n), j'ai découvert un pattern documenté : une page de connexion nue, sur un sous-domaine tout neuf, derrière un CDN, correspond statistiquement au profil d'une page de phishing pour les classifieurs heuristiques de Google Safe Browsing.
+En creusant (Google Search Console, forums communautaires n8n), j'ai découvert un pattern documenté : une page de connexion nue, sur un sous-domaine tout neuf, derrière un CDN, correspond statistiquement au profil d'une page de phishing pour les classifieurs heuristiques de Google Safe Browsing.
 
-La résolution a nécessité une démarche administrative plutôt que technique : validation de la propriété du domaine via Search Console, puis demande de révision manuelle. Un rappel utile que la sécurité *perçue* par des outils automatisés n'est pas toujours corrélée à la sécurité réelle d'un système.
+La résolution a nécessité une démarche administrative plutôt que technique : validation de la propriété du domaine via Search Console, puis demande de révision manuelle auprès des équipes Google.
 
-## La sécurisation finale
+### 3. Victoire : l'instance n8n opérationnelle en production
+
+Une fois le faux positif levé par Google et les permissions de volumes corrigées, l'instance n8n est enfin accessible de manière sécurisée et prête à orchestrer nos automatisations.
+
+![Dashboard n8n en ligne - Que veux-tu construire Sam ?](/blog/n8n-dashboard.png)
+*Figure 2 : Interface n8n sécurisée et opérationnelle sur n8n.samensteeve.com.*
+
+## La sécurisation finale & Ce que je retiens
 
 - **2FA** activée sur le compte administrateur
 - **Backups automatisés** (dump PostgreSQL quotidien) via script cron, rotation sur 7 jours
-- Compte owner **verrouillé après création** — tout nouvel utilisateur doit être invité explicitement depuis l'interface
+- Compte owner **verrouillé après création** — tout nouvel utilisateur doit être invité explicitement
 
-## Ce que je retiens
-
-Ce type de déploiement — modeste en apparence — mobilise tout un spectre de compétences : architecture système (isolation, réseaux Docker), sécurité (permissions, chiffrement, authentification), réseau (DNS, reverse proxy, certificats SSL), et une méthode rigoureuse pour diagnostiquer des pannes qui ne sont documentées nulle part de façon évidente.
-
-C'est exactement le type de problème que je rencontre au quotidien sur TribuneJustice et sur d'autres projets. Si vous avez un besoin similaire — orchestrer des automatisations sur votre infrastructure sans multiplier les abonnements cloud — c'est le type de mission sur lequel j'interviens directement.
+Ce type de déploiement — modeste en apparence — mobilise tout un spectre de compétences : architecture système (isolation, réseaux Docker), sécurité (permissions, chiffrement, authentification), réseau (DNS, reverse proxy, certificats SSL), et une méthode rigoureuse pour diagnostiquer des pannes réelles.
