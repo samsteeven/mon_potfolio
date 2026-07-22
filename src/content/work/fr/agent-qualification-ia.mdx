@@ -1,0 +1,79 @@
+---
+title: "Agent IA de Qualification de Leads"
+description: "Pipeline intelligent autonome : interception de formulaires, enrichissement web temps réel (Tavily), Knowledge Base catalogue services, scoring prospect et email personnalisé en < 30 secondes."
+date: "2026-07-21"
+role: "Architecte IA & Ingénieur logiciel"
+stack: ["n8n", "OpenRouter", "Claude Haiku 4.5", "Tavily API", "TypeScript", "Next.js", "Turso", "MCP"]
+status: "shipped"
+featured: true
+lang: "fr"
+---
+
+## Le problème
+
+Sur une plateforme de services d'ingénierie et de consulting, les demandes de contact arrivent avec des niveaux de maturité très disparates — du simple curieux au projet entreprise à fort budget. Traiter chaque soumission manuellement prenait plusieurs heures et risquait de faire passer à côté d'opportunités prioritaires.
+
+Il fallait un système autonome capable de recevoir, enrichir, scorer et répondre aux prospects **en moins de 30 secondes** sans dégrader la pertinence du premier contact.
+
+<CardGrid>
+  <Card title="Réponse instantanée">
+    Email qualifié et personnalisé envoyé automatiquement au prospect en moins de 30 secondes après soumission du formulaire.
+  </Card>
+  <Card title="Priorisation automatique">
+    Score de 1 à 10 calculé sur budget, besoin, urgence et légitimité de l'entreprise — enrichie en temps réel via le web.
+  </Card>
+</CardGrid>
+
+## Architecture du workflow
+
+Le workflow n8n **Lead Qualification Agent** s'articule autour de 8 nœuds principaux :
+
+```
+Form Submission → Normalize Payload → Lead Qualification Agent
+                                              │
+                        ┌─────────────────────┴──────────────────────┐
+                        │ Tools                                        │
+                        │  • OpenRouter Model (Claude Haiku 4.5)      │
+                        │  • Lead Memory                              │
+                        │  • Knowledge Base (catalogue services)      │
+                        │  • CRM - Save Lead / Get Lead               │
+                        │  • Web Search (Tavily)                      │
+                        │  • Qualification Output Parser              │
+                        └─────────────────────────────────────────────┘
+                                    │
+                  ┌─────────────────┴────────────────┐
+               Success                             Error
+                  │                                   │
+      Format Notification                    Log Agent Failure
+                  │
+      Send Qualification Email
+```
+
+**Sécurité webhook** : La route `/api/contact` de Next.js transfère la soumission vers n8n avec un header `X-Webhook-Token`. Le nœud *Normalize Payload* valide ce secret avant tout traitement — aucune exécution LLM ne démarre sans authentification.
+
+**Knowledge Base comme outil agent** : Le catalogue complet des services (ingénierie logicielle, architecture cloud, automatisation IA) est injecté comme outil de l'agent. Cela lui permet de matcher précisément le besoin exprimé avec les offres disponibles et de calibrer la réponse en conséquence.
+
+**Enrichissement Tavily** : L'agent déclenche une recherche web sur le nom de l'entreprise du prospect pour valider son secteur, sa taille et ses réalisations avant d'émettre un score.
+
+**Pipeline de notification** : En cas de succès, la sortie JSON de l'agent passe dans *Format Notification* qui structure l'email, puis *Send Qualification Email* l'envoie en moins de 30 secondes. En cas d'échec, *Log Agent Failure* enregistre l'erreur dans la Data Table CRM sans perdre les données de contact.
+
+## Ce que j'ai construit
+
+**Orchestration via OpenRouter** : L'agent tourne sur Claude Haiku 4.5 via OpenRouter — ce qui permet de switcher de modèle (Mistral, GPT-4o, Gemini) sans modifier l'agent, juste en changeant l'identifiant de modèle.
+
+**Structured Output Parser strict** : La sortie de l'agent est contrainte à un schéma JSON défini — score, résumé du besoin, fit service, email rédigé. Zéro hallucination de format possible.
+
+**CRM double nœud (Save / Get)** : L'agent peut d'abord lire les soumissions précédentes d'un même email via *Get Lead* (déduplication) puis persiste le nouveau score via *Save Lead*. Les données survivent aux redémarrages n8n.
+
+**Branchement MCP** : Le workflow est exposé comme outil MCP interrogeable depuis l'IDE (opencode) pour analyser les leads en langage naturel, sans ouvrir n8n.
+
+## Impact
+
+<CardGrid>
+  <Card title="< 30 secondes">
+    De la soumission du formulaire à l'email de réponse qualifié et personnalisé, entièrement automatisé.
+  </Card>
+  <Card title="100% des leads enrichis">
+    Chaque prospect reçoit une fiche entreprise enrichie et un score de maturité avant le moindre suivi humain.
+  </Card>
+</CardGrid>

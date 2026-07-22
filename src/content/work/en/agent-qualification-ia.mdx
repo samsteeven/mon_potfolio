@@ -1,0 +1,79 @@
+---
+title: "AI Lead Qualification Agent"
+description: "Autonomous intelligent pipeline: form interception, real-time web enrichment (Tavily), service Knowledge Base, prospect scoring and personalized email in < 30 seconds."
+date: "2026-07-21"
+role: "AI Architect & Software Engineer"
+stack: ["n8n", "OpenRouter", "Claude Haiku 4.5", "Tavily API", "TypeScript", "Next.js", "Turso", "MCP"]
+status: "shipped"
+featured: true
+lang: "en"
+---
+
+## The Problem
+
+On an engineering and consulting services platform, contact form submissions arrive with widely varying maturity levels — from curious browsers to high-budget enterprise projects. Processing each submission manually took several hours and risked missing high-priority opportunities.
+
+An autonomous system was needed to receive, enrich, score, and respond to prospects **in under 30 seconds** without compromising the quality of first contact.
+
+<CardGrid>
+  <Card title="Instant Response">
+    Qualified, personalized email sent automatically to the prospect in under 30 seconds after form submission.
+  </Card>
+  <Card title="Automated Prioritization">
+    Score from 1 to 10 calculated on budget, need, urgency, and company legitimacy — enriched in real-time via web search.
+  </Card>
+</CardGrid>
+
+## Workflow Architecture
+
+The **Lead Qualification Agent** n8n workflow revolves around 8 main nodes:
+
+```
+Form Submission → Normalize Payload → Lead Qualification Agent
+                                              │
+                        ┌─────────────────────┴──────────────────────┐
+                        │ Tools                                        │
+                        │  • OpenRouter Model (Claude Haiku 4.5)      │
+                        │  • Lead Memory                              │
+                        │  • Knowledge Base (service catalog)         │
+                        │  • CRM - Save Lead / Get Lead               │
+                        │  • Web Search (Tavily)                      │
+                        │  • Qualification Output Parser              │
+                        └─────────────────────────────────────────────┘
+                                    │
+                  ┌─────────────────┴────────────────┐
+               Success                             Error
+                  │                                   │
+      Format Notification                    Log Agent Failure
+                  │
+      Send Qualification Email
+```
+
+**Webhook security**: The Next.js `/api/contact` route forwards the submission to n8n with an `X-Webhook-Token` header. The *Normalize Payload* node validates this secret before any processing — no LLM execution starts without authentication.
+
+**Knowledge Base as an agent tool**: The full service catalog (software engineering, cloud architecture, AI automation) is injected as an agent tool. This allows the agent to precisely match the expressed need with available offerings and calibrate the response accordingly.
+
+**Tavily enrichment**: The agent triggers a web search on the prospect's company name to validate its sector, size, and track record before issuing a score.
+
+**Notification pipeline**: On success, the agent's JSON output passes through *Format Notification* which structures the email, then *Send Qualification Email* delivers it in under 30 seconds. On failure, *Log Agent Failure* records the error in the CRM Data Table without losing contact data.
+
+## What I Built
+
+**OpenRouter orchestration**: The agent runs on Claude Haiku 4.5 via OpenRouter — enabling model switching (Mistral, GPT-4o, Gemini) without modifying the agent, just changing the model identifier.
+
+**Strict Structured Output Parser**: The agent's output is constrained to a defined JSON schema — score, need summary, service fit, drafted email. Zero format hallucination possible.
+
+**Dual CRM nodes (Save / Get)**: The agent can first read previous submissions from the same email via *Get Lead* (deduplication) then persist the new score via *Save Lead*. Data survives n8n restarts.
+
+**MCP branching**: The workflow is exposed as an MCP tool queryable from the IDE (opencode) to analyze leads in natural language, without opening n8n.
+
+## Impact
+
+<CardGrid>
+  <Card title="< 30 seconds">
+    From form submission to qualified, personalized response email — fully automated.
+  </Card>
+  <Card title="100% Enriched Leads">
+    Every prospect receives an enriched company profile and maturity score before any human follow-up.
+  </Card>
+</CardGrid>
