@@ -82,6 +82,7 @@ export function getMDXComponents(components?: MDXComponents): MDXComponents {
       <ZoomableImage src={src || ""} alt={alt || ""} />
     ),
     // Export des composants riches pour être utilisables dans les fichiers MDX
+    ZoomableImage,
     Callout,
     CodeWindow,
     CardGrid,

@@ -103,6 +103,24 @@ Once the Google false positive was cleared via Search Console review, the n8n in
 ![n8n Dashboard Live](/blog/n8n-dashboard.png)
 *Figure 2: Secured, fully operational n8n instance on n8n.samensteeve.com.*
 
+## What's Running in Production Today
+
+The n8n instance is no longer just a task orchestrator. Two critical workflows run in production, connected by a **shared CRM Data Table** — the core of the system.
+
+### Lead Qualification Agent (write)
+
+Autonomous AI agent that intercepts form submissions, enriches data via Tavily, scores the lead 1-10, and **writes** to the CRM Data Table (upsert by email). Personalized response email sent to the prospect in < 30s. Redis memory, strict Output Parser (constrained JSON schema), retry on Gmail and Tavily.
+
+### WhatsApp CRM Assistant (read & operational)
+
+WhatsApp agent that allows **reading** and querying the same CRM in natural language — check recent leads, look up by email, update status, send professional emails. Redis memory for conversation context.
+
+### The Complete Pipeline
+
+Both workflows form a unified system: the Lead Agent **populates** the CRM with qualified, enriched leads, while the WhatsApp Assistant allows **querying** and **acting** on that data directly from WhatsApp — without opening the n8n interface. Shared Redis memory for conversation continuity between both agents.
+
+Each workflow has its own security model: the Lead Qualification Agent uses a Header Auth credential (`X-Webhook-Secret`) on its webhook, while the WhatsApp CRM Assistant relies on n8n's WhatsApp Business authentication. Both have `retryOnFail` configured on critical nodes.
+
 ## Takeaways
 
 Proper self-hosting requires robust isolation, security hardening, and proper reverse proxy configuration. It ensures cost-effective workflow automation without compromising production reliability.

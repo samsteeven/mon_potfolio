@@ -180,6 +180,26 @@ Une fois le faux positif levé par Google et les permissions de volumes corrigé
 ![Dashboard n8n en ligne - Que veux-tu construire Sam ?](/blog/n8n-dashboard.png)
 *Figure 2 : Interface n8n sécurisée et opérationnelle sur n8n.samensteeve.com.*
 
+## Ce qui tourne en production aujourd'hui
+
+L'instance n8n n'est plus un simple orchestrateur de tâches récurrentes. Deux workflows critiques y tournent en production, connectés par une **même Data Table CRM** — le cœur du système.
+
+### Lead Qualification Agent (écriture)
+
+Agent IA autonome qui intercepte les soumissions de formulaire, enrichit les données via Tavily, score le lead de 1 à 10, et **écrit** dans la CRM Data Table (upsert par email). Email de notification personnalisé envoyé au prospect en < 30 secondes. Mémoire Redis, Output Parser strict (schéma JSON contraint), retry sur Gmail et Tavily.
+
+### WhatsApp CRM Assistant (lecture & opérationnel)
+
+Agent WhatsApp qui permet de **lire** et interroger la même CRM en langage naturel — consulter les leads récents, chercher par email, mettre à jour un statut, envoyer un email professionnel. Mémoire Redis pour le contexte conversationnel.
+
+### Le pipeline complet
+
+Les deux workflows forment un système unifié : le Lead Agent **peuple** la CRM avec des leads qualifiés et enrichis, le WhatsApp Assistant permet de **consulter** et **agir** sur ces données directement depuis WhatsApp — sans ouvrir l'interface n8n. Mémoire Redis partagée pour la continuité conversationnelle entre les deux agents.
+
+<Callout type="tip">
+  Chaque workflow a sa propre logique de sécurité : le Lead Qualification Agent utilise une credential Header Auth (`X-Webhook-Secret`) sur son webhook, tandis que le WhatsApp CRM Assistant s'appuie sur l'authentification WhatsApp Business de n8n. Les deux ont un `retryOnFail` configuré sur les nœuds critiques.
+</Callout>
+
 ## La sécurisation finale & Ce que je retiens
 
 <CardGrid>

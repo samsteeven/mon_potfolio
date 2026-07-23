@@ -3,7 +3,7 @@ title: "AI Lead Qualification Agent"
 description: "Autonomous intelligent pipeline: form interception, real-time web enrichment (Tavily), service Knowledge Base, prospect scoring and personalized email in < 30 seconds."
 date: "2026-07-21"
 role: "AI Architect & Software Engineer"
-stack: ["n8n", "OpenRouter", "Claude Haiku 4.5", "Tavily API", "TypeScript", "Next.js", "Turso", "MCP"]
+stack: ["n8n", "OpenRouter", "Claude Haiku 4.5", "Tavily API", "Redis", "TypeScript", "Next.js", "Turso", "Data Tables", "MCP"]
 status: "shipped"
 featured: true
 lang: "en"
@@ -27,7 +27,7 @@ An autonomous system was needed to receive, enrich, score, and respond to prospe
 
 ## Workflow Architecture
 
-The **Lead Qualification Agent** n8n workflow revolves around 8 main nodes:
+The **Lead Qualification Agent** n8n workflow revolves around 13 nodes organized in 5 functional groups:
 
 ```
 Form Submission → Normalize Payload → Lead Qualification Agent
@@ -35,36 +35,50 @@ Form Submission → Normalize Payload → Lead Qualification Agent
                         ┌─────────────────────┴──────────────────────┐
                         │ Tools                                        │
                         │  • OpenRouter Model (Claude Haiku 4.5)      │
-                        │  • Lead Memory                              │
+                        │  • Lead Memory (Redis Chat Memory)          │
                         │  • Knowledge Base (service catalog)         │
-                        │  • CRM - Save Lead / Get Lead               │
+                        │  • CRM - Get Lead                           │
                         │  • Web Search (Tavily)                      │
-                        │  • Qualification Output Parser              │
+                        │  • Qualification Output Parser (strict)     │
                         └─────────────────────────────────────────────┘
                                     │
                   ┌─────────────────┴────────────────┐
                Success                             Error
                   │                                   │
-      Format Notification                    Log Agent Failure
+      CRM - Save Lead                      Log Agent Failure
+      (deterministic node)                 (error in Data Table)
+                  │
+      Format Notification
                   │
       Send Qualification Email
 ```
 
-**Webhook security**: The Next.js `/api/contact` route forwards the submission to n8n with an `X-Webhook-Token` header. The *Normalize Payload* node validates this secret before any processing — no LLM execution starts without authentication.
+**5 functional groups**:
+- **Data Normalization**: Webhook trigger → payload validation
+- **AI Agent & Tools**: Main agent + 6 sub-nodes (model, memory, tools)
+- **CRM Persistence**: Save Lead (deterministic, post-agent)
+- **Output & Notification**: Email formatting → Gmail send
+- **Error Handling**: Fallback to Data Table on failure
+
+**Webhook security**: The Next.js `/api/contact` route forwards the submission to n8n with a Header Auth credential (`X-Webhook-Secret`). The webhook node validates this secret via linked credential + IP filtering (`64.29.17.65, 216.198.79.65`) + `ignoreBots: true`. No execution starts without authentication.
+
+**Redis memory**: Conversation context is persisted in Redis (`memoryRedisChat`) — the agent retains interaction history across sessions, enabling more refined scoring on recurring contacts.
 
 **Knowledge Base as an agent tool**: The full service catalog (software engineering, cloud architecture, AI automation) is injected as an agent tool. This allows the agent to precisely match the expressed need with available offerings and calibrate the response accordingly.
 
-**Tavily enrichment**: The agent triggers a web search on the prospect's company name to validate its sector, size, and track record before issuing a score.
+**Tavily enrichment**: The agent triggers a web search on the prospect's company name to validate its sector, size, and track record before issuing a score. Tavily and Gmail calls have `retryOnFail` with 3 attempts.
 
-**Notification pipeline**: On success, the agent's JSON output passes through *Format Notification* which structures the email, then *Send Qualification Email* delivers it in under 30 seconds. On failure, *Log Agent Failure* records the error in the CRM Data Table without losing contact data.
+**Deterministic CRM Save Lead**: Unlike agent tools (which execute non-deterministically), the *CRM - Save Lead* node is a standard node in the main flow. It runs on every execution, guarantees data persistence in the CRM Data Table, and fails observably (no silent data loss).
+
+**Notification pipeline**: On success, the agent's JSON output passes through *Format Notification* which structures the email with data passed by the agent (leadName, leadEmail, leadCompany), then *Send Qualification Email* delivers it in under 30 seconds. On failure, *Log Agent Failure* records the error in the CRM Data Table without losing contact data.
 
 ## What I Built
 
 **OpenRouter orchestration**: The agent runs on Claude Haiku 4.5 via OpenRouter — enabling model switching (Mistral, GPT-4o, Gemini) without modifying the agent, just changing the model identifier.
 
-**Strict Structured Output Parser**: The agent's output is constrained to a defined JSON schema — score, need summary, service fit, drafted email. Zero format hallucination possible.
+**Strict Structured Output Parser with auto-fix**: The agent's output is constrained to a strict JSON schema with `enum` for discrete choices (budget, fit, urgency), `minimum`/`maximum` for the 1-10 score, and `required` on all critical fields. The `autoFix: true` option with a sub-node model (OpenRouter + Claude Haiku 4.5) automatically corrects invalid schemas. The agent is forced to pass through lead metadata (leadName, leadEmail, leadCompany) in its output, ensuring complete contact traceability.
 
-**Dual CRM nodes (Save / Get)**: The agent can first read previous submissions from the same email via *Get Lead* (deduplication) then persist the new score via *Save Lead*. Data survives n8n restarts.
+**Persistent CRM Data Table**: Leads are persisted in n8n native Data Tables — data survives restarts, is queryable via the n8n API, and requires no external database. The *Get Lead* node enables email deduplication before scoring.
 
 **MCP branching**: The workflow is exposed as an MCP tool queryable from the IDE (opencode) to analyze leads in natural language, without opening n8n.
 
@@ -78,3 +92,45 @@ Form Submission → Normalize Payload → Lead Qualification Agent
     Every prospect receives an enriched company profile and maturity score before any human follow-up.
   </Card>
 </CardGrid>
+
+## Two Workflows, One Complete Pipeline
+
+The Lead Qualification Agent doesn't run in isolation. It's part of a two-viewport lead management system sharing the **same CRM Data Table**:
+
+<ZoomableImage src="/projects/whatsapp_workflow.jpg" alt="n8n workflow — WhatsApp CRM Assistant: WhatsApp message trigger, extraction, AI agent with Redis memory and CRM tools, reply or professional email delivery" />
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│                    COMPLETE PIPELINE                             │
+│                                                                 │
+│  ┌──────────────────────┐         ┌──────────────────────────┐  │
+│  │  Lead Qualification   │         │  WhatsApp CRM Assistant  │  │
+│  │  Agent                │         │                          │  │
+│  │                       │         │  WhatsApp Trigger        │  │
+│  │  Form → Agent → CRM   │         │       ↓                  │  │
+│  │         ↓             │         │  Agent → CRM (read)      │  │
+│  │  Save Lead (write)    │         │       ↓                  │  │
+│  │         ↓             │         │  Reply WhatsApp          │  │
+│  │  Email notification   │         │  + send pro email        │  │
+│  └──────────┬────────────┘         └──────────┬───────────────┘  │
+│             │                                 │                  │
+│             └─────────────┬───────────────────┘                  │
+│                           ▼                                      │
+│               ┌──────────────────────┐                           │
+│               │  Data Table CRM      │                           │
+│               │  (leads_crm)         │                           │
+│               │  ─────────────────── │                           │
+│               │  email, leadName,    │                           │
+│               │  company, score,     │                           │
+│               │  qualification,      │                           │
+│               │  matchedService,     │                           │
+│               │  status, notes       │                           │
+│               └──────────────────────┘                           │
+└─────────────────────────────────────────────────────────────────┘
+```
+
+**The Lead Qualification Agent** intercepts the form, enriches the lead via Tavily, scores it, and **writes** to the CRM Data Table (upsert by email — automatic deduplication).
+
+**The WhatsApp CRM Assistant** allows **reading** and querying the same CRM in natural language from WhatsApp — check recent leads, look up by email, update status, or even send a professional email directly from the conversation.
+
+Both agents use persistent Redis memory — conversation context is retained across sessions for continuous interaction.
