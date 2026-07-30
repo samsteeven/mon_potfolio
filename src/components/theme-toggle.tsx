@@ -33,7 +33,11 @@ export function ThemeToggle() {
     <button
       onClick={toggle}
       aria-label="Changer de thème"
-      className="relative rounded-full border border-line p-1.5 text-ink-soft transition-all duration-200 hover:scale-110 hover:border-ink-soft hover:text-ink active:scale-[0.96]"
+      className={`relative rounded-full border p-1.5 transition-all duration-200 hover:scale-110 active:scale-[0.96] ${
+        isDark
+          ? "border-accent/30 text-ink bg-accent/5 hover:border-accent/60"
+          : "border-line text-ink-soft hover:border-ink-soft hover:text-ink"
+      }`}
     >
       <span className="relative block h-3.5 w-3.5">
         <Sun

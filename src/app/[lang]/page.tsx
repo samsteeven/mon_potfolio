@@ -8,7 +8,7 @@ import { ProjectCard } from "@/components/project-card";
 import { getT, type Language } from "@/lib/translations";
 import { createPageMetadata } from "@/lib/metadata";
 import { ScrollReveal } from "@/components/scroll-reveal";
-import { LinkedinIcon, GithubIcon } from "@/components/icons";
+import { LinkedinIcon, GithubIcon, WhatsappIcon } from "@/components/icons";
 import { BLUR_DATA_URL } from "@/lib/blur";
 
 interface PageProps {
@@ -132,6 +132,15 @@ export default async function HomePage({ params }: PageProps) {
               aria-label="GitHub"
             >
               <GithubIcon className="h-7 w-7" />
+            </a>
+            <a
+              href="https://wa.me/237654557446"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="transition-all duration-200 hover:text-accent hover:scale-110 active:scale-[0.96]"
+              aria-label="WhatsApp"
+            >
+              <WhatsappIcon className="h-7 w-7" />
             </a>
           </div>
         </div>
