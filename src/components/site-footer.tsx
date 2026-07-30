@@ -1,3 +1,4 @@
+import Image from "next/image";
 import { Calendar, Download, Mail } from "lucide-react";
 import { getT, type Language } from "@/lib/translations";
 import { LinkedinIcon, GithubIcon, WhatsappIcon } from "@/components/icons";
@@ -14,11 +15,20 @@ export function SiteFooter({ lang }: { lang: Language }) {
 
           {/* Identité + copyright */}
           <div className="flex flex-col gap-1.5">
-            <span
-              className="font-display text-base font-extrabold tracking-tight text-ink"
-            >
-              Samen Steeve
-            </span>
+            <div className="flex items-center gap-2.5">
+              <div className="relative h-8 w-8 shrink-0 overflow-hidden rounded-full border border-line bg-paper-raised/80 shadow-sm">
+                <Image
+                  src="/profile/profil.png"
+                  alt="Samen Steeve"
+                  width={32}
+                  height={32}
+                  className="h-full w-full object-cover object-[center_15%]"
+                />
+              </div>
+              <span className="font-display text-base font-extrabold tracking-tight text-ink">
+                Samen Steeve
+              </span>
+            </div>
             <span className="flex flex-wrap items-center gap-x-2 gap-y-1 font-mono text-[10px] text-ink-soft/70">
               <span>{t.footer.specialty}</span>
               <span className="text-ink-soft/25" aria-hidden="true">·</span>
