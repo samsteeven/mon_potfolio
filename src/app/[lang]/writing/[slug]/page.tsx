@@ -49,7 +49,7 @@ export default async function WritingPage({ params }: PageProps) {
 
   // ── Prev / Next article navigation ──
   const allPosts = getWritingPages(lang);
-  const currentIndex = allPosts.findIndex((p) => p.url === `/${lang}/writing/${slug}`);
+  const currentIndex = allPosts.findIndex((p) => p.url === `/writing/${slug}`);
   const prevPost = currentIndex > 0 ? allPosts[currentIndex - 1] : null;
   const nextPost = currentIndex < allPosts.length - 1 ? allPosts[currentIndex + 1] : null;
 
