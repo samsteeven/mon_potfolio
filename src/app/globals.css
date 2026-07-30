@@ -76,7 +76,7 @@ body {
 /* Active les transitions de couleurs uniquement lors du clic utilisateur sur le toggle */
 .theme-transition,
 .theme-transition * {
-  transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease !important;
+  transition: background-color 0.35s ease, color 0.35s ease, border-color 0.35s ease, box-shadow 0.35s ease, opacity 0.35s ease !important;
 }
 
 [data-theme="dark"] body {

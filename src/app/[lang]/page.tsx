@@ -147,7 +147,7 @@ export default async function HomePage({ params }: PageProps) {
       </section>
 
       {/* ---------- ABOUT ---------- */}
-      <section id="about" className="border-t border-line py-28 sm:py-36">
+      <section id="about" className="py-28 sm:py-36">
         <ScrollReveal>
           <h2 className="font-display text-2xl font-semibold">{t.about.title}</h2>
         </ScrollReveal>

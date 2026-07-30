@@ -34,9 +34,10 @@ export function SiteFooter({ lang }: { lang: Language }) {
               <span className="text-ink-soft/25" aria-hidden="true">·</span>
               <a
                 href="/cv-samen-steeve.pdf"
-                download
+                target="_blank"
+                rel="noopener noreferrer"
                 className="inline-flex items-center gap-1 font-semibold text-ink-soft/65 transition duration-200 hover:text-accent"
-                aria-label={t.footer.downloadCv}
+                aria-label={t.footer.cv}
               >
                 <Download className="h-3 w-3" />
                 {t.footer.cv}
