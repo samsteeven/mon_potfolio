@@ -32,7 +32,9 @@ export default async function HomePage({ params }: PageProps) {
 
   const work = getWorkPages(lang);
 
-  const writing = getWritingPages(lang).slice(0, 5);
+  const writing = getWritingPages(lang)
+    .filter((p) => p.url !== "/writing/inertia-laravel-react")
+    .slice(0, 5);
 
   return (
     <main id="main-content" className="mx-auto max-w-3xl px-6 pb-24">
