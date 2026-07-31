@@ -1,43 +1,278 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { Moon, Sun } from "lucide-react";
+import { flushSync } from "react-dom";
 
-export function ThemeToggle() {
+type TransitionVariant =
+  | "circle"
+  | "square"
+  | "triangle"
+  | "diamond"
+  | "hexagon"
+  | "rectangle"
+  | "star";
+
+interface ThemeToggleProps extends React.ComponentPropsWithoutRef<"button"> {
+  duration?: number;
+  variant?: TransitionVariant;
+  /** When true, the transition expands from the viewport center instead of the button center. */
+  fromCenter?: boolean;
+}
+
+function polygonCollapsed(point: string, vertexCount: number): string {
+  const pairs = Array.from({ length: vertexCount }, () => point).join(", ");
+  return `polygon(${pairs})`;
+}
+
+function getThemeTransitionClipPaths(
+  variant: TransitionVariant,
+  cx: number,
+  cy: number,
+  maxRadius: number,
+  viewportWidth: number,
+  viewportHeight: number
+): [string, string] {
+  const toX = (x: number) => `${(x / viewportWidth) * 100}%`;
+  const toY = (y: number) => `${(y / viewportHeight) * 100}%`;
+  const point = (x: number, y: number) => `${toX(x)} ${toY(y)}`;
+  const toRadius = (r: number) =>
+    `${(r / (Math.hypot(viewportWidth, viewportHeight) / Math.SQRT2)) * 100}%`;
+
+  switch (variant) {
+    case "circle":
+      return [
+        `circle(0% at ${point(cx, cy)})`,
+        `circle(${toRadius(maxRadius)} at ${point(cx, cy)})`,
+      ];
+    case "square": {
+      const halfW = Math.max(cx, viewportWidth - cx);
+      const halfH = Math.max(cy, viewportHeight - cy);
+      const halfSide = Math.max(halfW, halfH) * 1.05;
+      const end = [
+        point(cx - halfSide, cy - halfSide),
+        point(cx + halfSide, cy - halfSide),
+        point(cx + halfSide, cy + halfSide),
+        point(cx - halfSide, cy + halfSide),
+      ].join(", ");
+      return [polygonCollapsed(point(cx, cy), 4), `polygon(${end})`];
+    }
+    case "triangle": {
+      const scale = maxRadius * 2.2;
+      const dx = (Math.sqrt(3) / 2) * scale;
+      const verts = [
+        point(cx, cy - scale),
+        point(cx + dx, cy + 0.5 * scale),
+        point(cx - dx, cy + 0.5 * scale),
+      ].join(", ");
+      return [polygonCollapsed(point(cx, cy), 3), `polygon(${verts})`];
+    }
+    case "diamond": {
+      const R = maxRadius * Math.SQRT2;
+      const end = [
+        point(cx, cy - R),
+        point(cx + R, cy),
+        point(cx, cy + R),
+        point(cx - R, cy),
+      ].join(", ");
+      return [polygonCollapsed(point(cx, cy), 4), `polygon(${end})`];
+    }
+    case "hexagon": {
+      const R = maxRadius * Math.SQRT2;
+      const verts: string[] = [];
+      for (let i = 0; i < 6; i++) {
+        const a = -Math.PI / 2 + (i * Math.PI) / 3;
+        verts.push(point(cx + R * Math.cos(a), cy + R * Math.sin(a)));
+      }
+      return [
+        polygonCollapsed(point(cx, cy), 6),
+        `polygon(${verts.join(", ")})`,
+      ];
+    }
+    case "rectangle": {
+      const halfW = Math.max(cx, viewportWidth - cx);
+      const halfH = Math.max(cy, viewportHeight - cy);
+      const end = [
+        point(cx - halfW, cy - halfH),
+        point(cx + halfW, cy - halfH),
+        point(cx + halfW, cy + halfH),
+        point(cx - halfW, cy + halfH),
+      ].join(", ");
+      return [polygonCollapsed(point(cx, cy), 4), `polygon(${end})`];
+    }
+    case "star": {
+      const R = maxRadius * Math.SQRT2 * 1.03;
+      const innerRatio = 0.42;
+      const starPolygon = (radius: number) => {
+        const verts: string[] = [];
+        for (let i = 0; i < 5; i++) {
+          const outerA = -Math.PI / 2 + (i * 2 * Math.PI) / 5;
+          verts.push(
+            point(
+              cx + radius * Math.cos(outerA),
+              cy + radius * Math.sin(outerA)
+            )
+          );
+          const innerA = outerA + Math.PI / 5;
+          verts.push(
+            point(
+              cx + radius * innerRatio * Math.cos(innerA),
+              cy + radius * innerRatio * Math.sin(innerA)
+            )
+          );
+        }
+        return `polygon(${verts.join(", ")})`;
+      };
+      const startR = Math.max(2, R * 0.025);
+      return [starPolygon(startR), starPolygon(R)];
+    }
+    default:
+      return [
+        `circle(0% at ${point(cx, cy)})`,
+        `circle(${toRadius(maxRadius)} at ${point(cx, cy)})`,
+      ];
+  }
+}
+
+export function ThemeToggle({
+  className,
+  duration = 400,
+  variant = "circle",
+  fromCenter = false,
+  ...props
+}: ThemeToggleProps) {
   const [isDark, setIsDark] = useState(false);
+  const buttonRef = useRef<HTMLButtonElement>(null);
+  const isTransitioningRef = useRef(false);
 
   useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect
-    setIsDark(document.documentElement.getAttribute("data-theme") === "dark");
+    const updateTheme = () => {
+      setIsDark(document.documentElement.getAttribute("data-theme") === "dark");
+    };
+
+    updateTheme();
+
+    const observer = new MutationObserver(updateTheme);
+    observer.observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ["data-theme"],
+    });
+
+    return () => observer.disconnect();
   }, []);
 
-  function toggle() {
-    const next = !isDark;
-    setIsDark(next);
+  const toggleTheme = useCallback(() => {
+    const button = buttonRef.current;
+    if (
+      !button ||
+      isTransitioningRef.current ||
+      document.documentElement.dataset.magicuiThemeVt === "active"
+    )
+      return;
 
-    document.documentElement.classList.add("theme-transition");
-    document.documentElement.setAttribute("data-theme", next ? "dark" : "light");
+    const viewportWidth = window.innerWidth;
+    const viewportHeight = window.innerHeight;
 
-    try {
-      localStorage.setItem("theme", next ? "dark" : "light");
-    } catch {
-      // localStorage indisponible
+    let x: number;
+    let y: number;
+    if (fromCenter) {
+      x = viewportWidth / 2;
+      y = viewportHeight / 2;
+    } else {
+      const { top, left, width, height } = button.getBoundingClientRect();
+      x = left + width / 2;
+      y = top + height / 2;
     }
 
-    setTimeout(() => {
-      document.documentElement.classList.remove("theme-transition");
-    }, 400);
-  }
+    const maxRadius = Math.hypot(
+      Math.max(x, viewportWidth - x),
+      Math.max(y, viewportHeight - y)
+    );
+
+    const applyTheme = () => {
+      const newTheme = !isDark;
+      document.documentElement.setAttribute(
+        "data-theme",
+        newTheme ? "dark" : "light"
+      );
+      setIsDark(newTheme);
+      try {
+        localStorage.setItem("theme", newTheme ? "dark" : "light");
+      } catch {
+        // localStorage indisponible
+      }
+    };
+
+    if (typeof document.startViewTransition !== "function") {
+      applyTheme();
+      return;
+    }
+
+    const clipPath = getThemeTransitionClipPaths(
+      variant,
+      x,
+      y,
+      maxRadius,
+      viewportWidth,
+      viewportHeight
+    );
+
+    const root = document.documentElement;
+    root.dataset.magicuiThemeVt = "active";
+    root.style.setProperty(
+      "--magicui-theme-toggle-vt-duration",
+      `${duration}ms`
+    );
+    root.style.setProperty("--magicui-theme-vt-clip-from", clipPath[0]);
+    const cleanup = () => {
+      isTransitioningRef.current = false;
+      delete root.dataset.magicuiThemeVt;
+      root.style.removeProperty("--magicui-theme-toggle-vt-duration");
+      root.style.removeProperty("--magicui-theme-vt-clip-from");
+    };
+
+    isTransitioningRef.current = true;
+    const transition = document.startViewTransition(() => {
+      flushSync(applyTheme);
+    });
+    if (typeof transition?.finished?.finally === "function") {
+      transition.finished.finally(cleanup).catch(() => {});
+    } else {
+      cleanup();
+    }
+
+    const ready = transition?.ready;
+    if (ready && typeof ready.then === "function") {
+      ready
+        .then(() => {
+          document.documentElement.animate(
+            {
+              clipPath,
+            },
+            {
+              duration,
+              easing: variant === "star" ? "linear" : "ease-in-out",
+              fill: "forwards",
+              pseudoElement: "::view-transition-new(root)",
+            }
+          );
+        })
+        .catch(() => {});
+    }
+  }, [variant, fromCenter, duration, isDark]);
 
   return (
     <button
-      onClick={toggle}
+      type="button"
+      ref={buttonRef}
+      onClick={toggleTheme}
       aria-label="Changer de thème"
       className={`relative rounded-full border p-1.5 transition-all duration-200 hover:scale-110 active:scale-[0.96] ${
         isDark
           ? "border-accent/40 bg-accent/5 text-ink hover:border-accent/70"
           : "border-line text-ink-soft hover:border-ink-soft hover:text-ink"
-      }`}
+      } ${className ?? ""}`}
+      {...props}
     >
       <span className="relative block h-3.5 w-3.5">
         <Sun
@@ -46,7 +281,9 @@ export function ThemeToggle() {
           }`}
           style={{
             opacity: isDark ? 1 : 0,
-            transform: isDark ? "rotate(0deg) scale(1)" : "rotate(90deg) scale(0.25)",
+            transform: isDark
+              ? "rotate(0deg) scale(1)"
+              : "rotate(90deg) scale(0.25)",
           }}
         />
         <Moon
@@ -55,10 +292,13 @@ export function ThemeToggle() {
           }`}
           style={{
             opacity: isDark ? 0 : 1,
-            transform: isDark ? "rotate(-90deg) scale(0.25)" : "rotate(0deg) scale(1)",
+            transform: isDark
+              ? "rotate(-90deg) scale(0.25)"
+              : "rotate(0deg) scale(1)",
           }}
         />
       </span>
+      <span className="sr-only">Toggle theme</span>
     </button>
   );
 }
