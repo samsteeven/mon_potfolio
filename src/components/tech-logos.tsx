@@ -158,7 +158,7 @@ const LOGOS: Record<string, ReactNode> = {
   PostgreSQL: <PostgreSQLIcon className="h-5 w-5" />,
   Redis: <RedisIcon className="h-5 w-5" />,
   Docker: <DockerIcon className="h-5 w-5" />,
-  Cloudflare: <CloudflareIcon className="h-5 w-auto" />,
+  Cloudflare: <CloudflareIcon className="h-4 w-auto" />,
 };
 
 export function TechLogo({ name, className = "" }: { name: string; className?: string }) {
