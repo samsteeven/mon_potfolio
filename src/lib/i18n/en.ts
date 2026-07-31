@@ -95,16 +95,17 @@ export const en = {
   },
   stack: {
     title: "Tech Stack",
+    favoriteLabel: "Favorite",
     items: [
-      { name: "Laravel", url: "https://laravel.com", desc: "My primary backend: secure, structured, and fast to ship. From REST APIs to real-time WebSocket servers." },
-      { name: "AdonisJS", url: "https://adonisjs.com", desc: "A structured Node.js framework for building type-safe backends with the same elegance as Laravel." },
-      { name: "React / Next.js", url: "https://react.dev", desc: "My frontend of choice for high-performance interfaces — standalone or paired with Inertia." },
-      { name: "Angular", url: "https://angular.dev", desc: "For structured, enterprise-grade frontends where component architecture and long-term scalability matter." },
-      { name: "Inertia.js", url: "https://inertiajs.com", desc: "The bridge between Laravel and a modern frontend — without the overhead of a separate API layer." },
-      { name: "TypeScript", url: "https://www.typescriptlang.org", desc: "Type safety across the full stack. Non-negotiable for anything meant to last in production." },
-      { name: "PostgreSQL", url: "https://postgresql.org", desc: "Relational, reliable, battle-tested. My default for anything where data integrity matters." },
-      { name: "Redis", url: "https://redis.io", desc: "Cache, queues, real-time pub/sub. The layer that makes backends feel instant." },
-      { name: "Docker", url: "https://docker.com", desc: "Consistent environments from dev to production. Every project I ship runs in containers." },
+      { name: "Laravel", url: "https://laravel.com", desc: "My primary backend: secure, structured, and fast to ship. From REST APIs to real-time WebSocket servers.", favorite: true },
+      { name: "AdonisJS", url: "https://adonisjs.com", desc: "A structured Node.js framework for building type-safe backends with the same elegance as Laravel.", favorite: false },
+      { name: "React / Next.js", url: "https://react.dev", desc: "My frontend of choice for high-performance interfaces — standalone or paired with Inertia.", favorite: false },
+      { name: "Angular", url: "https://angular.dev", desc: "For structured, enterprise-grade frontends where component architecture and long-term scalability matter.", favorite: false },
+      { name: "Inertia.js", url: "https://inertiajs.com", desc: "The bridge between Laravel and a modern frontend — without the overhead of a separate API layer.", favorite: false },
+      { name: "TypeScript", url: "https://www.typescriptlang.org", desc: "Type safety across the full stack. Non-negotiable for anything meant to last in production.", favorite: false },
+      { name: "PostgreSQL", url: "https://postgresql.org", desc: "Relational, reliable, battle-tested. My default for anything where data integrity matters.", favorite: false },
+      { name: "Redis", url: "https://redis.io", desc: "Cache, queues, real-time pub/sub. The layer that makes backends feel instant.", favorite: false },
+      { name: "Docker", url: "https://docker.com", desc: "Consistent environments from dev to production. Every project I ship runs in containers.", favorite: false },
     ]
   },
   testimonials: {

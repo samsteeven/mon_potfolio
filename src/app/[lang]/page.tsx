@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import Image from "next/image";
-import { ArrowUpRight, Mail, Code2, ShieldCheck, Bot, CalendarDays, Users } from "lucide-react";
+import { ArrowUpRight, Mail, Code2, ShieldCheck, Bot, CalendarDays, Users, Star } from "lucide-react";
 import { TestimonialsSection } from "@/components/testimonials-section";
 import { getWorkPages, getWritingPages } from "@/lib/source";
 import { ProjectCard } from "@/components/project-card";
@@ -241,7 +241,9 @@ export default async function HomePage({ params }: PageProps) {
           {t.stack.items.map((item, i) => (
             <ScrollReveal key={item.name} delay={i * 60}>
               <div
-                className="group flex items-center justify-between gap-5 py-5 -mx-4 px-4 rounded-xl transition-all duration-300 ease-out hover:bg-paper-raised/40 hover:translate-x-2"
+                className={`group flex items-center justify-between gap-5 py-5 -mx-4 px-4 rounded-xl transition-all duration-300 ease-out hover:bg-paper-raised/40 hover:translate-x-2 ${
+                  item.favorite ? "bg-accent/5 border border-accent/15" : ""
+                }`}
               >
                 {/* Numéro */}
                 <span className="shrink-0 w-8 font-mono text-[11px] text-ink-soft/40 tabular-nums select-none group-hover:text-accent/60 transition-colors">
@@ -250,8 +252,14 @@ export default async function HomePage({ params }: PageProps) {
 
                 {/* Contenu */}
                 <div className="flex-1 min-w-0">
-                  <h3 className="font-display text-base font-semibold text-ink group-hover:text-accent transition-colors">
+                  <h3 className="flex flex-wrap items-center gap-2 font-display text-base font-semibold text-ink group-hover:text-accent transition-colors">
                     {item.name}
+                    {item.favorite && (
+                      <span className="inline-flex items-center gap-1 rounded-full border border-accent/30 bg-accent/10 px-2 py-0.5 font-mono text-[9px] font-bold uppercase tracking-widest text-accent">
+                        <Star className="h-2.5 w-2.5 fill-accent" />
+                        {t.stack.favoriteLabel}
+                      </span>
+                    )}
                   </h3>
                   <p className="mt-0.5 text-sm text-ink-soft leading-relaxed">
                     {item.desc}
