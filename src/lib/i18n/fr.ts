@@ -106,6 +106,7 @@ export const fr = {
       { name: "PostgreSQL", url: "https://postgresql.org", desc: "Relationnel, fiable, éprouvé. Mon choix par défaut quand l'intégrité des données est critique.", favorite: false },
       { name: "Redis", url: "https://redis.io", desc: "Cache, files d'attente, pub/sub temps réel. La couche qui rend les backends instantanés.", favorite: false },
       { name: "Docker", url: "https://docker.com", desc: "Environnements cohérents du dev à la production. Chaque projet que je livre tourne en conteneurs.", favorite: false },
+      { name: "Cloudflare", url: "https://cloudflare.com", desc: "Réseau edge, DNS, CDN et protection DDoS. La couche qui garde les sites rapides et protégés dans le monde entier.", favorite: false },
     ]
   },
   testimonials: {

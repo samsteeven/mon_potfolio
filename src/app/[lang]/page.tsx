@@ -8,6 +8,7 @@ import { ProjectCard } from "@/components/project-card";
 import { getT, type Language } from "@/lib/translations";
 import { createPageMetadata } from "@/lib/metadata";
 import { ScrollReveal } from "@/components/scroll-reveal";
+import { TechLogo } from "@/components/tech-logos";
 import { LinkedinIcon, GithubIcon, WhatsappIcon } from "@/components/icons";
 import { BLUR_DATA_URL } from "@/lib/blur";
 import { SERVICES_URL } from "@/lib/constants";
@@ -245,25 +246,23 @@ export default async function HomePage({ params }: PageProps) {
                   item.favorite ? "bg-accent/5 border border-accent/15" : ""
                 }`}
               >
-                {/* Numéro */}
-                <span className="shrink-0 w-8 font-mono text-[11px] text-ink-soft/40 tabular-nums select-none group-hover:text-accent/60 transition-colors">
-                  {String(i + 1).padStart(2, "0")}
-                </span>
-
                 {/* Contenu */}
-                <div className="flex-1 min-w-0">
-                  <h3 className="flex flex-wrap items-center gap-2 font-display text-base font-semibold text-ink group-hover:text-accent transition-colors">
-                    {item.name}
-                    {item.favorite && (
-                      <span className="inline-flex items-center gap-1 rounded-full border border-accent/30 bg-accent/10 px-2 py-0.5 font-mono text-[9px] font-bold uppercase tracking-widest text-accent">
-                        <Star className="h-2.5 w-2.5 fill-accent" />
-                        {t.stack.favoriteLabel}
-                      </span>
-                    )}
-                  </h3>
-                  <p className="mt-0.5 text-sm text-ink-soft leading-relaxed">
-                    {item.desc}
-                  </p>
+                <div className="flex min-w-0 flex-1 items-start gap-3">
+                  <TechLogo name={item.name} />
+                  <div className="min-w-0 flex-1">
+                    <h3 className="flex flex-wrap items-center gap-2 font-display text-base font-semibold text-ink group-hover:text-accent transition-colors">
+                      {item.name}
+                      {item.favorite && (
+                        <span className="inline-flex items-center gap-1 rounded-full border border-accent/30 bg-accent/10 px-2 py-0.5 font-mono text-[9px] font-bold uppercase tracking-widest text-accent">
+                          <Star className="h-2.5 w-2.5 fill-accent" />
+                          {t.stack.favoriteLabel}
+                        </span>
+                      )}
+                    </h3>
+                    <p className="mt-0.5 text-sm text-ink-soft leading-relaxed">
+                      {item.desc}
+                    </p>
+                  </div>
                 </div>
 
                 {/* Flèche cliquable */}

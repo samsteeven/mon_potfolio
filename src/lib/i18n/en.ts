@@ -106,6 +106,7 @@ export const en = {
       { name: "PostgreSQL", url: "https://postgresql.org", desc: "Relational, reliable, battle-tested. My default for anything where data integrity matters.", favorite: false },
       { name: "Redis", url: "https://redis.io", desc: "Cache, queues, real-time pub/sub. The layer that makes backends feel instant.", favorite: false },
       { name: "Docker", url: "https://docker.com", desc: "Consistent environments from dev to production. Every project I ship runs in containers.", favorite: false },
+      { name: "Cloudflare", url: "https://cloudflare.com", desc: "Edge network, DNS, CDN and DDoS protection. The layer that keeps sites fast and safe worldwide.", favorite: false },
     ]
   },
   testimonials: {
