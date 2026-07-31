@@ -2,6 +2,7 @@ import Image from "next/image";
 import { Calendar, Download, Mail } from "lucide-react";
 import { getT, type Language } from "@/lib/translations";
 import { LinkedinIcon, GithubIcon, WhatsappIcon } from "@/components/icons";
+import { SERVICES_URL } from "@/lib/constants";
 
 export function SiteFooter({ lang }: { lang: Language }) {
   const t = getT(lang);
@@ -100,7 +101,7 @@ export function SiteFooter({ lang }: { lang: Language }) {
             {t.footer.bookCall}
           </a>
           <a
-            href={`https://services.samensteeve.com/${lang}`}
+            href={`${SERVICES_URL}/${lang}`}
             className="font-mono text-xs font-bold text-accent hover:underline flex items-center gap-1.5 transition duration-200"
           >
             {t.nav.services} &rarr;

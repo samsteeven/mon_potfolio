@@ -8,6 +8,7 @@ import { ThemeToggle } from "@/components/theme-toggle";
 import { getT, type Language } from "@/lib/translations";
 import { useScrollSpy } from "@/hooks/use-scroll-spy";
 import { getOppositeUrl } from "@/hooks/use-language-switch";
+import { SERVICES_URL } from "@/lib/constants";
 
 export function SiteHeader({ lang }: { lang: Language }) {
   const pathname = usePathname();
@@ -33,7 +34,7 @@ export function SiteHeader({ lang }: { lang: Language }) {
 
   const navLinks = [
     { href: `/${lang}/#about`, label: t.nav.about, key: "about" as const },
-    { href: `https://services.samensteeve.com/${lang}`, label: t.nav.services, key: "services" as const },
+    { href: `${SERVICES_URL}/${lang}`, label: t.nav.services, key: "services" as const },
     { href: `/${lang}/writing`, label: t.nav.writing, key: "writing" as const },
   ];
 

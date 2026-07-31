@@ -10,6 +10,7 @@ import { createPageMetadata } from "@/lib/metadata";
 import { ScrollReveal } from "@/components/scroll-reveal";
 import { LinkedinIcon, GithubIcon, WhatsappIcon } from "@/components/icons";
 import { BLUR_DATA_URL } from "@/lib/blur";
+import { SERVICES_URL } from "@/lib/constants";
 
 interface PageProps {
   params: Promise<{ lang: Language }>;
@@ -421,7 +422,7 @@ export default async function HomePage({ params }: PageProps) {
             </p>
             <div className="mt-8 relative z-10">
               <a
-                href={`https://services.samensteeve.com/${lang}`}
+                href={`${SERVICES_URL}/${lang}`}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="inline-flex items-center gap-2 rounded-xl bg-ink px-6 py-3.5 font-mono text-xs uppercase tracking-wider text-paper transition-all duration-300 hover:scale-105 hover:bg-accent hover:text-white hover:shadow-lg hover:shadow-accent/15 active:scale-[0.96]"
