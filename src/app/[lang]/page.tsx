@@ -153,11 +153,27 @@ export default async function HomePage({ params }: PageProps) {
       </section>
 
       {/* ---------- ABOUT ---------- */}
-      <section id="about" className="py-28 sm:py-36">
-        <ScrollReveal>
+      <section id="about" className="relative py-28 sm:py-36">
+        {/* Giant Background Watermark — 100% traduit et identique au titre de section */}
+        <div className="pointer-events-none absolute left-0 right-0 top-4 sm:top-8 z-0 overflow-hidden select-none whitespace-nowrap">
+          <span
+            className="font-display text-[100px] font-extrabold leading-none tracking-tighter sm:text-[140px] md:text-[180px] lg:text-[210px]"
+            style={{
+              backgroundImage: 'repeating-linear-gradient(-45deg, var(--color-ink) 0px, var(--color-ink) 1.2px, transparent 1.2px, transparent 6px)',
+              WebkitBackgroundClip: 'text',
+              backgroundClip: 'text',
+              color: 'transparent',
+              opacity: 0.14,
+            }}
+          >
+            {t.about.title}
+          </span>
+        </div>
+
+        <ScrollReveal className="relative z-10">
           <h2 className="font-display text-2xl font-semibold">{t.about.title}</h2>
         </ScrollReveal>
-        <div className="mt-8 grid grid-cols-1 gap-6 md:grid-cols-2">
+        <div className="relative z-10 mt-8 grid grid-cols-1 gap-6 md:grid-cols-2">
 
           {/* Cards informatives : Qui je suis + Stack */}
           {[
@@ -236,11 +252,27 @@ export default async function HomePage({ params }: PageProps) {
       </section>
 
       {/* ---------- STACK ---------- */}
-      <section id="stack" className="border-t border-line py-28 sm:py-36">
-        <ScrollReveal>
+      <section id="stack" className="relative border-t border-line py-28 sm:py-36">
+        {/* Giant Background Watermark — 100% traduit et identique au titre de section */}
+        <div className="pointer-events-none absolute left-0 right-0 top-4 sm:top-8 z-0 overflow-hidden select-none whitespace-nowrap">
+          <span
+            className="font-display text-[100px] font-extrabold leading-none tracking-tighter sm:text-[150px] md:text-[180px] lg:text-[210px]"
+            style={{
+              backgroundImage: 'repeating-linear-gradient(-45deg, var(--color-ink) 0px, var(--color-ink) 1.2px, transparent 1.2px, transparent 6px)',
+              WebkitBackgroundClip: 'text',
+              backgroundClip: 'text',
+              color: 'transparent',
+              opacity: 0.14,
+            }}
+          >
+            {t.stack.title}
+          </span>
+        </div>
+
+        <ScrollReveal className="relative z-10">
           <h2 className="font-display text-2xl font-semibold">{t.stack.title}</h2>
         </ScrollReveal>
-        <div className="mt-8 flex flex-col divide-y divide-line">
+        <div className="relative z-10 mt-8 flex flex-col divide-y divide-line">
           {t.stack.items.map((item, i) => (
             <ScrollReveal key={item.name} delay={i * 60}>
               <div
@@ -286,8 +318,24 @@ export default async function HomePage({ params }: PageProps) {
       </section>
 
       {/* ---------- WORK ---------- */}
-      <section id="work" className="border-t border-line py-28 sm:py-36">
-        <ScrollReveal>
+      <section id="work" className="relative border-t border-line py-28 sm:py-36">
+        {/* Giant Background Watermark — 100% traduit et identique au titre de section */}
+        <div className="pointer-events-none absolute left-0 right-0 top-4 sm:top-8 z-0 overflow-hidden select-none whitespace-nowrap">
+          <span
+            className="font-display text-[100px] font-extrabold leading-none tracking-tighter sm:text-[150px] md:text-[180px] lg:text-[210px]"
+            style={{
+              backgroundImage: 'repeating-linear-gradient(-45deg, var(--color-ink) 0px, var(--color-ink) 1.2px, transparent 1.2px, transparent 6px)',
+              WebkitBackgroundClip: 'text',
+              backgroundClip: 'text',
+              color: 'transparent',
+              opacity: 0.14,
+            }}
+          >
+            {t.work.title}
+          </span>
+        </div>
+
+        <ScrollReveal className="relative z-10">
           <div className="flex items-end justify-between mb-10">
             <h2 className="font-display text-2xl font-semibold">{t.work.title}</h2>
             <Link
@@ -298,7 +346,7 @@ export default async function HomePage({ params }: PageProps) {
             </Link>
           </div>
         </ScrollReveal>
-         <div className="mt-8 flex flex-col gap-4">
+         <div className="relative z-10 mt-8 flex flex-col gap-4">
           {work.map((p, i) => (
               <ScrollReveal key={p.slug} delay={i * 80}>
                 <ProjectCard
@@ -320,18 +368,52 @@ export default async function HomePage({ params }: PageProps) {
       </section>
 
       {/* ---------- TESTIMONIALS ---------- */}
-      <section id="testimonials" className="border-t border-line py-28 sm:py-36">
-        <ScrollReveal>
+      <section id="testimonials" className="relative border-t border-line py-28 sm:py-36">
+        {/* Giant Background Watermark — 100% traduit et identique au titre de section */}
+        <div className="pointer-events-none absolute left-0 right-0 top-4 sm:top-8 z-0 overflow-hidden select-none whitespace-nowrap">
+          <span
+            className="font-display text-[100px] font-extrabold leading-none tracking-tighter sm:text-[150px] md:text-[180px] lg:text-[210px]"
+            style={{
+              backgroundImage: 'repeating-linear-gradient(-45deg, var(--color-ink) 0px, var(--color-ink) 1.2px, transparent 1.2px, transparent 6px)',
+              WebkitBackgroundClip: 'text',
+              backgroundClip: 'text',
+              color: 'transparent',
+              opacity: 0.14,
+            }}
+          >
+            {t.testimonials.title}
+          </span>
+        </div>
+
+        <ScrollReveal className="relative z-10">
           <h2 className="font-display text-2xl font-semibold">{t.testimonials.title}</h2>
           <p className="mt-2 text-sm text-ink-soft">{t.testimonials.subtitle}</p>
         </ScrollReveal>
-        <TestimonialsSection items={t.testimonials.items} />
+        <div className="relative z-10">
+          <TestimonialsSection items={t.testimonials.items} />
+        </div>
       </section>
 
       {/* ---------- WRITING ---------- */}
       {writing.length > 0 && (
-      <section id="writing" className="border-t border-line py-28 sm:py-36">
-        <ScrollReveal>
+      <section id="writing" className="relative border-t border-line py-28 sm:py-36">
+        {/* Giant Background Watermark — 100% traduit et identique au titre de section */}
+        <div className="pointer-events-none absolute left-0 right-0 top-4 sm:top-8 z-0 overflow-hidden select-none whitespace-nowrap">
+          <span
+            className="font-display text-[100px] font-extrabold leading-none tracking-tighter sm:text-[150px] md:text-[180px] lg:text-[210px]"
+            style={{
+              backgroundImage: 'repeating-linear-gradient(-45deg, var(--color-ink) 0px, var(--color-ink) 1.2px, transparent 1.2px, transparent 6px)',
+              WebkitBackgroundClip: 'text',
+              backgroundClip: 'text',
+              color: 'transparent',
+              opacity: 0.14,
+            }}
+          >
+            {t.writing.title}
+          </span>
+        </div>
+
+        <ScrollReveal className="relative z-10">
           <div className="flex items-end justify-between mb-10">
             <h2 className="font-display text-2xl font-semibold">{t.writing.title}</h2>
             <Link
