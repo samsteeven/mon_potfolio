@@ -28,7 +28,7 @@ Le site est bilingue `/en` et `/fr`. La racine `/` redirige vers `/en` via `src/
 
 ## Thème
 
-Mode clair/sombre géré par l'attribut `data-theme` sur `<html>`, persisté dans `localStorage` (clé `theme`). Le script anti-flash dans `src/app/layout.tsx` applique le thème avant le premier rendu React. Pas de librairie externe.
+Mode clair/sombre géré par l'attribut `data-theme` sur `<html>`, qui suit le thème du système (`prefers-color-scheme`) et s'adapte en direct (jour/soir). Le script anti-flash dans `src/app/layout.tsx` applique le thème avant le premier rendu React. Pas de librairie externe.
 
 ## Structure du contenu
 

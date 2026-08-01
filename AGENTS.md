@@ -38,7 +38,9 @@ polices). Ils sont exposés comme utilitaires Tailwind via `@theme inline` :
   **Ne jamais** charger de polices réseau à l'aide de balises `<link>` Google Fonts dans le layout.
   Toutes les polices doivent être importées via les dépendances npm `@fontsource/*` dans le layout principal `src/app/layout.tsx`.
 - Mode sombre : géré par l'attribut `data-theme="dark"` sur `<html>`, basculé par
-  `src/components/theme-toggle.tsx` et persisté dans `localStorage` (clé `theme`).
+  `src/components/theme-toggle.tsx`. Le thème suit le système (`prefers-color-scheme`)
+  et se met à jour en direct (`matchMedia` change) — le toggle ne change que la page
+  en cours, rien n'est persisté.
   Le script anti-flash dans `src/app/layout.tsx` (`<head>`) applique l'attribut avant le
   premier rendu — ne pas le retirer, ça causerait un flash de la mauvaise couleur.
 
@@ -312,7 +314,7 @@ public function index(): Response
 - Ne pas réintroduire `fumadocs-ui` — le rendu MDX est volontairement custom
   (`src/components/mdx/mdx-components.tsx`) pour garder un contrôle total du design.
 - Ne pas casser le mode sombre en ajoutant des couleurs hors tokens.
-- Ne pas remplacer le système de thème actuel (`data-theme` + localStorage) by a
+- Ne pas remplacer le système de thème actuel (`data-theme` + `prefers-color-scheme`) by a
   library (`next-themes`, etc.) sans raison concrète — ça fonctionne déjà.
 - Ne pas mettre `<html>/<body>` dans `src/app/[lang]/layout.tsx` — ils appartiennent
   au root layout `src/app/layout.tsx`.
