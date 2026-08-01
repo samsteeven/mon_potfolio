@@ -9,6 +9,7 @@ import { getT, type Language } from "@/lib/translations";
 import { createPageMetadata } from "@/lib/metadata";
 import { ScrollReveal } from "@/components/scroll-reveal";
 import { TechLogo } from "@/components/tech-logos";
+import { ParticlesBackground } from "@/components/particles-background";
 import { LinkedinIcon, GithubIcon, WhatsappIcon } from "@/components/icons";
 import { BLUR_DATA_URL } from "@/lib/blur";
 import { SERVICES_URL } from "@/lib/constants";
@@ -41,7 +42,8 @@ export default async function HomePage({ params }: PageProps) {
   return (
     <main id="main-content" className="mx-auto max-w-3xl px-6 pb-24">
       {/* ---------- HERO ---------- */}
-      <section className="pt-10 pb-24 sm:pt-18 sm:pb-36">
+      <section className="relative isolate overflow-hidden pt-10 pb-24 sm:pt-18 sm:pb-36">
+        <ParticlesBackground className="absolute inset-0 -z-10" quantity={100} ease={80} />
         {/* Avatar */}
         {/*<div*/}
         {/*  className="fade-up mb-8"*/}
