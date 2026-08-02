@@ -47,7 +47,7 @@ export async function generateMetadata({
       siteName: "Samen Steeve",
       images: [
         {
-          url: "/profile/profil.png",
+          url: `${BASE_URL}/profile/profil.png`,
           width: 800,
           height: 800,
           alt: title,
@@ -58,7 +58,7 @@ export async function generateMetadata({
       card: "summary",
       title,
       description,
-      images: ["/profile/profil.png"],
+      images: [`${BASE_URL}/profile/profil.png`],
     },
   };
 }
