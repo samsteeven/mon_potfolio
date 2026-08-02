@@ -497,7 +497,27 @@ export default async function HomePage({ params }: PageProps) {
 
       {/* ---------- SERVICES CTA ---------- */}
       <ScrollReveal delay={100}>
-        <section className="border-t border-line py-28 sm:py-36 text-center flex flex-col items-center">
+        <section className="relative border-t border-line py-28 sm:py-36 text-center flex flex-col items-center">
+          {/* DISCOVER watermark — assis en bas de la section, sur le footer, sans espace supplémentaire */}
+          <div
+            className="pointer-events-none absolute left-0 right-0 z-0 select-none whitespace-nowrap flex justify-center leading-none"
+            style={{ bottom: '-6rem' }}
+          >
+            <span
+              className="font-display text-[90px] font-extrabold leading-none tracking-tighter sm:text-[130px] md:text-[160px] lg:text-[190px]"
+              style={{
+                backgroundImage:
+                  "repeating-linear-gradient(-45deg, var(--color-ink) 0px, var(--color-ink) 1.2px, transparent 1.2px, transparent 6px)",
+                WebkitBackgroundClip: "text",
+                backgroundClip: "text",
+                color: "transparent",
+                opacity: 0.12,
+              }}
+            >
+              EXPLORE
+            </span>
+          </div>
+
           <div className="max-w-xl relative p-8 md:p-12 rounded-3xl border border-line bg-paper-raised/30 overflow-hidden shadow-sm transition duration-300 hover:border-accent/30">
             {/* Blueprint Grid background */}
             <div className="absolute inset-0 bg-[linear-gradient(to_right,var(--color-line)_1px,transparent_1px),linear-gradient(to_bottom,var(--color-line)_1px,transparent_1px)] bg-[size:24px_24px] opacity-10 pointer-events-none" />
