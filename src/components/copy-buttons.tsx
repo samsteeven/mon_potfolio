@@ -20,17 +20,27 @@ export function CopyButtons({ url, shareText, lang }: CopyButtonsProps) {
   const [copied, setCopied] = useState<CopyState>({ link: false, post: false });
 
   const handleCopy = async (type: keyof CopyState, text: string) => {
-    // API Clipboard moderne (HTTPS ou localhost). Pas de fallback execCommand
-    // (déprécié) — on échoue silencieusement si l'API est indisponible.
     try {
-      await navigator.clipboard.writeText(text);
+      if (typeof navigator !== "undefined" && navigator.clipboard && navigator.clipboard.writeText) {
+        await navigator.clipboard.writeText(text);
+      } else {
+        const textarea = document.createElement("textarea");
+        textarea.value = text;
+        textarea.style.position = "fixed";
+        textarea.style.opacity = "0";
+        document.body.appendChild(textarea);
+        textarea.focus();
+        textarea.select();
+        document.execCommand("copy");
+        document.body.removeChild(textarea);
+      }
       setCopied((prev) => ({ ...prev, [type]: true }));
       setTimeout(
         () => setCopied((prev) => ({ ...prev, [type]: false })),
         2000
       );
     } catch {
-      // Clipboard indisposable (HTTPS requis ou permission refusée) — on ignore
+      // Clipboard error ignored safely
     }
   };
 
@@ -41,54 +51,63 @@ export function CopyButtons({ url, shareText, lang }: CopyButtonsProps) {
   const l = labels[lang];
 
   return (
-    <div className="flex items-center gap-2">
+    <div className="flex items-center gap-2 notranslate" translate="no">
       {/* Copy link button */}
       <button
+        type="button"
         onClick={() => handleCopy("link", url)}
         title={l.link}
         className={`
           inline-flex items-center gap-1.5
           rounded border px-2.5 py-1
           font-mono text-[10px] uppercase tracking-wider
-          transition-all duration-200
+          transition-all duration-200 cursor-pointer notranslate
           ${
             copied.link
               ? "border-accent/40 bg-accent/10 text-accent"
               : "border-line bg-paper-raised/80 text-ink-soft hover:border-accent/30 hover:text-ink hover:bg-paper-raised"
           }
         `}
+        translate="no"
       >
         {copied.link ? (
-          <Check className="h-3 w-3" />
+          <Check className="h-3 w-3 shrink-0" />
         ) : (
-          <Link2 className="h-3 w-3" />
+          <Link2 className="h-3 w-3 shrink-0" />
         )}
-        {copied.link ? l.done : l.link}
+        <span className="notranslate" translate="no">
+          {copied.link ? l.done : l.link}
+        </span>
       </button>
 
       {/* Copy post button */}
       <button
+        type="button"
         onClick={() => handleCopy("post", shareText)}
         title={l.post}
         className={`
           inline-flex items-center gap-1.5
           rounded border px-2.5 py-1
           font-mono text-[10px] uppercase tracking-wider
-          transition-all duration-200
+          transition-all duration-200 cursor-pointer notranslate
           ${
             copied.post
               ? "border-accent/40 bg-accent/10 text-accent"
               : "border-line bg-paper-raised/80 text-ink-soft hover:border-accent/30 hover:text-ink hover:bg-paper-raised"
           }
         `}
+        translate="no"
       >
         {copied.post ? (
-          <Check className="h-3 w-3" />
+          <Check className="h-3 w-3 shrink-0" />
         ) : (
-          <Copy className="h-3 w-3" />
+          <Copy className="h-3 w-3 shrink-0" />
         )}
-        {copied.post ? l.done : l.post}
+        <span className="notranslate" translate="no">
+          {copied.post ? l.done : l.post}
+        </span>
       </button>
     </div>
   );
 }
+
