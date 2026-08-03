@@ -35,9 +35,13 @@ export function createPageMetadata({
   const altLang: Language = lang === "fr" ? "en" : "fr";
   const canonicalUrl = `${BASE_URL}/${lang}${path}`;
   const altUrl = `${BASE_URL}/${altLang}${path}`;
+  const absoluteImage = image.startsWith("http")
+    ? image
+    : `${BASE_URL}${image.startsWith("/") ? "" : "/"}${image}`;
+
   const ogImage = image === PROFILE_IMAGE
-    ? { url: image, width: 800, height: 800, alt: title }
-    : { url: image, alt: title };
+    ? { url: absoluteImage, width: 800, height: 800, alt: title }
+    : { url: absoluteImage, alt: title };
 
   return {
     title: `${title} — Samen Steeve`,
