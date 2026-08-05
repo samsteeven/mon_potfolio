@@ -86,8 +86,8 @@ export function TableOfContents({ items, lang }: TableOfContentsProps) {
 
   return (
     <>
-      {/* Version desktop : aside sticky à droite (xl+) */}
-      <aside className="absolute top-0 -right-72 hidden h-full w-60 xl:block">
+      {/* Version desktop : aside sticky à droite (2xl+) */}
+      <aside className="absolute top-0 -right-64 hidden h-full w-56 2xl:block">
         <div className="sticky top-24 flex max-h-[calc(100vh-8rem)] flex-col gap-2 overflow-hidden">
           <div className="min-h-0 flex-1 overflow-y-auto rounded-xl border border-line bg-paper/80 p-4 shadow-sm backdrop-blur-sm">
             <nav>
@@ -101,7 +101,7 @@ export function TableOfContents({ items, lang }: TableOfContentsProps) {
       </aside>
 
       {/* Version mobile / tablette : <details> repliable sous le titre */}
-      <details className="group mb-8 rounded-xl border border-line bg-paper/80 p-4 shadow-sm backdrop-blur-sm xl:hidden">
+      <details className="group mb-8 rounded-xl border border-line bg-paper/80 p-4 shadow-sm backdrop-blur-sm 2xl:hidden">
         <summary className="flex cursor-pointer list-none items-center justify-between font-mono text-[11px] uppercase tracking-widest text-ink-soft hover:text-ink transition-colors">
           <span>{menuLabel}</span>
           <span className="text-ink-soft transition-transform duration-200 group-open:rotate-180">▾</span>

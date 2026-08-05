@@ -55,6 +55,7 @@ export default async function WorkPage({ params }: PageProps) {
   const page = workSource.getPage([lang, slug]);
   if (!page || (page.data.lang || "fr") !== lang) notFound();
 
+  const prefix = lang === "en" ? "" : "/fr";
   const t = getT(lang);
   const MDX = page.data.body;
 
@@ -124,7 +125,7 @@ export default async function WorkPage({ params }: PageProps) {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(projectJsonLd) }}
       />
       <Link
-        href={`/${lang}/#work`}
+        href={`${prefix}/#work`}
         className="inline-flex items-center gap-2 font-mono text-xs uppercase tracking-wider text-ink-soft transition-all duration-200 hover:text-accent hover:-translate-x-0.5"
       >
         <ArrowLeft className="h-3.5 w-3.5" />
@@ -152,7 +153,7 @@ export default async function WorkPage({ params }: PageProps) {
         <p className="mt-4 text-base leading-relaxed text-ink-soft">
           {page.data.description}
         </p>
-        <div className="mt-6 flex flex-wrap items-center gap-3">
+        <div className="mt-6 flex flex-wrap items-center gap-3 max-w-full">
           <StatusDot status={page.data.status} lang={lang} />
           <span className="inline-flex items-center gap-1.5 font-mono text-[10px] text-accent/80 border border-accent/20 bg-accent/5 rounded px-1.5 py-0.5">
             <span>
@@ -160,11 +161,11 @@ export default async function WorkPage({ params }: PageProps) {
             </span>
             <LanguageFlag lang={page.data.lang || "fr"} />
           </span>
-          <div className="flex flex-wrap gap-2">
+          <div className="flex flex-wrap gap-2 min-w-0 max-w-full">
             {page.data.stack.map((tech) => (
               <span
                 key={tech}
-                className="rounded border border-line bg-paper-raised/80 px-2.5 py-0.5 font-mono text-[10px] text-ink-soft"
+                className="rounded border border-line bg-paper-raised/80 px-2.5 py-0.5 font-mono text-[10px] text-ink-soft break-words"
               >
                 {tech}
               </span>
@@ -205,7 +206,7 @@ export default async function WorkPage({ params }: PageProps) {
             {/* Prev */}
             {prevProject ? (
               <Link
-                href={`/${lang}/work/${prevProject.slug}`}
+                href={`${prefix}/work/${prevProject.slug}`}
                 className="group flex flex-col justify-between rounded-xl border border-line bg-paper-raised/40 p-5 transition-all duration-300 hover:-translate-y-0.5 hover:border-accent/40 hover:bg-paper-raised/70 hover:shadow-md"
               >
                 <div>
@@ -228,7 +229,7 @@ export default async function WorkPage({ params }: PageProps) {
             {/* Next */}
             {nextProject ? (
               <Link
-                href={`/${lang}/work/${nextProject.slug}`}
+                href={`${prefix}/work/${nextProject.slug}`}
                 className="group flex flex-col justify-between rounded-xl border border-line bg-paper-raised/40 p-5 transition-all duration-300 hover:-translate-y-0.5 hover:border-accent/40 hover:bg-paper-raised/70 hover:shadow-md sm:text-right"
               >
                 <div>
