@@ -28,16 +28,19 @@ export async function generateMetadata({
       ? "Ingénieur logiciel. Je conçois et développe des systèmes logiciels résilients en apportant un soin particulier à la sécurité en production, l'intégrité des données et l'intégration de flux d'agents IA dans les processus métier."
       : "Software Engineer. Designing and building resilient software systems with a focus on production security, data integrity, and integrating autonomous AI workflows into business processes.";
 
+  // L'anglais est servi à la racine (sans /en), le français sous /fr
+  const canonicalUrl = lang === "en" ? BASE_URL : `${BASE_URL}/fr`;
+
   return {
     title,
     description,
     metadataBase: new URL(BASE_URL),
     alternates: {
-      canonical: `${BASE_URL}/${lang}`,
+      canonical: canonicalUrl,
       languages: {
-        "en": `${BASE_URL}/en`,
+        "en": BASE_URL,
         "fr": `${BASE_URL}/fr`,
-        "x-default": `${BASE_URL}/en`,
+        "x-default": BASE_URL,
       },
     },
     openGraph: {

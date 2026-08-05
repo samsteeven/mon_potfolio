@@ -28,8 +28,19 @@ export function proxy(request: NextRequest) {
     return NextResponse.next();
   }
 
-  const hasLang = pathname.startsWith("/en") || pathname.startsWith("/fr");
-  const langPath = hasLang ? pathname : `/en${pathname}`;
+  // /en/... → 308 vers /... (l'anglais est la langue par défaut, sans préfixe visible)
+  if (pathname.startsWith("/en")) {
+    const cleanPath = pathname.slice(3) || "/";
+    const url = new URL(cleanPath, request.url);
+    url.search = request.nextUrl.search;
+    const response = NextResponse.redirect(url, 308);
+    setPageHeaders(response);
+    return response;
+  }
+
+  const hasFr = pathname.startsWith("/fr");
+  // URLs sans préfixe de langue → rewrite interne vers /en/... (invisible pour le visiteur)
+  const langPath = hasFr ? pathname : `/en${pathname}`;
 
   const accept = request.headers.get("accept") || "";
   if (accept.includes("text/markdown")) {
@@ -38,11 +49,11 @@ export function proxy(request: NextRequest) {
     return NextResponse.rewrite(url);
   }
 
-  // Redirection des URLs sans préfixe de langue vers /en (ex: /work/digitram → /en/work/digitram)
-  if (!hasLang) {
+  if (!hasFr) {
+    // Rewrite interne : / → /en, /work/... → /en/work/... etc.
     const url = new URL(`/en${pathname}`, request.url);
     url.search = request.nextUrl.search;
-    const response = NextResponse.redirect(url, 308);
+    const response = NextResponse.rewrite(url);
     setPageHeaders(response);
     return response;
   }
