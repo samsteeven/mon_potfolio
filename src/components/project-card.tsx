@@ -22,6 +22,7 @@ export function ProjectCard({
   lang: Language;
 }) {
   const t = getT(lang);
+  const prefix = lang === "en" ? "" : "/fr";
   return (
     <div className="flex flex-col gap-4 rounded-2xl border border-line bg-paper-raised/20 p-6 transition-all duration-300 ease-out hover:-translate-y-1.5 hover:border-accent/20 hover:bg-paper-raised hover:shadow-md hover:shadow-accent/[0.01]">
       <div className="flex flex-col gap-1.5 sm:flex-row sm:items-center sm:justify-between">
@@ -62,7 +63,7 @@ export function ProjectCard({
             </a>
           )}
           <Link
-            href={`/${lang}/work/${project.slug}`}
+            href={`${prefix}/work/${project.slug}`}
             className="inline-flex items-center gap-1.5 font-mono text-[11px] uppercase tracking-wide text-accent/80 hover:text-accent transition-all duration-200 hover:gap-2 shrink-0"
           >
             {t.details.readCaseStudy}

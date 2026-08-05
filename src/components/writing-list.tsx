@@ -10,6 +10,7 @@ import type { WritingItem } from "@/lib/source";
 
 export function WritingList({ items, lang }: { items: WritingItem[]; lang: Language }) {
   const t = getT(lang);
+  const prefix = lang === "en" ? "" : "/fr";
 
   const tags = useMemo(() => {
     const set = new Set<string>();
@@ -102,7 +103,7 @@ export function WritingList({ items, lang }: { items: WritingItem[]; lang: Langu
               className="fade-up group -mx-2 px-2 py-6 transition-all duration-200 rounded-xl hover:bg-paper-raised/50"
             >
               <Link
-                href={`/${lang}${item.url}`}
+                href={`${prefix}${item.url}`}
                 className="flex items-start gap-5"
               >
                 {/* Miniature à gauche */}

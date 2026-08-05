@@ -14,7 +14,9 @@ export function SiteHeader({ lang }: { lang: Language }) {
   const pathname = usePathname();
   const [hash, setHash] = useState("");
   const t = getT(lang);
-  const isHome = pathname === "/" || pathname === `/${lang}`;
+  // L'anglais est à la racine (sans préfixe), le français sous /fr
+  const prefix = lang === "en" ? "" : "/fr";
+  const isHome = pathname === "/" || pathname === "/fr";
 
   useEffect(() => {
     document.documentElement.lang = lang;
@@ -33,14 +35,14 @@ export function SiteHeader({ lang }: { lang: Language }) {
   const oppositeLang = t.nav.opposite;
 
   const navLinks = [
-    { href: `/${lang}/#about`, label: t.nav.about, key: "about" as const },
-    { href: `${SERVICES_URL}/${lang}`, label: t.nav.services, key: "services" as const },
-    { href: `/${lang}/writing`, label: t.nav.writing, key: "writing" as const },
+    { href: `${prefix}/#about`, label: t.nav.about, key: "about" as const },
+    { href: `${SERVICES_URL}${prefix || "/"}`, label: t.nav.services, key: "services" as const },
+    { href: `${prefix}/writing`, label: t.nav.writing, key: "writing" as const },
   ];
 
   const ariaCurrentOf = (linkKey: "services" | "about" | "writing") => {
     if (linkKey === "writing") {
-      return pathname.startsWith(`/${lang}/writing`) || pathname.startsWith("/writing") ? "page" : undefined;
+      return pathname.startsWith(`${prefix}/writing`) || pathname.startsWith("/writing") ? "page" : undefined;
     }
     if (linkKey === "services") {
       return undefined;
@@ -54,7 +56,7 @@ export function SiteHeader({ lang }: { lang: Language }) {
         
         {/* Logo / Section Profil */}
         <Link
-          href={`/${lang}`}
+          href={prefix || "/"}
           className="flex items-center gap-2.5 transition-all duration-200 hover:opacity-85 group shrink-0"
         >
           <div className="relative h-8 w-8 overflow-hidden rounded-full border border-line bg-paper-raised/80 shadow-sm transition-all duration-300 group-hover:border-accent/40 group-hover:scale-105">

@@ -6,6 +6,7 @@ import { SERVICES_URL } from "@/lib/constants";
 
 export function SiteFooter({ lang }: { lang: Language }) {
   const t = getT(lang);
+  const prefix = lang === "en" ? "" : "/fr";
   const year = new Date().getFullYear();
   const waMsg = lang === "en" ? "Hello%21%20I%27d%20like%20to%20discuss%20a%20project." : "Bonjour%20%21%20Je%20souhaite%20discuter%20d%27un%20projet.";
 
@@ -101,7 +102,7 @@ export function SiteFooter({ lang }: { lang: Language }) {
             {t.footer.bookCall}
           </a>
           <a
-            href={`${SERVICES_URL}/${lang}`}
+            href={`${SERVICES_URL}${prefix || "/"}`}
             className="font-mono text-xs font-bold text-accent hover:underline flex items-center gap-1.5 transition duration-200"
           >
             {t.nav.services} &rarr;
