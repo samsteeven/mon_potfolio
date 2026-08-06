@@ -500,7 +500,7 @@ export default async function HomePage({ params }: PageProps) {
         <section className="relative border-t border-line py-28 sm:py-36 text-center flex flex-col items-center">
           {/* DISCOVER watermark — assis en bas de la section, sur le footer, sans espace supplémentaire */}
           <div
-            className="pointer-events-none absolute left-0 right-0 z-0 select-none whitespace-nowrap flex justify-center leading-none"
+            className="pointer-events-none absolute left-0 right-0 z-0 overflow-hidden select-none whitespace-nowrap flex justify-center leading-none"
             style={{ bottom: '-6rem' }}
           >
             <span
