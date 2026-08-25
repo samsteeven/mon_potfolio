@@ -140,7 +140,7 @@ export default async function HomePage({ params }: PageProps) {
               <GithubIcon className="h-7 w-7" />
             </a>
             <a
-              href="https://wa.me/237654557446"
+              href="https://wa.me/33614093987"
               target="_blank"
               rel="noopener noreferrer"
               className="transition-all duration-200 hover:text-accent hover:scale-110 active:scale-[0.96]"
