@@ -1,0 +1,66 @@
+---
+title: "SIGGE — ESTLC Information System (UNV Ebolowa)"
+description: "Complete information system for a public engineering school in Cameroon: online admission exams with PDF registration forms, academic management, research labs, payments, student portal — Laravel + React, running in production on the school's official domain."
+date: "2026-05-15"
+role: "Architect & Full-Stack Developer"
+stack: ["Laravel 12", "React 18", "Redux Toolkit", "MySQL", "Docker", "JWT", "Tailwind CSS", "Vercel"]
+status: "shipped"
+featured: false
+url: "https://estlc.unv-ebolowa.cm/"
+lang: "en"
+---
+
+## The Context
+
+ESTLC — the Higher School of Transport, Logistics and Commerce at the University of Ebolowa (Ambam, South Cameroon) — is a public engineering school: 11 tracks (transport, logistics, commerce, computer engineering, mechatronics…), a doctoral training unit (UFD-TSI), and a high-stakes annual admission exam.
+
+Everything ran on paper and scattered files: admission applications managed manually, no visibility for candidates, no digital space for students, and no structured communication with the public.
+
+SIGGE is the information system built to replace all of that — a single platform covering the public website, exam registration, student life, and school administration. A team project, from architecture to deployment, delivered and **running in production on the school's official domain**.
+
+<CardGrid>
+  <Card title="For the school">
+    Official public website: departments, tracks, news, official announcements (MINESUP communiqués, results), FAQ, contacts — all managed from the back office.
+  </Card>
+  <Card title="For candidates">
+    Fully online admission exam registration: application creation, modification via a secure identifier, and a PDF registration form ready to print.
+  </Card>
+  <Card title="For students">
+    Student portal by registration number: internal messaging, timetables per track and level, internal rules, handbook, student clubs.
+  </Card>
+</CardGrid>
+
+## What I Built
+
+**Full-stack architecture**: Laravel 12 API with JWT authentication (`tymon/jwt-auth`) paired with Sanctum, complete RBAC via `spatie/laravel-permission` (admin, staff, student, candidate roles…). React 18 SPA with Redux Toolkit and persistence (`redux-persist`), `react-router-dom` routing. Multi-tenant models per school/academic year, with composite primary keys handled via `eloquent-composite-key`.
+
+**Admission exam module — end-to-end online registration**: candidates, exam sessions (1st and 3rd year engineering), exam centers, composition sites, application files with attachments. The hard part: the **PDF registration form** generated backend-side (dompdf/fpdf) with pixel-exact field alignment on the official template — including debugging a blank-field alignment bug in production. Excel export of candidate lists (`maatwebsite/excel`).
+
+**Research lab module (UFD-TSI)**: research lab management — members with fine-grained roles (administrator, project lead, principal researcher, technician, intern…), research projects, equipment with bookings and maintenance, publications, external member applications.
+
+**Academic & administrative management**: schools, tracks, series, diplomas, academic years, grades, payment tranches, staff, administrative requests, registration-number/password recovery by email.
+
+**Content & student life**: news, slides, resources, FAQ, timetables per track/level, internal messaging, admission announcements featured on the homepage.
+
+**Technical challenges solved**: an infinite API-call loop and CORS bypassed via a Vercel proxy for the frontend; PDF generation stabilized after several iterations; OCR (`tesseract`) planned for document reading; QR codes on generated documents.
+
+## Impact
+
+<CardGrid>
+  <Card title="Official production">
+    The system runs on the school's domain — estlc.unv-ebolowa.cm — with the exam registration portal on inscriptionestlcunv-ebolowa.vercel.app.
+  </Card>
+  <Card title="2026-2027 admission digitalized">
+    Online registration is open for the September 26, 2026 exam: 530 seats (400 in year 1, 130 in year 3) — no more paper-based management.
+  </Card>
+  <Card title="One system, three audiences">
+    Public site + candidate portal + student portal + admin back office in a single platform with one unified RBAC.
+  </Card>
+  <Card title="Shipped as a team, in 3 months">
+    May → July 2026: architecture, modules, and deployment driven with a rigorous git workflow (PRs, reviews, merges) on the shared repository.
+  </Card>
+</CardGrid>
+
+## What This Experience Taught Me
+
+Building for a real administration changes everything: deadlines are dictated by the academic calendar (the exam cannot wait), data is sensitive (identities, payments), and every screen must be understandable by non-technical users. Working as a team on a single repository — code reviews, merges, cross-debugging a PDF bug in production — also confirmed that architecture and communication matter as much as the code itself.

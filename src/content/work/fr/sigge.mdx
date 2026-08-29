@@ -1,0 +1,66 @@
+---
+title: "SIGGE — Système d'information de l'ESTLC (UNV Ebolowa)"
+description: "Système d'information complet pour une école d'ingénieurs publique au Cameroun : concours d'admission en ligne avec fiches PDF, gestion académique, laboratoires, paiements, espace étudiants — Laravel + React, en production sur le domaine officiel de l'école."
+date: "2026-05-15"
+role: "Architecte & Développeur Full-Stack"
+stack: ["Laravel 12", "React 18", "Redux Toolkit", "MySQL", "Docker", "JWT", "Tailwind CSS", "Vercel"]
+status: "shipped"
+featured: false
+url: "https://estlc.unv-ebolowa.cm/"
+lang: "fr"
+---
+
+## Le contexte
+
+L'ESTLC — École Supérieure de Transport, de Logistique et de Commerce de l'Université d'Ebolowa (Ambam, Sud-Cameroun) — est une école publique de cycle ingénieur : 11 filières (transport, logistique, commerce, génie informatique, mécatronique…), une unité de formation doctorale (UFD-TSI), et un concours d'admission annuel à fort enjeu.
+
+Tout fonctionnait au papier et aux fichiers éparpillés : inscriptions au concours gérées manuellement, aucune visibilité pour les candidats, pas d'espace numérique pour les étudiants, zéro communication structurée avec les familles et le public.
+
+SIGGE est le système d'information construit pour remplacer ça — un seul SI couvrant le site public, les inscriptions au concours, la vie étudiante et l'administration de l'école. Un projet d'équipe, de l'architecture au déploiement, livré et **en production sur le domaine officiel de l'école**.
+
+<CardGrid>
+  <Card title="Pour l'école">
+    Site public officiel : départements, filières, actualités, annonces officielles (communiqués du MINESUP, résultats), FAQ, contacts — tout est géré depuis le back-office.
+  </Card>
+  <Card title="Pour les candidats">
+    Inscription au concours d'admission entièrement en ligne : création du dossier, modification via identifiant sécurisé, fiche d'inscription générée en PDF prête à imprimer.
+  </Card>
+  <Card title="Pour les étudiants">
+    Espace étudiants par matricule : messagerie interne, emplois du temps par filière et niveau, règlement intérieur, livret, vie des clubs.
+  </Card>
+</CardGrid>
+
+## Ce que j'ai construit
+
+**Architecture full-stack** : API Laravel 12 avec authentification JWT (`tymon/jwt-auth`) couplée à Sanctum, RBAC complet via `spatie/laravel-permission` (rôles admin, personnel, étudiant, candidat…). Frontend React 18 (SPA) avec Redux Toolkit et persistance (`redux-persist`), routage `react-router-dom`. Modèles multi-tenant par école/année scolaire, avec clés composites gérées via `eloquent-composite-key`.
+
+**Module concours — l'inscription en ligne de bout en bout** : candidats, sessions de concours (1ère et 3ème année ingénieurs), centres d'examen, sites de composition, dossiers et pièces jointes. Le point dur : la **fiche d'inscription PDF** générée côté backend (dompdf/fpdf) avec alignement exact des champs sur le gabarit officiel — y compris le débogage d'un bug d'alignement des champs vides corrigé en production. Export Excel des listes de candidats (`maatwebsite/excel`).
+
+**Module laboratoires (UFD-TSI)** : gestion des laboratoires de recherche — membres avec rôles fins (administrateur, chef de projet, chercheur principal, technicien, stagiaire…), projets de recherche, équipements avec réservations et entretiens, publications, candidatures de membres externes.
+
+**Gestion académique & administrative** : écoles, filières, séries, diplômes, années scolaires, notes, paiements par tranches, personnel, requêtes administratives, récupération de matricule/mot de passe par email.
+
+**Contenus & vie de l'école** : actualités, slides, ressources, FAQ, emplois du temps par filière/niveau, messagerie interne, annonces de concours mises en avant sur la page d'accueil.
+
+**Défis techniques résolus** : boucle infinie d'appels API et CORS contournés via un proxy Vercel pour le frontend ; génération PDF fiabilisée après plusieurs itérations ; OCR (`tesseract`) prévu pour la lecture de documents ; QR codes sur les documents générés.
+
+## Impact
+
+<CardGrid>
+  <Card title="En production officielle">
+    Le SI tourne sur le domaine de l'école — estlc.unv-ebolowa.cm — et le portail d'inscription au concours sur inscriptionestlcunv-ebolowa.vercel.app.
+  </Card>
+  <Card title="Concours 2026-2027 digitalisé">
+    Les inscriptions en ligne sont ouvertes pour le concours du 26 septembre 2026 : 530 places (400 en 1ère année, 130 en 3ème année) — fini la gestion papier.
+  </Card>
+  <Card title="Un seul SI, trois publics">
+    Site public + espace candidat + espace étudiant + back-office admin dans une même plateforme, avec un RBAC unique.
+  </Card>
+  <Card title="Livré en équipe, en 3 mois">
+    Mai → juillet 2026 : architecture, modules et déploiement menés avec un workflow git rigoureux (PRs, revues, merges) sur le repo partagé.
+  </Card>
+</CardGrid>
+
+## Ce que cette expérience m'a appris
+
+Construire pour une administration réelle change tout : les échéances sont dictées par le calendrier académique (le concours ne peut pas attendre), les données sont sensibles (identités, paiements), et chaque écran doit être compréhensible par des non-informaticiens. Travailler en équipe sur un même repository — revues de code, merges, débogage croisé d'un bug PDF en production — m'a aussi confirmé que l'architecture et la communication valent autant que le code.
