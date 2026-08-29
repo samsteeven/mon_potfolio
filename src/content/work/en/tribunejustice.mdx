@@ -1,9 +1,9 @@
 ---
 title: "Tribunejustice"
-description: "Complete legaltech platform: client-lawyer matching, secure payments, real-time communication, and AI automation."
-date: "2026-01-15"
-role: "Tech Lead & Project Manager"
-stack: ["Laravel", "Angular", "Next.js", "Redis", "Docker", "Laravel Reverb"]
+description: "Legaltech platform for the Cameroonian market, built end-to-end for its legal-expert founder: Laravel API, Angular SSR+PWA frontend, Next.js blog — escrow payments, video consultations, real-time messaging, 41 vulnerabilities closed, LCP 5s → 1.5s."
+date: "2026-06-14"
+role: "Tech Lead"
+stack: ["Laravel", "Angular 20", "Next.js", "Typesense", "MeSomb", "Redis", "Laravel Reverb", "Docker"]
 status: "in-progress"
 featured: true
 url: "https://tribunejustice.com"
@@ -26,40 +26,67 @@ Tribunejustice needed a platform that would solve this from both ends — bringi
   </Card>
 </CardGrid>
 
+## Scope — Three Applications, Built End-to-End for a Legal Expert
+
+This wasn't a website. It's a full product platform — the digital product of Mr Badjeu Kuitchouha Ghislain, a Cameroonian legal expert who came up with the idea and wrote the specifications. He consulted me to build it: I led and built the entire technical side — from the data model (MCD) to the architecture, from security hardening to deployment — over 8 months (~1,650 tracked changes), exchanging with him on every product decision as ideas flowed both ways.
+
+<CardGrid>
+  <Card title="Core platform — Angular 20 (SSR + PWA)">
+    Client & expert portals: service requests, video consultations, messaging, document vault, payments, invoices, bilingual FR/EN, offline-capable via service worker.
+  </Card>
+  <Card title="API & back-office — Laravel 12">
+    55+ domain models (ServiceRequest, VideoSession, Appointment, Invoice, Transaction, Vault…), RBAC with 5 roles, queues, WebSockets, search indexing, REST API documented with Scribe.
+  </Card>
+  <Card title="Legal media — Next.js 15">
+    "La Tribune" blog with a contributor space, legal directory, moderated publishing, SEO, and full FR/EN internationalization.
+  </Card>
+</CardGrid>
+
 ## What I Built
 
-**Modular backend (Laravel)**: The entire platform is organized around a *Service Request* — the central entity that carries the full lifecycle: creation, expert assignment, tracking, payment, resolution. A `ServiceRequestStatusMachine` state machine guarantees that no case can skip a step or revert to an invalid state.
+**Domain engine — the Service Request**: The entire platform is organized around one central entity carrying the full lifecycle: creation, expert assignment, tracking, payment, resolution. A `ServiceRequestStatusMachine` guarantees no case can skip a step or revert to an invalid state — every transition is validated and logged. The 55+ models were designed from a single MCD, so the whole product shares one coherent vocabulary.
 
-**Security — defense-in-depth**: Legal data is highly sensitive. The platform went through a full security audit after launch:
+**Video consultations & case tracking**: Appointments with availability management, video sessions integrated with the case lifecycle, shared documents, and billing automatically attached to the ServiceRequest — a full consultation workflow, not just a chat widget.
 
-- Granular RBAC with strict Admin / Super Admin separation
-- Sudo mode (password re-confirmation) required for sensitive actions: 2FA changes, data exports, admin operations
-- SSRF protection on the blog image proxy via strict allowlist
-- Hardened CRM observers to prevent cross-module data leaks
-- Redis TTL sessions for sudo (10-minute window)
+**Payments with escrow (MeSomb)**: Cameroonian mobile money (MTN Mobile Money, Orange Money) via MeSomb, with an escrow flow that holds funds until service completion, professional payouts, transaction tracking, and invoice generation (PDF). Trust is the core product of a legaltech — payments were designed around it.
 
-**Evolving Angular frontend**: The monolithic `AuthService` (594 lines, 87 consumers) was refactored into 4 signal-based specialized services, making the auth layer predictable, testable, and maintainable. The `ApiClient` centralizes retry logic, error normalization, and typed error handling across all API calls.
+**Real-time communication**: Client-expert messaging over WebSockets (Laravel Reverb) with presence, read receipts, and favorites — no polling. Horizon queue workers dispatch web push, email, and SMS notifications asynchronously, so delivery never blocks the request.
 
-**Real-time messaging**: Client-expert communication uses WebSocket via Laravel Reverb, with Horizon queue workers for async notification and email dispatch — no polling, instant delivery.
+**Secure document vault**: A dedicated vault gives clients a structured, access-controlled home for sensitive legal documents, tied to the case lifecycle.
 
-**Search & discovery**: Expert profiles are indexed via Typesense with real-time faceted search, reducing time-to-match for clients looking for the right specialist.
+**Search & discovery (Typesense)**: Expert profiles are indexed with faceted, typo-tolerant search in real time — reducing time-to-match while keeping relevance control in the backend.
 
-**CRM & automation**: A full CRM module tracks contacts, lifecycle stages, lead scoring, and campaign automation — connected to the core domain via observers and events.
+**CRM & automation**: A full CRM module tracks contacts, lifecycle stages, lead scoring, and campaign automation — connected to the core domain via observers and events, so CRM activity reacts to real case events instead of living in a silo.
+
+**Frontend architecture — ApiClient**: Every API call goes through a centralized client handling exponential backoff with jitter, idempotency keys, in-flight request deduplication, response normalization, and typed errors (`NetworkError`, `ValidationError`, `ServerError`…). The monolithic `AuthService` (594 lines, 87 consumers) was refactored into 4 signal-based services — state, API, token lifecycle, permissions — making auth predictable and testable.
+
+**Bilingual by design (FR/EN)**: Both official languages of the Cameroonian justice system, across all three applications — with translation tooling, i18n key auditing, and telemetry that reports untranslated strings so gaps are fixed before users see them.
+
+**Performance & reliability**: LCP went from 5,004 ms to under 1,500 ms. Image assets were converted to WebP — 68 MB → 3.9 MB (94% lighter). Deployments became zero-downtime, stale-cache crashes auto-recover, PM2 keeps processes alive, Redis replaced file cache, and backups are automated. The platform stopped breaking when it was updated.
+
+**Security — defense-in-depth**: Legal data is highly sensitive, so the platform was hardened through two audit campaigns (external pentest + internal review):
+
+- **41 vulnerabilities closed** across the blog, RBAC system, and frontend — before any breach occurred
+- HTTP-only JWT cookies, CSP finalized on all 3 domains, CORS deduplication, `security.txt`
+- Sudo mode (password re-confirmation, 10-minute Redis TTL) for sensitive actions: 2FA changes, data exports, admin operations
+- Granular RBAC with strict Admin / Super Admin separation; 2FA with recovery codes
+- SSRF protection on the blog image proxy via strict allowlist; open-redirect and XSS guards on the frontend
+- RGPD compliance in progress: data-processing register, impact analysis, business-continuity and incident-response plans
 
 ## Impact
 
 <CardGrid>
-  <Card title="41 vulnerabilities fixed">
-    A post-launch audit identified and closed 41 security flaws across the blog, RBAC system, and frontend — before any breach could occur.
+  <Card title="41 vulnerabilities closed">
+    Two audit campaigns (external pentest + internal review) identified and closed 41 security flaws across the blog, RBAC, and frontend — before any breach could occur.
   </Card>
-  <Card title="30% IT maintenance freed">
-    The on-premise Exchange migration freed 30% of recurring IT time — redirected to product features instead of server maintenance.
+  <Card title="3x faster loading">
+    LCP went from 5 seconds to under 1.5 seconds — images 94% lighter (68 MB → 3.9 MB), cache strategy rebuilt, budget halved.
+  </Card>
+  <Card title="Zero-downtime deployments">
+    The platform used to go blank (520) after every update. Deployments are now atomic, with automatic recovery from stale caches — no more broken launches.
   </Card>
   <Card title="Instant case visibility">
-    Clients and lawyers now see every status change in real time via WebSocket — eliminating the back-and-forth emails that used to define case communication.
-  </Card>
-  <Card title="~50% recurring cost reduction">
-    Architectural decisions (Redis caching, N+1 elimination, 4 composite indexes) cut server load significantly, reducing infrastructure costs as the user base grows.
+    Clients and lawyers see every status change in real time via WebSocket — eliminating the back-and-forth emails that used to define case communication.
   </Card>
 </CardGrid>
 
@@ -72,9 +99,9 @@ Tribunejustice needed a platform that would solve this from both ends — bringi
 
 ## What This Experience Taught Me
 
-Architecting a legaltech platform forces a specific mindset: every feature has to answer two questions — *"can this data leak?"* and *"can this workflow be subverted?"* Security can't be layered on after the fact in a domain handling sensitive legal and financial data.
+Leading the end-to-end build of a legaltech platform for a client forces you to own every layer — and it changed how I approach systems. Architecting a legaltech platform forces a specific mindset: every feature has to answer two questions — *"can this data leak?"* and *"can this workflow be subverted?"* Security can't be layered on after the fact in a domain handling sensitive legal and financial data.
 
-I also learned to balance velocity against quality: shipping security fixes without breaking user experience, migrating an Angular codebase without halting production, and documenting architectural decisions so the team could move independently.
+I also learned to balance velocity against quality: shipping security fixes without breaking user experience, migrating an Angular codebase without halting production, and documenting architectural decisions (state machine, idempotency, sudo mode) so that the platform keeps evolving without accumulating debt.
 
 ## Next Steps
 

@@ -3,7 +3,7 @@ title: "AI Lead Qualification Agent"
 description: "Autonomous intelligent pipeline: form interception, real-time web enrichment (Tavily), service Knowledge Base, prospect scoring and personalized email in < 30 seconds."
 date: "2026-07-21"
 role: "AI Architect & Software Engineer"
-stack: ["n8n", "OpenRouter", "Claude Haiku 4.5", "Tavily API", "Redis", "TypeScript", "Next.js", "Turso", "Data Tables", "MCP"]
+stack: ["n8n", "OpenRouter", "DeepSeek v4 Flash", "Tavily API", "Redis", "Next.js", "Data Tables", "MCP"]
 status: "shipped"
 featured: true
 lang: "en"
@@ -34,7 +34,7 @@ Form Submission → Normalize Payload → Lead Qualification Agent
                                               │
                         ┌─────────────────────┴──────────────────────┐
                         │ Tools                                        │
-                        │  • OpenRouter Model (Claude Haiku 4.5)      │
+                        │  • OpenRouter Model (DeepSeek v4 Flash)     │
                         │  • Lead Memory (Redis Chat Memory)          │
                         │  • Knowledge Base (service catalog)         │
                         │  • CRM - Get Lead                           │
@@ -60,7 +60,7 @@ Form Submission → Normalize Payload → Lead Qualification Agent
 - **Output & Notification**: Email formatting → Gmail send
 - **Error Handling**: Fallback to Data Table on failure
 
-**Webhook security**: The Next.js `/api/contact` route forwards the submission to n8n with a Header Auth credential (`X-Webhook-Secret`). The webhook node validates this secret via linked credential + IP filtering (`64.29.17.65, 216.198.79.65`) + `ignoreBots: true`. No execution starts without authentication.
+**Webhook security**: The Next.js `/api/contact` route forwards the submission to n8n with a Header Auth credential (`n8n-webhook-secret`). The webhook node validates this secret via linked credential + IP filtering (`64.29.17.65, 216.198.79.65`) + `ignoreBots: true`. No execution starts without authentication.
 
 **Redis memory**: Conversation context is persisted in Redis (`memoryRedisChat`) — the agent retains interaction history across sessions, enabling more refined scoring on recurring contacts.
 
@@ -74,9 +74,9 @@ Form Submission → Normalize Payload → Lead Qualification Agent
 
 ## What I Built
 
-**OpenRouter orchestration**: The agent runs on Claude Haiku 4.5 via OpenRouter — enabling model switching (Mistral, GPT-4o, Gemini) without modifying the agent, just changing the model identifier.
+**OpenRouter orchestration**: The agent runs on DeepSeek v4 Flash via OpenRouter — enabling model switching (Mistral, GPT-4o, Gemini) without modifying the agent, just changing the model identifier.
 
-**Strict Structured Output Parser with auto-fix**: The agent's output is constrained to a strict JSON schema with `enum` for discrete choices (budget, fit, urgency), `minimum`/`maximum` for the 1-10 score, and `required` on all critical fields. The `autoFix: true` option with a sub-node model (OpenRouter + Claude Haiku 4.5) automatically corrects invalid schemas. The agent is forced to pass through lead metadata (leadName, leadEmail, leadCompany) in its output, ensuring complete contact traceability.
+**Strict Structured Output Parser with auto-fix**: The agent's output is constrained to a strict JSON schema with `enum` for discrete choices (budget, fit, urgency), `minimum`/`maximum` for the 1-10 score, and `required` on all critical fields. The `autoFix: true` option with a sub-node model (OpenRouter + DeepSeek v4 Flash) automatically corrects invalid schemas. The agent is forced to pass through lead metadata (leadName, leadEmail, leadCompany) in its output, ensuring complete contact traceability.
 
 **Persistent CRM Data Table**: Leads are persisted in n8n native Data Tables — data survives restarts, is queryable via the n8n API, and requires no external database. The *Get Lead* node enables email deduplication before scoring.
 

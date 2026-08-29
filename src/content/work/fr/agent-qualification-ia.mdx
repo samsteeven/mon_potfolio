@@ -3,7 +3,7 @@ title: "Agent IA de Qualification de Leads"
 description: "Pipeline intelligent autonome : interception de formulaires, enrichissement web temps réel (Tavily), Knowledge Base catalogue services, scoring prospect et email personnalisé en < 30 secondes."
 date: "2026-07-21"
 role: "Architecte IA & Ingénieur logiciel"
-stack: ["n8n", "OpenRouter", "Claude Haiku 4.5", "Tavily API", "Redis", "TypeScript", "Next.js", "Turso", "Data Tables", "MCP"]
+stack: ["n8n", "OpenRouter", "DeepSeek v4 Flash", "Tavily API", "Redis", "Next.js", "Data Tables", "MCP"]
 status: "shipped"
 featured: true
 lang: "fr"
@@ -34,7 +34,7 @@ Form Submission → Normalize Payload → Lead Qualification Agent
                                               │
                         ┌─────────────────────┴──────────────────────┐
                         │ Tools                                        │
-                        │  • OpenRouter Model (Claude Haiku 4.5)      │
+                        │  • OpenRouter Model (DeepSeek v4 Flash)     │
                         │  • Lead Memory (Redis Chat Memory)          │
                         │  • Knowledge Base (catalogue services)      │
                         │  • CRM - Get Lead                           │
@@ -60,7 +60,7 @@ Form Submission → Normalize Payload → Lead Qualification Agent
 - **Output & Notification** : Formatage email → envoi Gmail
 - **Error Handling** : Fallback sur Data Table en cas d'échec
 
-**Sécurité webhook** : La route `/api/contact` de Next.js transfère la soumission vers n8n avec une credential Header Auth (`X-Webhook-Secret`). Le nœud webhook valide ce secret via credential linkée + filtrage IP (`64.29.17.65, 216.198.79.65`) + `ignoreBots: true`. Aucune exécution ne démarre sans authentification.
+**Sécurité webhook** : La route `/api/contact` de Next.js transfère la soumission vers n8n avec une credential Header Auth (`n8n-webhook-secret`). Le nœud webhook valide ce secret via credential linkée + filtrage IP (`64.29.17.65, 216.198.79.65`) + `ignoreBots: true`. Aucune exécution ne démarre sans authentification.
 
 **Mémoire Redis** : Le contexte conversationnel est persisté en Redis (`memoryRedisChat`) — l'agent conserve l'historique des interactions entre sessions, permettant un scoring plus affiné sur les contacts récurrents.
 
@@ -74,9 +74,9 @@ Form Submission → Normalize Payload → Lead Qualification Agent
 
 ## Ce que j'ai construit
 
-**Orchestration via OpenRouter** : L'agent tourne sur Claude Haiku 4.5 via OpenRouter — ce qui permet de switcher de modèle (Mistral, GPT-4o, Gemini) sans modifier l'agent, juste en changeant l'identifiant de modèle.
+**Orchestration via OpenRouter** : L'agent tourne sur DeepSeek v4 Flash via OpenRouter — ce qui permet de switcher de modèle (Mistral, GPT-4o, Gemini) sans modifier l'agent, juste en changeant l'identifiant de modèle.
 
-**Structured Output Parser strict avec auto-fix** : La sortie de l'agent est contrainte à un schéma JSON strict avec `enum` pour les choix discrets (budget, fit, urgence), `minimum`/`maximum` pour le score 1-10, et `required` sur tous les champs critiques. L'option `autoFix: true` avec un sous-nœud modèle (OpenRouter + Claude Haiku 4.5) corrige automatiquement les schémas invalides. L'agent est forcé de passer-through les métadonnées du lead (leadName, leadEmail, leadCompany) dans sa sortie, assurant la traçabilité complète du contact.
+**Structured Output Parser strict avec auto-fix** : La sortie de l'agent est contrainte à un schéma JSON strict avec `enum` pour les choix discrets (budget, fit, urgence), `minimum`/`maximum` pour le score 1-10, et `required` sur tous les champs critiques. L'option `autoFix: true` avec un sous-nœud modèle (OpenRouter + DeepSeek v4 Flash) corrige automatiquement les schémas invalides. L'agent est forcé de passer-through les métadonnées du lead (leadName, leadEmail, leadCompany) dans sa sortie, assurant la traçabilité complète du contact.
 
 **CRM Data Table persistante** : Les leads sont persistés dans une Data Table n8n native — les données survivent aux redémarrages, sont interrogeables via l'API n8n, et n'exigent pas de base externe. Le nœud *Get Lead* permet la dédoublonnage par email avant scoring.
 

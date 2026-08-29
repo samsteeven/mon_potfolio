@@ -8,7 +8,7 @@ lang: "en"
 cover: "/blog/n8n-cover.jpg"
 ---
 
-An autopilot automation tool can go wrong: poor isolation on a shared VPS can compromise your production database. Here is how I deployed n8n in production for the [TribuneJustice](/en/work/tribunejustice) project — a legaltech platform I lead as Tech Lead — without disrupting existing infrastructure.
+An autopilot automation tool can go wrong: poor isolation on a shared VPS can compromise your production database. Here is how I deployed n8n in production for the [TribuneJustice](/en/work/tribunejustice) project — a legaltech platform I built from scratch and lead — without disrupting existing infrastructure.
 
 ## The Context: Making the Most of an Existing VPS
 
@@ -106,21 +106,21 @@ Once the Google false positive was cleared via Search Console review, the n8n in
 
 ## What's Running in Production Today
 
-The n8n instance is no longer just a task orchestrator. Two critical workflows run in production, connected by a **shared CRM Data Table** — the core of the system.
+The n8n instance is deployed and secured on n8n.samensteeve.com (2FA, automated PostgreSQL backups). The **Lead Qualification Agent** runs there in production, connected to the WhatsApp CRM Assistant (built and tested) by a **shared CRM Data Table** — the core of the system.
 
-### Lead Qualification Agent (write)
+### Lead Qualification Agent (write) — in production
 
-Autonomous AI agent that intercepts form submissions, enriches data via Tavily, scores the lead 1-10, and **writes** to the CRM Data Table (upsert by email). Personalized response email sent to the prospect in < 30s. Redis memory, strict Output Parser (constrained JSON schema), retry on Gmail and Tavily.
+Autonomous AI agent that intercepts form submissions, enriches data via Tavily, scores the lead 1-10, and **writes** to the CRM Data Table (upsert by email). Personalized response email sent to the prospect in < 30s. Redis memory, strict Output Parser (constrained JSON schema), retry on Gmail and Tavily. Header-secured webhook + IP filtering — the workflow is published and receives form submissions.
 
-### WhatsApp CRM Assistant (read & operational)
+### WhatsApp CRM Assistant (read & operational) — awaiting credentials
 
-WhatsApp agent that allows **reading** and querying the same CRM in natural language — check recent leads, look up by email, update status, send professional emails. Redis memory for conversation context.
+WhatsApp agent that allows **reading** and querying the same CRM in natural language — check recent leads, look up by email, update status, send professional emails. Redis memory for conversation context. Built and tested in manual mode; publication only awaits the WhatsApp Business credentials.
 
 ### The Complete Pipeline
 
 Both workflows form a unified system: the Lead Agent **populates** the CRM with qualified, enriched leads, while the WhatsApp Assistant allows **querying** and **acting** on that data directly from WhatsApp — without opening the n8n interface. Shared Redis memory for conversation continuity between both agents.
 
-Each workflow has its own security model: the Lead Qualification Agent uses a Header Auth credential (`X-Webhook-Secret`) on its webhook, while the WhatsApp CRM Assistant relies on n8n's WhatsApp Business authentication. Both have `retryOnFail` configured on critical nodes.
+Each workflow has its own security model: the Lead Qualification Agent uses a Header Auth credential (`n8n-webhook-secret`) on its webhook, while the WhatsApp CRM Assistant will rely on n8n's WhatsApp Business authentication once its credentials are set. Both have `retryOnFail` configured on critical nodes.
 
 ## Takeaways
 

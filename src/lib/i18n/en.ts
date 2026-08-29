@@ -99,6 +99,7 @@ export const en = {
     items: [
       { name: "Laravel", url: "https://laravel.com", desc: "My primary backend: secure, structured, and fast to ship. From REST APIs to real-time WebSocket servers.", favorite: true },
       { name: "AdonisJS", url: "https://adonisjs.com", desc: "A structured Node.js framework for building type-safe backends with the same elegance as Laravel.", favorite: false },
+      { name: "NestJS", url: "https://nestjs.com", desc: "A modular, type-safe Node.js framework built for enterprise APIs and microservices.", favorite: false },
       { name: "React / Next.js", url: "https://react.dev", desc: "My frontend of choice for high-performance interfaces — standalone or paired with Inertia.", favorite: false },
       { name: "Inertia.js", url: "https://inertiajs.com", desc: "The bridge between Laravel and a modern frontend — without the overhead of a separate API layer.", favorite: false },
       { name: "TypeScript", url: "https://www.typescriptlang.org", desc: "Type safety across the full stack. Non-negotiable for anything meant to last in production.", favorite: false },
