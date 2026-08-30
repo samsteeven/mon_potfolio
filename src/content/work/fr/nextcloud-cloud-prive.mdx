@@ -1,0 +1,68 @@
+---
+title: "Cloud privé souverain avec Nextcloud — CAMTEL-TECH Services"
+description: "Projet d'UE Administration des Services Cloud (EADL) : cahier des charges complet et déploiement Docker d'un cloud privé Nextcloud souverain pour une PME camerounaise — conformité RGPD, spécifications fonctionnelles MoSCoW, CAPEX/OPEX, architecture dessinée sous EdrawMax."
+date: "2026-05-01"
+role: "Cloud Architect & Technical Writer"
+stack: ["Nextcloud", "Docker", "MariaDB", "Redis", "Nginx", "RGPD", "ISO 27001", "EdrawMax"]
+status: "shipped"
+featured: false
+lang: "fr"
+---
+
+## Le contexte
+
+CAMTEL-TECH Services est une PME camerounaise de services informatiques : installation de réseaux, maintenance d'infrastructures, support technique et gestion de projets IT. Siège à Yaoundé, agence à Douala, environ 200 collaborateurs — dont beaucoup travaillent sur le terrain et ont besoin d'accéder à des documents à distance.
+
+Le problème n'était pas technique, il était **stratégique** : l'entreprise stockait ses données dans un NAS local, Google Workspace Business **et** Dropbox Business. Hétérogénéité des solutions, droits d'accès non uniformes, données personnelles dispersées, sauvegardes incohérentes, hébergement hors de tout contrôle juridique — soit **7 points de non-conformité RGPD** identifiés, dans un dossier où chaque fichier partagé sans contrôle est une preuve contre l'entreprise.
+
+L'objectif du projet : proposer une **alternative souveraine et sécurisée aux clouds publics** — un cloud privé basé sur Nextcloud — et le documenter au niveau professionnel.
+
+<CardGrid>
+  <Card title="Le problème de dispersion">
+    NAS local + Google Workspace + Dropbox : impossible de localiser les données personnelles, de contrôler les accès, d'appliquer le droit à l'effacement, ou de prouver un audit.
+  </Card>
+  <Card title="Le problème de souveraineté">
+    Google et Dropbox stockent les données dans des infrastructures cloud internationales — violations potentielles des règles de transfert hors Union Européenne exigées par le RGPD.
+  </Card>
+  <Card title="Le problème de terrain">
+    Les employés se connectent depuis des réseaux publics et des appareils personnels : la gestion des droits doit être centralisée, fiable, et le moindre privilège appliqué.
+  </Card>
+</CardGrid>
+
+## Ce que j'ai construit
+
+**Cahier des charges en 4 axes** — le livrable central du projet, structuré comme un document d'étude professionnel :
+
+1. **Description du contexte** : cadre du projet, problématique (la dispersion multi-outils), objectifs, périmètre et limites.
+2. **Spécification fonctionnelle** : recensement des besoins via la méthode **MoSCoW** (Must/Should/Could/Won't), cas d'utilisation principaux, architecture fonctionnelle de Nextcloud.
+3. **Spécification technique** : évaluation des besoins en stockage, sécurité et gestion des données ; architecture d'infrastructure ; plan de déploiement de Nextcloud ; plan de migration des données ; conformité réglementaire **RGPD et ISO 27001**.
+4. **Spécification financière** : estimation des coûts d'investissement (**CAPEX**), des coûts de fonctionnement (**OPEX**), analyse coût-bénéfice comparative et options de financement.
+
+**Architecture & schémas** : la conception de l'infrastructure hybride (datacenter local + accès terrain sécurisés) dessinée sous **EdrawMax** — schéma d'architecture, diagrammes fonctionnels et diagramme de flux.
+
+**Déploiement réel — stack Docker complète** : le TP associé a consisté à déployer réellement Nextcloud 28 dans une stack conteneurisée : **Nextcloud 28 (Apache)** + **MariaDB 11** (avec healthcheck), **Redis 7** pour le cache, **Nginx en reverse proxy** avec headers de sécurité durcis (X-Content-Type-Options, X-Frame-Options, X-XSS-Protection, Referrer-Policy), support WebSocket (Nextcloud Talk), limites de taille de fichiers élevées (uploads 10 Go), credentials gérés via variables d'environnement — pas de secrets en dur.
+
+**Livrables de synthèse** : document Word de présentation générale du projet, **PowerPoint** de présentation devant l'encadrant, et **tutoriel** de la solution de bout en bout (du déploiement à l'administration).
+
+## Impact
+
+<CardGrid>
+  <Card title="Conformité RGPD par conception">
+    Le cahier des charges répond point par point aux obligations : localisation des données, contrôle des accès, droit à l'effacement, traçabilité, sauvegarde et conservation — y compris la conformité ISO 27001.
+  </Card>
+  <Card title="Souveraineté numérique">
+    Une alternative open source aux géants du cloud public : l'entreprise reprend le contrôle de ses données, hébergées et administrées localement.
+  </Card>
+  <Card title="Décision financière chiffrée">
+    CAPEX, OPEX et analyse coût-bénéfice calés sur un contexte réel (~200 collaborateurs) — le document est exploitable par un décideur, pas un exercice théorique.
+  </Card>
+  <Card title="Du cahier des charges au déploiement">
+    La stack Docker Nextcloud/MariaDB/Redis/Nginx a été réellement déployée et documentée — le projet ne s'arrête pas à la conception.
+  </Card>
+</CardGrid>
+
+## Ce que cette expérience m'a appris
+
+Un cahier des charges n'est pas de la rédaction : c'est de l'ingénierie structurée. Traduire une problématique RGPD réelle — sept risques concrets de non-conformité — en spécifications MoSCoW, puis en coûts CAPEX/OPEX, m'a appris à rendre une solution technique **auditable et défendable devant un décideur** : chaque choix (Nextcloud face aux clouds publics, MariaDB/Redis, reverse proxy, secrets en .env) a une justification économique et réglementaire, pas seulement technique.
+
+Et la boucle complète — cahier des charges → architecture → déploiement réel → tutoriel → soutenance — est le meilleur exercice pour vérifier qu'une architecture conçue sur papier tourne vraiment en pratique.

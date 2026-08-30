@@ -1,0 +1,68 @@
+---
+title: "Sovereign Private Cloud with Nextcloud — CAMTEL-TECH Services"
+description: "EADL 'Cloud Services Administration' course project: full specification document and Docker deployment of a sovereign Nextcloud private cloud for a Cameroonian IT services SME — GDPR compliance, MoSCoW functional specs, CAPEX/OPEX, architecture diagrams in EdrawMax."
+date: "2026-05-01"
+role: "Cloud Architect & Technical Writer"
+stack: ["Nextcloud", "Docker", "MariaDB", "Redis", "Nginx", "GDPR", "ISO 27001", "EdrawMax"]
+status: "shipped"
+featured: false
+lang: "en"
+---
+
+## The Context
+
+CAMTEL-TECH Services is a Cameroonian IT services SME: network installation, infrastructure maintenance, technical support, and IT project management. HQ in Yaoundé, branch in Douala, roughly 200 employees — many of them working in the field and needing remote access to documents.
+
+The problem wasn't technical, it was **strategic**: the company stored its data in a local NAS, Google Workspace Business **and** Dropbox Business. Heterogeneous solutions, non-uniform access rights, scattered personal data, inconsistent backups, hosting beyond any legal control — that's **7 concrete GDPR non-compliance risks** identified, in a business where every uncontrolled shared file is potential evidence against the company.
+
+The project goal: propose a **sovereign, secured alternative to public clouds** — a private cloud based on Nextcloud — and document it at a professional level.
+
+<CardGrid>
+  <Card title="The dispersion problem">
+    Local NAS + Google Workspace + Dropbox: impossible to locate personal data, control access, enforce the right to erasure, or prove an audit trail.
+  </Card>
+  <Card title="The sovereignty problem">
+    Google and Dropbox store data in international cloud infrastructure — potential violations of the GDPR's rules on transfers outside the EU.
+  </Card>
+  <Card title="The field problem">
+    Employees connect from public networks and personal devices: access rights must be centralized, reliable, and least-privilege enforced.
+  </Card>
+</CardGrid>
+
+## What I Built
+
+**Specification document in 4 sections** — the central deliverable, structured like a professional study:
+
+1. **Context description**: project frame, problem statement (the multi-tool dispersion), objectives, scope and limits.
+2. **Functional specification**: requirements inventory via the **MoSCoW** method (Must/Should/Could/Won't), main use cases, Nextcloud functional architecture.
+3. **Technical specification**: storage, security and data-management needs assessment; infrastructure architecture; Nextcloud deployment plan; data migration plan; **GDPR and ISO 27001** regulatory compliance.
+4. **Financial specification**: capital expenditure (**CAPEX**), operating expenditure (**OPEX**) estimates, comparative cost-benefit analysis, and financing options.
+
+**Architecture & diagrams**: the hybrid infrastructure design (local datacenter + secured field access) modelled in **EdrawMax** — architecture diagram, functional diagrams, and data flow diagram.
+
+**Real deployment — full Docker stack**: the associated practical work involved actually deploying Nextcloud 28 in a containerized stack: **Nextcloud 28 (Apache)** + **MariaDB 11** (with healthcheck), **Redis 7** for caching, **Nginx reverse proxy** with hardened security headers (X-Content-Type-Options, X-Frame-Options, X-XSS-Protection, Referrer-Policy), WebSocket support (Nextcloud Talk), high upload limits (10 GB), credentials handled via environment variables — no hardcoded secrets.
+
+**Synthesis deliverables**: Word document presenting the project, **PowerPoint** deck for the supervisor presentation, and an end-to-end **tutorial** from deployment to administration.
+
+## Impact
+
+<CardGrid>
+  <Card title="GDPR compliance by design">
+    The specification answers every obligation: data localization, access control, right to erasure, traceability, backup and retention — including ISO 27001 alignment.
+  </Card>
+  <Card title="Digital sovereignty">
+    An open-source alternative to public-cloud giants: the company takes back control of its data, hosted and administered locally.
+  </Card>
+  <Card title="Computed financial decision">
+    CAPEX, OPEX and cost-benefit analysis sized for a real context (~200 employees) — usable by a decision-maker, not a theoretical exercise.
+  </Card>
+  <Card title="From specification to deployment">
+    The Nextcloud/MariaDB/Redis/Nginx Docker stack was actually deployed and documented — the project doesn't stop at design.
+  </Card>
+</CardGrid>
+
+## What This Experience Taught Me
+
+A specification document isn't writing: it's structured engineering. Translating a real GDPR problem — seven concrete non-compliance risks — into MoSCoW requirements, then into CAPEX/OPEX figures, taught me how to make a technical solution **auditable and defensible in front of a decision-maker**: every choice (Nextcloud over public clouds, MariaDB/Redis, reverse proxy, secrets in .env) has an economic and regulatory justification, not just a technical one.
+
+And the complete loop — specification → architecture → real deployment → tutorial → oral defense — is the best way to verify that an architecture designed on paper actually runs in practice.
