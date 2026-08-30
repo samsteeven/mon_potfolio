@@ -114,34 +114,10 @@ export const fr = {
     subtitle: "Ce que mes clients et collaborateurs disent de notre collaboration.",
     items: [
       {
-        quote: "Steeve a conçu notre infrastructure hybride de microservices de A à Z. La synchronisation offline-first a résolu des années d'échecs de synchronisation pour nos agents de terrain. Une approche technique rigoureuse qui a tenu toutes ses promesses.",
-        author: "Jean-Pierre Ndongo",
-        role: "DSI",
-        company: "AGROCAM S.A."
-      },
-      {
-        quote: "En tant que Tech Lead, Steeve a non seulement sécurisé notre plateforme mais a également structuré notre codebase Angular pour monter en charge. Son leadership et son approche axée sécurité nous ont évité des mois de retravail.",
-        author: "Sandrine Eboa",
-        role: "Tech Lead & Co-fondatrice",
-        company: "Tribunejustice"
-      },
-      {
-        quote: "La migration vers M365 et la conception du réseau hybride Azure se sont déroulées de manière fluide, sans une seule minute d'interruption. Steeve a su aligner ses recommandations techniques avec nos objectifs métier.",
-        author: "Marc Alima",
-        role: "CTO",
-        company: "ShopNow"
-      },
-      {
-        quote: "Steeve a repris notre backend Laravel existant et l'a complètement transformé. Tests automatisés, CI/CD, documentation d'API — tout ce qui manquait est maintenant en place. Le projet a été livré dans les temps, et notre équipe peut enfin travailler sereinement.",
-        author: "Carole Mvele",
-        role: "Lead Développeuse",
-        company: "Digital Services Group"
-      },
-      {
-        quote: "L'audit de sécurité qu'il a mené sur notre plateforme a révélé des vulnérabilités critiques que nous n'aurions jamais détectées seuls. Son rapport était clair, exploitable, et il nous a accompagnés jusqu'à la correction complète.",
-        author: "Hervé Nkili",
-        role: "CEO",
-        company: "OpenCode Labs"
+        quote: "Steeve a construit la plateforme TribuneJustice avec moi, de la conception à la mise en production : je venais avec l'idée et les spécifications métier, il apportait l'architecture et l'exigence technique. Les audits de sécurité qu'il a menés ont transformé un bon produit en un produit de confiance pour notre profession.",
+        author: "Badjeu Kuitchouha Ghislain",
+        role: "Fondateur & Expert juridique",
+        company: "TribuneJustice"
       }
     ]
   },

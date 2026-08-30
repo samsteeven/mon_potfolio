@@ -1,8 +1,8 @@
 ---
 title: "DIGITRANS-CM"
-description: "Architecture microservices cloud-native pour AGROCAM S.A. : ERP, CRM, Supply Chain offline-first, BI, infrastructure AWS hybride, et blockchain Hyperledger Fabric."
+description: "Épreuve certifiante RNCP (bloc BC04, Cloud Computing) : architecture microservices cloud-native pour un groupe agroalimentaire camerounais simulé — ERP, CRM, Supply Chain offline-first, BI, AWS hybride, blockchain Hyperledger Fabric. Équipe de 3, livrée en 3 jours."
 date: "2026-05-01"
-role: "Architecte solution & Développeur full-stack"
+role: "Architecte Cloud & Développeur Full-Stack"
 stack: ["Node.js", "Express", "FastAPI", "PostgreSQL", "Redis", "Docker", "Kubernetes", "Terraform", "AWS", "Azure", "Hyperledger Fabric", "GitHub Actions"]
 status: "shipped"
 featured: false
@@ -10,11 +10,13 @@ url: "https://github.com/samsteeven/digitram-cm-microservices"
 lang: "fr"
 ---
 
-## Le problème
+## Le contexte — une épreuve certifiante en conditions réelles
 
-AGROCAM S.A. est une entreprise agro-industrielle camerounaise qui gère l'intégralité de ses opérations — RH, comptabilité, achats, commandes clients, chaîne d'approvisionnement — sur un système monolithique legacy. L'architecture ne passait plus à l'échelle. Ajouter un module risquait de faire tomber le reste. Les agents terrain en zone reculée n'avaient aucun moyen d'enregistrer des opérations sans connexion. Et la chaîne d'approvisionnement n'avait aucune traçabilité immuable — pourtant indispensable pour la conformité et le contrôle qualité dans le secteur alimentaire.
+En mai 2026, dans le cadre de ma 4ème année à EADL (année académique 2025/2026, semestre II), j'ai passé l'épreuve certifiante RNCP39765 — bloc BC04 « Optimiser le Système d'Information (SI) par l'apport du Cloud Computing », compétences C21 à C26.
 
-L'objectif : remplacer ce système par une architecture distribuée moderne, conçue pour les contraintes opérationnelles africaines réelles.
+La mise en situation reconstituée : CAMTECH SOLUTIONS S.A., une ESN camerounaise, vient de remporter l'appel d'offres DIGITRANS-CM lancé par AGROCAM S.A., groupe agroalimentaire de 1 200 employés. La mission : remplacer un SI legacy monolithique (2009) par un écosystème applicatif moderne, distribué et partiellement cloud — ERP, CRM, Supply Chain et BI. Les données sensibles (RH, financières, clients) doivent rester sur le sol camerounais (loi n°2010/012), et l'ensemble doit tenir les réalités locales : délestages, connectivité inégale, latence de 150 à 250 ms vers les régions cloud européennes.
+
+**Format** : 3 jours, en équipe de 3 étudiants. Livrables évalués par un jury : application déployée + documentation technique (Partie I), rapport de sécurisation (Partie II), soutenance.
 
 <CardGrid>
   <Card title="Le problème de connectivité">
@@ -27,11 +29,13 @@ L'objectif : remplacer ce système par une architecture distribuée moderne, con
     La chaîne d'approvisionnement n'avait aucun audit immuable. Les enregistrements d'expéditions pouvaient être modifiés après coup — un risque de responsabilité pour un producteur alimentaire.
   </Card>
   <Card title="Le problème de scalabilité">
-    Le système monolithique ne permettait pas de mises à jour modulaires. Chaque changement risquait de casser d'autres parties du métier — le développement avançait au ralenti.
+    Le système monolithique de 2009 ne permettait pas de mises à jour modulaires. Chaque changement risquait de casser d'autres parties du métier.
   </Card>
 </CardGrid>
 
 ## Ce que j'ai construit
+
+**Partie I — application et infrastructure cloud (C21 à C24) :**
 
 **5 microservices isolés** avec une API Gateway comme point d'entrée unique — centralisant JWT/OAuth2, le rate limiting, et jouant le rôle de reverse proxy. Les services métier ne valident jamais les tokens directement ; ils font confiance aux en-têtes injectés par le gateway. Chaque service possède sa propre base PostgreSQL avec un schéma dédié et 17 index de performance.
 
@@ -39,7 +43,7 @@ L'objectif : remplacer ce système par une architecture distribuée moderne, con
 
 **Supply Chain offline-first** : Conçu spécifiquement pour les agents en zones de faible connectivité. Un endpoint `POST /sync/push` accepte un lot d'opérations INSERT/UPDATE/DELETE avec un `offline_id` pour la déduplication côté serveur. Un worker Redis traite la queue toutes les 30 secondes avec mécanisme de retry et dead-letter — les opérations saisies hors ligne se synchronisent automatiquement dès que la connexion revient.
 
-**Traçabilité blockchain immuable (Hyperledger Fabric)** : Chaque expédition et checkpoint est enregistré sur la blockchain Fabric via un chaincode de 147 lignes. `getHistoryForKey()` fournit des historiques d'audit complets. Une fonction `verifyChainIntegrity()` valide l'intégrité de toute la chaîne — chaque checkpoint est lié au précédent via un index composite. Les enregistrements ne peuvent pas être modifiés rétroactivement.
+**Traçabilité blockchain (Hyperledger Fabric)** : Chaque expédition et checkpoint est enregistré sur la blockchain Fabric via un chaincode de 147 lignes. `getHistoryForKey()` fournit des historiques d'audit complets. Une fonction `verifyChainIntegrity()` valide l'intégrité de toute la chaîne — chaque checkpoint est lié au précédent via un index composite. Les enregistrements ne peuvent pas être modifiés rétroactivement.
 
 **BI Service (FastAPI/Python)** : Agrège les KPIs de tous les services via HTTP avec cache Redis de 5 minutes. Expose des endpoints de snapshots, tendances, et tableaux de bord — donnant à la direction une visibilité temps réel sur l'ensemble de l'opération sans requêter les bases de production directement.
 
@@ -47,20 +51,22 @@ L'objectif : remplacer ce système par une architecture distribuée moderne, con
 
 **Pipeline CI/CD (GitHub Actions, 5 étapes)** : Lint → Tests Jest → Lint Python (Ruff) → Build Docker multi-stage + push ECR → Deploy ECS. Environnements staging et production séparés.
 
+**Partie II — rapport de sécurisation (C25–C26)** : analyse de 4 risques cloud majeurs sous le modèle de responsabilité partagée, politique IAM multi-rôles, procédure de départ d'un développeur, rotation des clés, plan de réponse aux incidents, chiffrement en transit et au repos. Et la solution de traçabilité : choix d'Hyperledger Fabric justifié face aux contraintes du projet (réseau privé d'entreprise, latence, hébergement local), structure de bloc, consensus adapté, smart contracts protégés contre les vulnérabilités classiques (reentrancy, integer overflow), conformité avec la loi n°2010/012.
+
 ## Impact
 
 <CardGrid>
-  <Card title="Zéro perte de données terrain">
-    L'architecture offline-first permet aux agents de travailler sans connexion. Les opérations sont mises en queue localement et synchronisées automatiquement — plus de ressaisie manuelle, plus d'enregistrements perdus.
+  <Card title="Livré en 3 jours">
+    Application déployée, documentation technique, rapport de sécurisation et soutenance — en équipe de 3, sous contrainte de délai.
   </Card>
-  <Card title="Conformité légale complète">
-    Les données RH et financières restent on-premise à Douala (loi camerounaise n°2010/012). L'architecture hybride a été conçue autour de cette contrainte dès le départ — pas ajoutée après coup.
+  <Card title="Bloc BC04 couvert">
+    Épreuve certifiante RNCP39765 : compétences C21 à C26 évaluées par un jury — intégration cloud, IaC, administration, performance, sécurité, blockchain.
   </Card>
-  <Card title="Audit supply chain immuable">
-    Chaque checkpoint d'expédition est désormais sur la blockchain. Les enregistrements ne peuvent plus être modifiés après coup — éliminant le risque de responsabilité lié aux logs mutables pour un producteur alimentaire.
+  <Card title="Souveraineté par conception">
+    Données RH et financières on-premise à Douala, workloads à forte charge sur régions cloud africaines (AWS af-south-1, Azure South Africa North).
   </Card>
   <Card title="~450 $/mois d'infrastructure estimée">
-    Un système multi-cloud production-ready avec monitoring, alerting, DRP (RTO 5–60 min, RPO 5 min) et autoscaling — à un coût accessible pour une PME camerounaise.
+    Infrastructure multi-cloud dimensionnée et chiffrée (auto-scaling, suivi des coûts) — accessible pour une PME camerounaise.
   </Card>
 </CardGrid>
 
@@ -73,6 +79,4 @@ L'objectif : remplacer ce système par une architecture distribuée moderne, con
 
 ## Ce que cette expérience m'a appris
 
-Concevoir pour une agro-industrie camerounaise m'a confronté à des contraintes qui n'apparaissent pas dans les architectures de manuel : agents sans connexion, réglementation sur la résidence des données, et exigences de traçabilité légale pour la chaîne alimentaire. Chaque compromis technique était dicté par le métier — pas par les préférences technologiques.
-
-J'ai aussi appris à concevoir un système déployable de trois façons différentes (Docker Compose, Kubernetes, ECS Fargate) sans changer une ligne de code métier — une contrainte qui force une séparation plus nette entre infrastructure et application dès le départ.
+Trois jours pour livrer un SI complet, ça force à trancher : on n'a pas le luxe de l'infini, et chaque choix d'architecture doit être défendable devant un jury. J'ai appris à justifier des décisions — Terraform plutôt que CloudFormation, Hyperledger plutôt qu'Ethereum, régions cloud africaines plutôt qu'européennes — et à produire des livrables lisibles par un tiers. Travailler à trois sur des livrables indivisibles, c'est aussi apprendre à découper le travail sans casser la cohérence d'ensemble.

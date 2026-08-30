@@ -1,7 +1,6 @@
 "use client";
 
 import React, { useState, useEffect, useRef, useCallback } from "react";
-import Image from "next/image";
 
 interface Testimonial {
   quote: string;
@@ -120,17 +119,7 @@ export function TestimonialsSection({ items }: Props) {
               <div className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-full font-mono text-[11px] font-bold transition-all duration-300 overflow-hidden relative ${
                 isActive ? "bg-accent text-white scale-105" : "bg-paper-raised text-ink-soft"
               }`}>
-                {t.author === "Sandrine Eboa" ? (
-                  <Image
-                    src="/TJ-Logo.png"
-                    alt="TribuneJustice"
-                    fill
-                    sizes="36px"
-                    className="h-full w-full object-cover filter dark:brightness-110 z-10"
-                  />
-                ) : (
-                  initials
-                )}
+                {initials}
               </div>
 
               {/* Infos */}

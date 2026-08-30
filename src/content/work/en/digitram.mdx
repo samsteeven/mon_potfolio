@@ -1,8 +1,8 @@
 ---
 title: "DIGITRANS-CM"
-description: "Cloud-native microservices architecture for AGROCAM S.A.: ERP, CRM, offline-first Supply Chain, BI, hybrid AWS infrastructure, and Hyperledger Fabric blockchain."
+description: "RNCP certification exam (BC04, Cloud Computing): cloud-native microservices architecture for a simulated Cameroonian agro-industrial group — ERP, CRM, offline-first Supply Chain, BI, hybrid AWS, Hyperledger Fabric blockchain. Team of 3, delivered in 3 days."
 date: "2026-05-01"
-role: "Solution Architect & Full-stack Developer"
+role: "Cloud Architect & Full-Stack Developer"
 stack: ["Node.js", "Express", "FastAPI", "PostgreSQL", "Redis", "Docker", "Kubernetes", "Terraform", "AWS", "Azure", "Hyperledger Fabric", "GitHub Actions"]
 status: "shipped"
 featured: false
@@ -10,11 +10,13 @@ url: "https://github.com/samsteeven/digitram-cm-microservices"
 lang: "en"
 ---
 
-## The Problem
+## The Context — A Certification Exam Under Real Conditions
 
-AGROCAM S.A. is a Cameroonian agro-industrial company running its entire operation — HR, accounting, procurement, client orders, and supply chain — on a monolithic legacy system. The architecture couldn't scale. Adding a new module meant risking the entire system. Field agents in remote areas had no way to log operations without an internet connection. And there was no audit trail for the supply chain — a critical requirement for compliance and quality control.
+In May 2026, during my 4th year at EADL (academic year 2025/2026, semester II), I took the RNCP39765 certification exam — block BC04 "Optimizing the Information System with Cloud Computing", competencies C21 to C26.
 
-The goal: replace this with a modern, distributed information system designed for real African operational constraints.
+The reconstructed scenario: CAMTECH SOLUTIONS S.A., a Cameroonian IT services company, just won the DIGITRANS-CM tender launched by AGROCAM S.A., an agro-industrial group with 1,200 employees. The mission: replace a legacy monolithic SI (2009) with a modern, distributed, partially cloud ecosystem — ERP, CRM, Supply Chain and BI. Sensitive data (HR, financial, customer) must stay on Cameroonian soil (Law n°2010/012), and everything must withstand local realities: power outages, uneven connectivity, 150–250 ms latency to European cloud regions.
+
+**Format**: 3 days, in a team of 3 students. Deliverables assessed by a jury: deployed application + technical documentation (Part I), security report (Part II), oral defense.
 
 <CardGrid>
   <Card title="The connectivity problem">
@@ -27,11 +29,13 @@ The goal: replace this with a modern, distributed information system designed fo
     The supply chain had no immutable audit trail. Shipment records could be modified after the fact — a liability risk for a food-grade production company.
   </Card>
   <Card title="The scalability problem">
-    The monolithic system couldn't be updated modularly. Any change risked breaking unrelated parts of the business — development had slowed to a crawl.
+    The 2009 monolith couldn't be updated modularly. Any change risked breaking unrelated parts of the business.
   </Card>
 </CardGrid>
 
 ## What I Built
+
+**Part I — cloud application & infrastructure (C21–C24):**
 
 **5 isolated microservices** with an API Gateway as the single entry point — centralizing JWT/OAuth2, rate limiting, and acting as a reverse proxy. Business services never validate tokens directly; they trust gateway-injected headers. Each service owns its own PostgreSQL database with dedicated schemas and 17 performance indexes.
 
@@ -39,7 +43,7 @@ The goal: replace this with a modern, distributed information system designed fo
 
 **Offline-first Supply Chain**: Designed specifically for field agents in low-connectivity areas. A `POST /sync/push` endpoint accepts a batch of INSERT/UPDATE/DELETE operations with an `offline_id` for server-side deduplication. A Redis worker processes the queue every 30 seconds with retry and dead-letter mechanisms — operations logged offline sync automatically when connectivity resumes.
 
-**Immutable blockchain traceability (Hyperledger Fabric)**: Every shipment and supply chain checkpoint is recorded on the Fabric blockchain via a 147-line chaincode. `getHistoryForKey()` provides complete audit trails. A `verifyChainIntegrity()` function validates the entire chain — each checkpoint links to the previous via a composite index. Records cannot be altered retroactively.
+**Blockchain traceability (Hyperledger Fabric)**: Every shipment and supply chain checkpoint is recorded on the Fabric blockchain via a 147-line chaincode. `getHistoryForKey()` provides complete audit trails. A `verifyChainIntegrity()` function validates the entire chain — each checkpoint links to the previous via a composite index. Records cannot be altered retroactively.
 
 **BI Service (FastAPI/Python)**: Aggregates KPIs from all services via HTTP with 5-minute Redis cache. Exposes snapshot, trend, and dashboard endpoints — giving management real-time visibility across the entire operation without querying production databases directly.
 
@@ -47,20 +51,22 @@ The goal: replace this with a modern, distributed information system designed fo
 
 **CI/CD pipeline (GitHub Actions, 5 stages)**: Lint → Jest tests → Python lint (Ruff) → Docker multi-stage build + ECR push → ECS deploy. Separate environments for staging and production.
 
+**Part II — security report (C25–C26)**: analysis of 4 major cloud risks under the shared responsibility model, multi-role IAM policy, developer offboarding procedure, key rotation, incident response plan, encryption in transit and at rest. Plus the traceability solution: Hyperledger Fabric chosen and justified against project constraints (private enterprise network, latency, local hosting), block structure, adapted consensus, smart contracts hardened against classic vulnerabilities (reentrancy, integer overflow), compliance with Law n°2010/012.
+
 ## Impact
 
 <CardGrid>
-  <Card title="Zero data loss in the field">
-    The offline-first sync architecture means field agents can work without connectivity. Operations are queued locally and synced automatically — no manual re-entry, no lost records.
+  <Card title="Delivered in 3 days">
+    Deployed application, technical documentation, security report, and oral defense — as a team of 3, under deadline pressure.
   </Card>
-  <Card title="Full legal compliance">
-    HR and financial data stays on-premise in Douala (Cameroonian law n°2010/012). The hybrid architecture was designed around this constraint from day one — not retrofitted.
+  <Card title="BC04 block covered">
+    RNCP39765 certification exam: competencies C21–C26 assessed by a jury — cloud integration, IaC, administration, performance, security, blockchain.
   </Card>
-  <Card title="Immutable supply chain audit">
-    Every shipment checkpoint is now on the blockchain. Records cannot be altered after the fact — eliminating the liability risk of mutable supply chain logs for a food-grade producer.
+  <Card title="Sovereignty by design">
+    HR and financial data on-premise in Douala, high-load workloads on African cloud regions (AWS af-south-1, Azure South Africa North).
   </Card>
   <Card title="$465/month estimated infrastructure">
-    A fully production-grade multi-cloud setup with monitoring, alerting, DRP (RTO 5–60 min, RPO 5 min), and autoscaling — at a cost accessible for a mid-sized Cameroonian company.
+    A production-grade multi-cloud setup with monitoring, alerting, DRP (RTO 5–60 min, RPO 5 min), and autoscaling — at a cost accessible for a mid-sized Cameroonian company.
   </Card>
 </CardGrid>
 
@@ -73,6 +79,4 @@ The goal: replace this with a modern, distributed information system designed fo
 
 ## What This Experience Taught Me
 
-Designing for a Cameroonian agro-industrial company exposed me to real-world constraints that don't appear in textbook architectures: field agents without connectivity, data residency regulations, and legal traceability requirements for the food supply chain. Every technical tradeoff was dictated by the business — not by technology preferences.
-
-I also learned to design a system deployable in three different ways (Docker Compose, Kubernetes, ECS Fargate) without changing a line of business logic — a constraint that forced cleaner separation between infrastructure and application from the start.
+Three days to deliver a complete SI forces you to make decisions: you don't have the luxury of infinite options, and every architectural choice must be defensible in front of a jury. I learned to justify decisions — Terraform over CloudFormation, Hyperledger over Ethereum, African cloud regions over European ones — and to produce deliverables readable by a third party. Working as three people on indivisible deliverables also teaches you how to split the work without breaking overall coherence.

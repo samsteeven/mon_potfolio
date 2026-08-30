@@ -114,34 +114,10 @@ export const en = {
     subtitle: "What clients and colleagues say about our collaboration.",
     items: [
       {
-        quote: "Steeve designed our hybrid microservices infrastructure from scratch. The offline-first synchronization resolved years of sync failures for our field agents. A rigorous technical approach that delivered on every promise.",
-        author: "Jean-Pierre Ndongo",
-        role: "Director of Information Systems",
-        company: "AGROCAM S.A."
-      },
-      {
-        quote: "As Tech Lead, Steeve not only secured our entire platform but also structured our Angular codebase for scale. His leadership and security-first approach saved us months of rework.",
-        author: "Sandrine Eboa",
-        role: "Tech Lead & Co-founder",
-        company: "Tribunejustice"
-      },
-      {
-        quote: "The migration to M365 and the hybrid Azure network design went seamlessly without a single minute of downtime. Steeve aligned his technical recommendations with our business objectives throughout.",
-        author: "Marc Alima",
-        role: "CTO",
-        company: "ShopNow"
-      },
-      {
-        quote: "Steeve took over our existing Laravel backend and completely transformed it. Automated tests, CI/CD, API documentation — everything that was missing is now in place. The project was delivered on schedule, and our team can finally work with confidence.",
-        author: "Carole Mvele",
-        role: "Lead Developer",
-        company: "Digital Services Group"
-      },
-      {
-        quote: "The security audit he conducted on our platform uncovered critical vulnerabilities we would never have caught on our own. His report was clear, actionable, and he stayed with us through full remediation.",
-        author: "Hervé Nkili",
-        role: "CEO",
-        company: "OpenCode Labs"
+        quote: "Steeve built the TribuneJustice platform with me, from design to production: I brought the idea and the business specifications, he brought the architecture and the technical rigor. The security audits he ran turned a good product into a trustworthy one for our profession.",
+        author: "Badjeu Kuitchouha Ghislain",
+        role: "Founder & Legal Expert",
+        company: "TribuneJustice"
       }
     ]
   },
