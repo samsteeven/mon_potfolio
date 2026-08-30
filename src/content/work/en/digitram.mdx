@@ -1,8 +1,8 @@
 ---
 title: "DIGITRANS-CM"
-description: "RNCP certification exam (BC04, Cloud Computing): cloud-native microservices architecture for a simulated Cameroonian agro-industrial group — ERP, CRM, offline-first Supply Chain, BI, hybrid AWS, Hyperledger Fabric blockchain. Team of 3, delivered in 3 days."
+description: "RNCP certification exams (BC02 + BC04): cloud-native microservices architecture and project management for a simulated Cameroonian agro-industrial group — ERP, CRM, offline-first Supply Chain, BI, hybrid AWS, Hyperledger Fabric blockchain, budget and KPIs. Team of 3, delivered in 3 days."
 date: "2026-05-01"
-role: "Cloud Architect & Full-Stack Developer"
+role: "Cloud Architect & Digital Project Manager (team of 3)"
 stack: ["Node.js", "Express", "FastAPI", "PostgreSQL", "Redis", "Docker", "Kubernetes", "Terraform", "AWS", "Azure", "Hyperledger Fabric", "GitHub Actions"]
 status: "shipped"
 featured: false
@@ -12,11 +12,13 @@ lang: "en"
 
 ## The Context — A Certification Exam Under Real Conditions
 
-In May 2026, during my 4th year at EADL (academic year 2025/2026, semester II), I took the RNCP39765 certification exam — block BC04 "Optimizing the Information System with Cloud Computing", competencies C21 to C26.
+In May 2026, during my 4th year at EADL (academic year 2025/2026, semester II), I took two RNCP39765 certification exams sharing the same thread — the DIGITRANS-CM project:
+- **Block BC04 "Optimizing the Information System with Cloud Computing"** (competencies C21–C26): the technical side.
+- **Block BC02 "Managing Digital Projects"** (competencies C10–C15): the project-management side — plan, budget, KPIs, team coordination, tech watch and lessons learned.
 
 The reconstructed scenario: CAMTECH SOLUTIONS S.A., a Cameroonian IT services company, just won the DIGITRANS-CM tender launched by AGROCAM S.A., an agro-industrial group with 1,200 employees. The mission: replace a legacy monolithic SI (2009) with a modern, distributed, partially cloud ecosystem — ERP, CRM, Supply Chain and BI. Sensitive data (HR, financial, customer) must stay on Cameroonian soil (Law n°2010/012), and everything must withstand local realities: power outages, uneven connectivity, 150–250 ms latency to European cloud regions.
 
-**Format**: 3 days, in a team of 3 students. Deliverables assessed by a jury: deployed application + technical documentation (Part I), security report (Part II), oral defense.
+**Format**: 3 days, in a team of 3 students. Deliverables assessed by a jury: source code + technical documentation + collective report (Part I), and a 15–20 min individual oral defense (Part II).
 
 <CardGrid>
   <Card title="The connectivity problem">
@@ -53,20 +55,34 @@ The reconstructed scenario: CAMTECH SOLUTIONS S.A., a Cameroonian IT services co
 
 **Part II — security report (C25–C26)**: analysis of 4 major cloud risks under the shared responsibility model, multi-role IAM policy, developer offboarding procedure, key rotation, incident response plan, encryption in transit and at rest. Plus the traceability solution: Hyperledger Fabric chosen and justified against project constraints (private enterprise network, latency, local hosting), block structure, adapted consensus, smart contracts hardened against classic vulnerabilities (reentrancy, integer overflow), compliance with Law n°2010/012.
 
+## The Project-Management Side — Managing Digital Projects (BC02, C10–C15)
+
+The same project was also assessed on **management and steering**, not just technical delivery. On the module assigned to me, I produced a complete steering dashboard written in professional language readable by a non-technical CEO:
+
+**Project plan & methodology (C10)**: Work Breakdown Structure of the module with person-day estimates, a Gantt schedule covering the exercise, identification of Cameroon-specific risks (power outages, turnover, software licensing) and an associated mitigation plan.
+
+**Team coordination & collaborative tools (C11)**: sprint log documenting meetings, decisions and problems; Kanban board; versioned Git repo; explicit task allocation; upskilling actions (pair-programming, code reviews).
+
+**Budget tracking & KPIs (C12)**: project budget tracking — 480 M FCFA over 18 months, split across modules — with variance analysis (e.g. +6.5% overrun on the Supply Chain module from customs API integration, offset by under-spend on CRM/BI). Person-day tracking and 5 KPIs: test coverage (≥80%), critical bugs in review (≤3/sprint), CI/CD deploy time (≤15 min), offline-first availability (≥70%), velocity (≥30 SP). For each variance: quantification, root cause, corrective action, and impact on the next contractual milestone.
+
+**Technology watch & problem solving (C13)**: documentation of technical problems encountered, with consulted sources (including English-language ones) and justification of the retained solutions against alternatives.
+
+**Progress reviews & lessons learned (C14–C15)**: formal review minutes (agenda, decisions, actions, owners), and a final lessons-learned session on best practices, improvements and code quality (fewer bugs, removing duplication).
+
 ## Impact
 
 <CardGrid>
   <Card title="Delivered in 3 days">
-    Deployed application, technical documentation, security report, and oral defense — as a team of 3, under deadline pressure.
+    Source code, technical documentation, steering report and individual oral defense — as a team of 3, under deadline pressure.
   </Card>
-  <Card title="BC04 block covered">
-    RNCP39765 certification exam: competencies C21–C26 assessed by a jury — cloud integration, IaC, administration, performance, security, blockchain.
+  <Card title="Two certification blocks covered">
+    RNCP39765 — BC04 (C21–C26: cloud, IaC, security, blockchain) and BC02 (C10–C15: plan, budget, KPIs, coordination, lessons learned).
   </Card>
   <Card title="Sovereignty by design">
     HR and financial data on-premise in Douala, high-load workloads on African cloud regions (AWS af-south-1, Azure South Africa North).
   </Card>
-  <Card title="$465/month estimated infrastructure">
-    A production-grade multi-cloud setup with monitoring, alerting, DRP (RTO 5–60 min, RPO 5 min), and autoscaling — at a cost accessible for a mid-sized Cameroonian company.
+  <Card title="Steering with figures (480 M FCFA)">
+    Steering dashboard: split budget, variance analysis, 5 KPIs, corrective actions and impact on contractual milestones.
   </Card>
 </CardGrid>
 

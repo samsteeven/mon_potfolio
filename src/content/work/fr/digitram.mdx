@@ -1,8 +1,8 @@
 ---
 title: "DIGITRANS-CM"
-description: "Épreuve certifiante RNCP (bloc BC04, Cloud Computing) : architecture microservices cloud-native pour un groupe agroalimentaire camerounais simulé — ERP, CRM, Supply Chain offline-first, BI, AWS hybride, blockchain Hyperledger Fabric. Équipe de 3, livrée en 3 jours."
+description: "Épreuves certifiantes RNCP (blocs BC02 + BC04) : architecture microservices cloud-native et pilotage de projet pour un groupe agroalimentaire camerounais simulé — ERP, CRM, Supply Chain offline-first, BI, AWS hybride, blockchain Hyperledger Fabric, budget et KPI. Équipe de 3, livrée en 3 jours."
 date: "2026-05-01"
-role: "Architecte Cloud & Développeur Full-Stack"
+role: "Architecte Cloud & Chef de projet numérique (équipe de 3)"
 stack: ["Node.js", "Express", "FastAPI", "PostgreSQL", "Redis", "Docker", "Kubernetes", "Terraform", "AWS", "Azure", "Hyperledger Fabric", "GitHub Actions"]
 status: "shipped"
 featured: false
@@ -12,11 +12,13 @@ lang: "fr"
 
 ## Le contexte — une épreuve certifiante en conditions réelles
 
-En mai 2026, dans le cadre de ma 4ème année à EADL (année académique 2025/2026, semestre II), j'ai passé l'épreuve certifiante RNCP39765 — bloc BC04 « Optimiser le Système d'Information (SI) par l'apport du Cloud Computing », compétences C21 à C26.
+En mai 2026, dans le cadre de ma 4ème année à EADL (année académique 2025/2026, semestre II), j'ai passé deux épreuves certifiantes RNCP39765 sur le même fil directeur — le projet DIGITRANS-CM :
+- **Bloc BC04 « Optimiser le Système d'Information par l'apport du Cloud Computing »** (compétences C21–C26) : le volet technique.
+- **Bloc BC02 « Manager les Projets Numériques »** (compétences C10–C15) : le volet gestion de projet — plan, budget, KPI, coordination d'équipe, veille et RETEX.
 
 La mise en situation reconstituée : CAMTECH SOLUTIONS S.A., une ESN camerounaise, vient de remporter l'appel d'offres DIGITRANS-CM lancé par AGROCAM S.A., groupe agroalimentaire de 1 200 employés. La mission : remplacer un SI legacy monolithique (2009) par un écosystème applicatif moderne, distribué et partiellement cloud — ERP, CRM, Supply Chain et BI. Les données sensibles (RH, financières, clients) doivent rester sur le sol camerounais (loi n°2010/012), et l'ensemble doit tenir les réalités locales : délestages, connectivité inégale, latence de 150 à 250 ms vers les régions cloud européennes.
 
-**Format** : 3 jours, en équipe de 3 étudiants. Livrables évalués par un jury : application déployée + documentation technique (Partie I), rapport de sécurisation (Partie II), soutenance.
+**Format** : 3 jours, en équipe de 3 étudiants. Livrables évalués par un jury : code source + documentation technique + rapport collectif (Partie I), et soutenance individuelle de 15–20 min devant jury (Partie II).
 
 <CardGrid>
   <Card title="Le problème de connectivité">
@@ -53,20 +55,34 @@ La mise en situation reconstituée : CAMTECH SOLUTIONS S.A., une ESN camerounais
 
 **Partie II — rapport de sécurisation (C25–C26)** : analyse de 4 risques cloud majeurs sous le modèle de responsabilité partagée, politique IAM multi-rôles, procédure de départ d'un développeur, rotation des clés, plan de réponse aux incidents, chiffrement en transit et au repos. Et la solution de traçabilité : choix d'Hyperledger Fabric justifié face aux contraintes du projet (réseau privé d'entreprise, latence, hébergement local), structure de bloc, consensus adapté, smart contracts protégés contre les vulnérabilités classiques (reentrancy, integer overflow), conformité avec la loi n°2010/012.
 
+## Le volet gestion de projet — Manager les Projets Numériques (BC02, C10–C15)
+
+Le même projet était aussi évalué sous l'angle du **management et du pilotage**, pas seulement de la technique. Sur le module qui m'était assigné, j'ai produit un tableau de bord de pilotage complet, rédigé en style professionnel lisible par un Directeur Général non technique :
+
+**Plan de projet & méthodologie (C10)** : Work Breakdown Structure du module avec estimation des charges en jours-homme, planning Gantt prévisionnel couvrant la mise en situation, identification des risques propres au contexte camerounais (délestages, turnover, contraintes de licences) et plan de mitigation associé.
+
+**Coordination d'équipe & outils collaboratifs (C11)** : journal de bord (sprint log) documentant réunions, décisions et problèmes ; tableau Kanban ; dépôt Git versionné ; répartition explicite des tâches ; actions de montée en compétences (pair-programming, revues de code).
+
+**Suivi budgétaire & KPI (C12)** : suivi du budget du projet — 480 M FCFA sur 18 mois, ventilé entre modules — avec analyse des écarts (ex. dépassement de +6,5 % sur le module Supply Chain lié à l'intégration des APIs douanières, compensé par une sous-consommation sur CRM/BI). Suivi des charges en jours-homme et de 5 KPI : couverture de tests (≥80 %), bugs critiques en revue (≤3/sprint), durée de déploiement CI/CD (≤15 min), disponibilité offline-first (≥70 %), vélocité (≥30 SP). Pour chaque écart : quantification, cause racine, action corrective et impact sur le jalon contractuel suivant.
+
+**Veille technologique & résolution de problèmes (C13)** : documentation de problèmes techniques rencontrés, avec sources consultées (dont des sources en anglais) et justification des solutions retenues face aux alternatives.
+
+**Revues d'avancement & RETEX (C14–C15)** : comptes rendus de revues formelles (ordre du jour, décisions, actions, responsables), et session de retour d'expérience finale sur les bonnes pratiques, axes d'amélioration et qualité de code (réduction des bugs, suppression des duplications).
+
 ## Impact
 
 <CardGrid>
   <Card title="Livré en 3 jours">
-    Application déployée, documentation technique, rapport de sécurisation et soutenance — en équipe de 3, sous contrainte de délai.
+    Code source, documentation technique, rapport de pilotage et soutenance individuelle — en équipe de 3, sous contrainte de délai.
   </Card>
-  <Card title="Bloc BC04 couvert">
-    Épreuve certifiante RNCP39765 : compétences C21 à C26 évaluées par un jury — intégration cloud, IaC, administration, performance, sécurité, blockchain.
+  <Card title="Deux blocs certifiants couverts">
+    RNCP39765 — BC04 (compétences C21–C26 : cloud, IaC, sécurité, blockchain) et BC02 (C10–C15 : plan, budget, KPI, coordination, RETEX).
   </Card>
   <Card title="Souveraineté par conception">
     Données RH et financières on-premise à Douala, workloads à forte charge sur régions cloud africaines (AWS af-south-1, Azure South Africa North).
   </Card>
-  <Card title="~450 $/mois d'infrastructure estimée">
-    Infrastructure multi-cloud dimensionnée et chiffrée (auto-scaling, suivi des coûts) — accessible pour une PME camerounaise.
+  <Card title="Pilotage chiffré (480 M FCFA)">
+    Tableau de bord de pilotage : budget ventilé, analyse des écarts, 5 KPI, actions correctives et impact sur les jalons contractuels.
   </Card>
 </CardGrid>
 
