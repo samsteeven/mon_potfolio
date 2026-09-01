@@ -8,11 +8,11 @@ lang: "en"
 cover: "/blog/n8n-cover.jpg"
 ---
 
-An autopilot automation tool can go wrong: poor isolation on a shared VPS can compromise your production database. Here is how I deployed n8n in production for the [TribuneJustice](/en/work/tribunejustice) project — a legaltech platform I built from scratch and lead — without disrupting existing infrastructure.
+An autopilot automation tool can go wrong: poor isolation on a shared VPS can compromise your production database. Here is how I self-hosted n8n in production on a VPS I already ran, without disrupting existing infrastructure.
 
 ## The Context: Making the Most of an Existing VPS
 
-On TribuneJustice, I needed a workflow orchestrator for recurring tasks: notifications, service syncs, and scheduled jobs. Rather than paying for execution-based cloud subscriptions, I chose to self-host [n8n](https://n8n.io) on a VPS already running for the project — maximizing existing resources rather than multiplying infrastructure costs.
+For my own automation — a lead-qualification pipeline that intercepts contact form submissions, enriches them via web search, scores them, and feeds a shared CRM, plus a WhatsApp CRM assistant — I needed a workflow orchestrator. Rather than paying for execution-based cloud subscriptions, I chose to self-host [n8n](https://n8n.io) on a VPS already running for my work — maximizing existing resources rather than multiplying infrastructure costs.
 
 ## Architecture Choice: Complete Isolation
 

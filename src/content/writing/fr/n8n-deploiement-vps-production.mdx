@@ -8,11 +8,11 @@ lang: "fr"
 cover: "/blog/n8n-cover.jpg"
 ---
 
-L'outil d'automatisation autopilote peut lui-même mal tourner : une mauvaise isolation sur un VPS partagé, et c'est votre base de production qui paie les frais. Voici comment j'ai déployé n8n en production pour le projet [TribuneJustice](/fr/work/tribunejustice) — une plateforme legaltech que j'ai construite de A à Z et que je pilote — sans rien casser de l'infrastructure existante.
+L'outil d'automatisation autopilote peut lui-même mal tourner : une mauvaise isolation sur un VPS partagé, et c'est votre base de production qui paie les frais. Voici comment j'ai auto-hébergé n8n en production sur un VPS que je gérais déjà, sans rien casser de l'infrastructure existante.
 
 ## Le contexte : rentabiliser un VPS déjà en place
 
-Sur TribuneJustice, j'avais besoin d'un orchestrateur de tâches récurrentes : notifications, synchronisations entre services, jobs planifiés. Plutôt que de payer un abonnement cloud facturé à l'exécution, j'ai choisi d'auto-héberger [n8n](https://n8n.io) sur un VPS déjà utilisé pour le projet — histoire de rentabiliser des ressources disponibles plutôt que de multiplier les infrastructures.
+Pour mes propres automatisations — un pipeline de qualification de leads qui intercepte les soumissions de formulaire de contact, les enrichit via une recherche web, les score, et alimente une CRM partagée, plus un assistant CRM WhatsApp — j'avais besoin d'un orchestrateur de workflows. Plutôt que de payer un abonnement cloud facturé à l'exécution, j'ai choisi d'auto-héberger [n8n](https://n8n.io) sur un VPS déjà utilisé pour mon activité — histoire de rentabiliser des ressources disponibles plutôt que de multiplier les infrastructures.
 
 Le VPS tournait déjà sous Ubuntu, avec Docker, nginx, Redis et une base MySQL locale. L'objectif : ajouter n8n proprement, via un sous-domaine dédié, sans affecter la disponibilité du reste.
 
