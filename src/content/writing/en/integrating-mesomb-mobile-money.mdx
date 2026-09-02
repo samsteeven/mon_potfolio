@@ -1,0 +1,191 @@
+---
+title: "Integrating mobile money (MeSomb) into a legaltech platform: an escrow that actually holds"
+description: "What integrating MTN Mobile Money / Orange Money in Cameroon really involves: HMAC request signing, idempotent webhooks, race conditions on escrow, and the engineering discipline that makes money flows safe."
+date: "2026-09-02"
+tags: ["Laravel", "Payments", "MeSomb", "Mobile Money", "Escrow", "Security", "Webhooks"]
+published: true
+lang: "en"
+---
+
+Integrating a payment gateway is the rare feature where a bug isn't an annoyance — it's money leaving the system. On TribuneJustice, a legaltech where clients pay lawyers for services before they're delivered, the stakes were higher: we needed an **escrow** flow, not just a "charge the card" button.
+
+This is what the integration of mobile money in Cameroon (MeSomb, via MTN Mobile Money and Orange Money) actually looked like, and the engineering that stops a payment stack from leaking money.
+
+## Why payments are a legaltech's riskiest code
+
+On a legal platform, a payment is not "buy a product". It's: *a client puts money in trust → a lawyer performs a service → the funds are released*. That means the payment engine carries:
+
+- An **escrow lifecycle** (`held` → `released` → `refunded`) that must never skip a state.
+- **Two parties** (client and expert) plus a platform commission in a single transaction.
+- The requirement to handle **failures, retries, and double-notifications** without ever crediting twice.
+
+If a standard SaaS can tolerate "the payment went through twice, we refund later", a legal escrow cannot. Let's look at how I built it.
+
+## One abstraction, three providers
+
+The first decision: never hard-code a provider. Every payment touches a gateway through a single interface, so swapping or adding a PSP never touches business logic.
+
+```php
+interface PaymentGatewayInterface
+{
+    public function getGatewayName(): string;
+    public function initiatePayment(PaymentInitDTO $dto, string $internalReference): PaymentResultDTO;
+    public function verifyWebhook(Request $request): bool;
+    public function handleWebhook(Request $request): PaymentResultDTO;
+    public function checkStatus(string $paymentReference): PaymentResultDTO;
+}
+```
+
+A router picks the right implementation per context: MeSomb is the default aggregator for **all mobile money in XAF** (MTN MoMo, Orange Money), while CinetPay/Flutterwave handle **cards and international payments**.
+
+```php
+if (in_array($method, [Transaction::METHOD_MTN_MOMO, Transaction::METHOD_ORANGE_MONEY], true)) {
+    return $this->mesomb;
+}
+return $this->cinetPay;
+```
+
+<Callout type="tip">
+  The abstraction is the whole point. When a gateway changes its API or a new aggregator appears, you add one adapter — you don't rewrite the escrow.
+</Callout>
+
+## The hard part: signing requests like the SDK does
+
+MeSomb doesn't use a simple API key. Every request carries an `Authorization` header built from an **HMAC-SHA1** signature over a canonical request. The official PHP SDK (`hachther/mesomb-php`) constructs it in a *very* specific way — and if your header insertion order doesn't match exactly, every request is rejected with a 401.
+
+The subtle details that make or break it:
+
+- Headers must be inserted in the exact order: `content-type` (for non-GET), `host`, `x-mesomb-date`, `x-mesomb-nonce`.
+- The canonical request joins the **path segments rawurlencoded** and hashes the body with `sha1`.
+- `serialize_precision` must be set to `-1` so PHP's JSON serialization doesn't produce subtly different floats.
+
+```php
+// The scope and string-to-sign from the SDK's line-by-line behavior
+$scope = $date->format('Ymd').'/payment/mesomb_request';
+$stringToSign = 'HMAC-SHA1'."\n".$timestamp."\n".$scope."\n".sha1($canonicalRequest);
+$signature = hash_hmac('sha1', $stringToSign, $this->secretKey);
+```
+
+<Callout type="warning">
+  This is the kind of code where you can't "wing it". I rebuilt the signing by reading the SDK source line by line — the comment in the method even notes the exact insertion order copied from `AOperation::executeRequest` and `Signature::signRequest`. That attention is what turns an opaque 401 into a working payment.
+</Callout>
+
+Two more real-world traps when dealing with Cameroonian phone numbers:
+
+- Users type their number in a dozen formats (`+237677123456`, `00237 677...`, `67712 34 56`). I strip everything non-digit, drop the `237` prefix, and keep the **9 local digits**.
+- The **operator is inferred from the prefix** (`69`, `655`, `656` → Orange; otherwise MTN) — because the API needs to know which wallet to debit.
+
+## Idempotence: the bug that double-charges
+
+The signature of every payment engine is a **race condition**. Consider a confirmation path where a webhook and a manual status check both arrive for the same transaction — or where the PSP retries a notification. Without protection, two concurrent requests both pass the `if ($tx->status !== 'completed')` guard, and you generate **two invoices and mark the service as paid twice**.
+
+The fix is pessimistic locking inside the transaction:
+
+```php
+return DB::transaction(function () use ($transaction) {
+    $lockedTx = Transaction::lockForUpdate()->findOrFail($transaction->id);
+
+    if ($lockedTx->status === Transaction::STATUS_COMPLETED) {
+        return $lockedTx; // already handled → idempotent
+    }
+
+    $invoice = Invoice::create([...]);
+    $lockedTx->update(['status' => Transaction::STATUS_COMPLETED, ...]);
+    // ... mark the ServiceRequest as paid
+});
+```
+
+<Callout type="warning">
+  `lockForUpdate()` takes a row lock so a concurrent transaction **waits**, re-reads the fresh state, and sees it's already `completed`. Without it, two requests hammering the same millisecond both pass the check — and money flows twice. This is invisible in unit tests and nearly impossible to reproduce by hand.
+</Callout>
+
+The same pattern guards **every money-mutating transition**: escrow release (early-return if already `released`) and refund (early-return if already `refunded`).
+
+## The escrow lifecycle
+
+Every transaction starts `pending` with `escrow_status = held`. The funds are in trust, not with the expert.
+
+```php
+'escrow_status' => Transaction::ESCROW_HELD,
+'status'        => Transaction::STATUS_PENDING,
+```
+
+When the service is delivered, the escrow is **released and the expert payout is scheduled at J+7** (an owner decision: give a cooling-off window). The platform commission (~20%) is computed up front and the **net amount** goes to the expert as a pending payout.
+
+```php
+$scheduledAt = $now->copy()->addDays(self::PAYOUT_DELAY_DAYS); // 7
+
+$lockedTx->update([
+    'escrow_status' => Transaction::ESCROW_RELEASED,
+    'payout_due_at' => $scheduledAt,
+]);
+
+ProfessionalPayout::updateOrCreate([...], [
+    'commission_amount' => $commissionAmount,
+    'net_amount'        => $netAmount,
+    'status'            => 'pending',
+    'scheduled_at'      => $scheduledAt,
+]);
+```
+
+Each state transition is **validated and immutable**: you can't release funds from an already-refunded escrow, and the refund path is its own state machine.
+
+## Refunds as a state machine (ADR-001)
+
+Refunds aren't one button. They're scenarios with different economics:
+
+- **Full refund** (cancellation before start): 100% of the gross paid, PSP fees absorbed by the platform.
+- **Partial refund** (cancellation after start): a percentage entered case by case by an admin.
+- **Dispute** : 100% of the gross **plus** recovery of the platform commission from the expert — either debited from their internal balance or clawed back as a *negative* net payout (`net_amount` negative) absorbed on future payouts.
+
+<CardGrid>
+  <Card title="Idempotent refund">
+    The refund locks the row and early-returns if already refunded — so a retry never refunds twice.
+  </Card>
+  <Card title="Best-effort PSP refund">
+    If the gateway refund fails, the refund record stays `pending` and is retried, rather than failing the whole operation.
+  </Card>
+  <Card title="Expert clawback">
+    In a dispute, the platform recovers its commission: debit the balance first, then a negative `due` payout on future earnings.
+  </Card>
+  <Card title="Business state stays consistent">
+    On refund, the service request is cancelled, the invoice marked refunded, and the timeline updated. No orphaned states.
+  </Card>
+</CardGrid>
+
+## Webhooks: the part that breaks in production
+
+Webhooks are where the money actually gets confirmed, and they're full of traps.
+
+**Signature verification with replay protection.** MeSomb sends an `X-MeSomb-Webhook-Signature` header in the format `t=<timestamp>,v1=<signature>`. I verify it with HMAC-SHA256, reject anything outside a **10-minute timestamp window** (anti-replay), and compare with `hash_equals` (constant-time, against timing attacks).
+
+```php
+if (abs(time() - $timestamp) > 600) {
+    return false; // replay attempt
+}
+$payloadToSign = "{$timestamp}.{$rawBody}";
+$expectedSignature = hash_hmac('sha256', $payloadToSign, $secret);
+return hash_equals($expectedSignature, $receivedSignature);
+```
+
+**Payload formats change under you.** The gateway evolved from a legacy `{status, pk, reference}` payload to a new nested `{event_type, data.object}` shape. The handler normalizes both — the webhook processor has to survive your provider's API drift.
+
+**A logging bug that could take payments down.** The production log channel (Nightwatch) occasionally had a file-permission issue. Any `Log::` call that threw inside the webhook handler would make the whole webhook fail with a 500 — which the PSP would retry, repeatedly, potentially blocking legitimate payments. The fix: wrap the logging in a best-effort `try/catch` so a log failure can never fail a payment.
+
+```php
+try {
+    Log::info("Webhook reçu ({$gatewayName})", ['payload' => $request->all()]);
+} catch (\Throwable $logE) {
+    // silencieux — un échec d'écriture de log ne doit jamais bloquer un paiement
+}
+```
+
+## What this taught me
+
+Payments demand a specific engineering temperament. The interesting bugs aren't in happy paths — they're in **retries, races, and provider drift**. Three rules I now apply everywhere:
+
+<Callout type="tip">
+  **1. Lock every money transition.** `lockForUpdate()` + idempotent early-return on every state change. **2. Never let a side effect fail a payment.** Logging, notifications, or a secondary call should be best-effort, not blocking. **3. Treat provider APIs as hostile contracts.** Verify signatures, tolerate replay-window drift, normalize multi-format payloads, and read the SDK source when a request returns a cryptic 401.
+</Callout>
+
+For a legaltech — where trust *is* the product — the escrow isn't a feature. It's the whole point. And it only works if the code underneath refuses to let money flow twice, or to let a log line take a payment down.
