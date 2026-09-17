@@ -13,6 +13,11 @@ export const en = {
     readPosts: "Read all posts",
     scheduleMeeting: "Schedule a meeting",
   },
+  hiring: {
+    text: "Looking for a full-stack developer internship",
+    cta: "Get in touch",
+    close: "Dismiss banner",
+  },
   work: {
     title: "Work",
     caseStudy: "Read case study",

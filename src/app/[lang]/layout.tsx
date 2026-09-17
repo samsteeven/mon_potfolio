@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
+import { HiringBanner } from "@/components/hiring-banner";
 import { WebMCPProvider } from "@/components/webmcp-provider";
 import type { Language } from "@/lib/translations";
 
@@ -90,6 +91,7 @@ export default async function RootLayout({ children, params }: LayoutProps) {
         Skip to content
       </a>
       <WebMCPProvider />
+      <HiringBanner lang={lang} />
       <SiteHeader lang={lang} />
       <div id="main-content" tabIndex={-1} className="flex-1 outline-none">{children}</div>
       <SiteFooter lang={lang} />

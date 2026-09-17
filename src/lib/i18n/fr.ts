@@ -13,6 +13,11 @@ export const fr = {
     readPosts: "Lire les articles",
     scheduleMeeting: "Planifier un appel",
   },
+  hiring: {
+    text: "En recherche d'un stage de développeur full-stack",
+    cta: "Me contacter",
+    close: "Fermer la bannière",
+  },
   about: {
     title: "À propos de moi",
     q1: "Qui je suis",
