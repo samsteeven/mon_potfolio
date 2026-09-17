@@ -1,8 +1,8 @@
 import Image from "next/image";
-import { Calendar, Download, Mail } from "lucide-react";
+import { Calendar, FileText, Mail } from "lucide-react";
 import { getT, type Language } from "@/lib/translations";
 import { LinkedinIcon, GithubIcon, WhatsappIcon } from "@/components/icons";
-import { SERVICES_URL } from "@/lib/constants";
+import { SERVICES_URL, CV_URL } from "@/lib/constants";
 
 export function SiteFooter({ lang }: { lang: Language }) {
   const t = getT(lang);
@@ -35,13 +35,13 @@ export function SiteFooter({ lang }: { lang: Language }) {
               <span>{t.footer.specialty}</span>
               <span className="text-ink-soft/25" aria-hidden="true">·</span>
               <a
-                href="/cv-samen-steeve.pdf"
+                href={CV_URL}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="inline-flex items-center gap-1 font-semibold text-ink-soft/65 transition duration-200 hover:text-accent"
                 aria-label={t.footer.cv}
               >
-                <Download className="h-3 w-3" />
+                <FileText className="h-3 w-3" />
                 {t.footer.cv}
               </a>
             </span>
