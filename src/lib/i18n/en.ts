@@ -14,7 +14,7 @@ export const en = {
     scheduleMeeting: "Schedule a meeting",
   },
   hiring: {
-    text: "Looking for a full-stack developer internship",
+    text: "Looking for an end-of-studies internship — Full-Stack Developer (6 months)",
     cta: "Get in touch",
     close: "Dismiss banner",
   },

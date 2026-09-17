@@ -14,7 +14,7 @@ export const fr = {
     scheduleMeeting: "Planifier un appel",
   },
   hiring: {
-    text: "En recherche d'un stage de développeur full-stack",
+    text: "En recherche d'un stage de fin d'études — Développeur Full-Stack (6 mois)",
     cta: "Me contacter",
     close: "Fermer la bannière",
   },
