@@ -1,0 +1,57 @@
+---
+title: "Second Brain — Personal AI Knowledge Base over MCP"
+description: "A self-hosted 'second brain': an Obsidian vault made readable AND writable by any AI via a dedicated MCP server — RAG with local Ollama embeddings + Qdrant, DeepSeek generation, human-validated AI writes, automatic classification and deduplication."
+date: "2026-09-19"
+role: "Designer & Builder (solo) — full-stack, infra, MCP"
+stack: ["n8n", "MCP", "RAG", "Qdrant", "Ollama", "DeepSeek", "Docker", "GitHub"]
+status: "shipped"
+featured: false
+url: "https://github.com/samsteeven/sam-second-brain"
+lang: "en"
+---
+
+## The Context
+
+Every AI conversation started from zero. I had to re-explain who I am, my projects, my skills, my CV — context scattered across files, never up to date, and no AI has a durable memory I control. I wanted my knowledge base to be **reachable by any AI** (ChatGPT, Claude, Cursor, opencode), not locked in one tool.
+
+## What I Built
+
+A self-hosted "second brain": an **Obsidian vault** as the source of truth, versioned on a **private GitHub repo**, indexed by an **n8n** pipeline into **Qdrant** (vector store), embedded locally with **Ollama bge-m3**, and generated with **DeepSeek V4 Flash Vision** (via the OpenCode Go gateway). Everything is exposed to any AI through a **dedicated MCP server**.
+
+Two MCP tools:
+
+<CardGrid>
+  <Card title="second_brain_ask">
+    RAG over my whole knowledge base: any AI asks a question, gets a sourced answer (projects, stack, CV, lessons learned).
+  </Card>
+  <Card title="second_brain_add">
+    Any AI can write notes. Each note is auto-classified (type, tags, folder), checked against duplicates, and held in quarantine until I validate.
+  </Card>
+  <Card title="Ingestion (every 30 min)">
+    Private repo → decoding → local embeddings → Qdrant. Pending notes (AI writes) are excluded until validated.
+  </Card>
+  <Card title="Housekeeping (weekly)">
+    A report flags redundant note pairs (semantic similarity), written in quarantine for me to review.
+  </Card>
+</CardGrid>
+
+## Impact
+
+<CardGrid>
+  <Card title="One base, any AI">
+    A single MCP URL (`/mcp/second-brain-kb`) lets ChatGPT, Claude, Cursor or opencode read AND write my knowledge with source citations.
+  </Card>
+  <Card title="Privacy by design">
+    Embeddings run 100% locally (Ollama) on my VPS — no third party indexes my notes. Zero extra API cost.
+  </Card>
+  <Card title="Human gate">
+    Nothing an AI writes enters the searchable base without my validation (`status: pending`) — a guard against prompt injection.
+  </Card>
+  <Card title="Quality controls">
+    Duplicate writes refused at ≥ 75% similarity, notes auto-classified, weekly redundancy report.
+  </Card>
+</CardGrid>
+
+## What This Experience Taught Me
+
+Shipping a production MCP server surfaced three hard-won lessons: **OpenAI model nodes don't expose custom headers** (the OpenCode Go gateway requires `x-opencode-session`) → call the API directly over HTTP; **splitInBatches aborts on empty items** → prefer linear pipelines; and **uncontrolled AI writes are a real threat** → the quarantine-by-status pattern is the simplest effective gate.
