@@ -125,7 +125,13 @@ D'abord la classification automatique. Une IA qui propose une note lui donne un 
 
 ### Étape 7 : plonger dans la source
 
-Une base de connaissances, c'est bien. Mais parfois, l'IA a besoin du détail exact, un fichier précis d'un projet. Plutôt que de tout recopier dans le vault, j'ai ajouté un troisième outil : second_brain_project_details. L'IA demande repo ou repo#chemin, et elle va lire la source directement sur GitHub. Le vault reste léger, la source reste la vérité.
+Une base de connaissances, c'est bien. Mais parfois, l'IA a besoin du détail exact : un fichier précis d'un projet, l'implémentation réelle d'une fonctionnalité.
+
+Plutôt que de tout recopier dans le vault, j'ai ajouté un troisième outil : second_brain_project_details. L'IA demande un repo (ou repo#chemin), et elle va lire la source directement sur GitHub.
+
+Concrètement : « comment avais-je implémenté l'escrow ? », « je veux refaire cette fonctionnalité ailleurs, montre-moi comment je l'avais faite ». L'IA part chercher la vraie implémentation, dans le vrai code. Le vault reste léger, la source reste la vérité.
+
+Aujourd'hui, cet outil est branché sur GitHub. Mais rien ne l'empêche de l'être demain sur d'autres outils : GitLab, un gestionnaire de tickets, une doc interne. C'est ça qui est puissant : la même base peut ouvrir l'IA à tout mon environnement de travail.
 
 ### Étape 8 : l'authentification
 

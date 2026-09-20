@@ -125,7 +125,13 @@ First, automatic classification. An AI proposing a note assigns it a type, tags 
 
 ### Step 7: diving into the source
 
-A knowledge base is good. But sometimes the AI needs the exact detail, a specific file from a project. Rather than copying everything into the vault, I added a third tool: second_brain_project_details. The AI asks for repo or repo#path, and it reads the source directly on GitHub. The vault stays light, the source stays the truth.
+A knowledge base is good. But sometimes the AI needs the exact detail: a specific file from a project, the real implementation of a feature.
+
+Rather than copying everything into the vault, I added a third tool: second_brain_project_details. The AI asks for a repo (or repo#path), and it reads the source directly on GitHub.
+
+In practice: "how did I implement escrow?", "I want to rebuild this feature elsewhere, show me how I did it". The AI goes to find the real implementation, in the real code. The vault stays light, the source stays the truth.
+
+Today, that tool is wired to GitHub. But nothing stops it from being wired to other tools tomorrow: GitLab, an issue tracker, internal docs. That's the powerful part: the same base can open the AI to my whole work environment.
 
 ### Step 8: authentication
 
