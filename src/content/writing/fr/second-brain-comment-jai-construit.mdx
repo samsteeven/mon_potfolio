@@ -1,5 +1,5 @@
 ---
-title: "Construire un « second cerveau » pour mes IA, le récit complet étape par étape"
+title: "Un « second cerveau » interopérable pour mes IA : source de vérité locale, RAG et MCP"
 description: "Comment je suis passé d'une frustration quotidienne à un serveur MCP en production : les décisions prises, les problèmes rencontrés, les solutions trouvées, et surtout à quoi ça me sert au quotidien."
 date: "2026-09-20"
 tags: ["IA", "RAG", "MCP", "n8n", "Obsidian", "Auto-hébergement"]
@@ -11,6 +11,26 @@ cover: "/blog/second-brain-architecture.png"
 Je vais être honnête. Ce projet n'est pas né d'une envie de faire de l'IA. Il est né d'une frustration. Chaque fois que j'ouvrais ChatGPT, Claude, Cursor ou opencode, je recommençais à zéro. Je réexpliquais qui je suis, mes projets, ma stack, mes études, ce que je cherchais. À chaque conversation. Mon contexte était éparpillé dans dix fichiers, jamais à jour, et aucune IA n'a une mémoire durable que je contrôle.
 
 Cet article raconte comment j'ai construit un « second cerveau » pour régler ça. Pas à pas, avec les galères et les solutions. Le résultat final m'importe moins que le chemin pour y arriver.
+
+## Les principes d'architecture
+
+Derrière les outils, il y a une chaîne de principes. C'est elle qui structure tout le reste.
+
+```
+Source de vérité
+      ↓
+Projection
+      ↓
+Retrieval
+      ↓
+Accès contrôlé
+      ↓
+Écriture contrôlée
+      ↓
+Vérification
+```
+
+Le vault est la source de vérité. Tout le reste n'en est qu'une projection. L'IA ne touche jamais la source directement : elle passe par un accès contrôlé, une écriture contrôlée, puis une vérification humaine. C'est ce fil qui relie tout ce qui suit.
 
 ## Le point de départ : réexpliquer ma vie à une machine
 
@@ -76,6 +96,8 @@ https://n8n.samensteeve.com/mcp/second-brain-kb
 ```
 
 Concrètement, dans une conversation Claude, je peux écrire « interroge mon second cerveau : quels sont mes projets Laravel ? » et il va chercher dans mes notes, avec les sources.
+
+Le point clé n'est pas le RAG en lui-même : un « Obsidian + chatbot » classique fait déjà ça. Ce qui change tout, c'est l'**interopérabilité** : la même base sert à ChatGPT, Claude, Cursor et opencode, sans duplication. Et le serveur n'expose que mes outils, jamais l'administration de n8n.
 
 ![Le serveur MCP dédié et ses outils](/blog/second-brain-mcp-server.png)
 

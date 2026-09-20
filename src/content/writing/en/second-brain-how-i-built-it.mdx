@@ -1,5 +1,5 @@
 ---
-title: "Building a 'second brain' for my AIs, the full story step by step"
+title: "An interoperable 'second brain' for my AIs: local source of truth, RAG and MCP"
 description: "How I went from a daily frustration to a production MCP server: the decisions I made, the problems I hit, the solutions I found, and what it is useful for in my daily life."
 date: "2026-09-20"
 tags: ["AI", "RAG", "MCP", "n8n", "Obsidian", "Self-hosting"]
@@ -11,6 +11,26 @@ cover: "/blog/second-brain-architecture.png"
 Let me be honest. This project wasn't born from a desire to "do AI". It was born from frustration. Every time I opened ChatGPT, Claude, Cursor or opencode, I started from zero. I re-explained who I am, my projects, my stack, my studies, what I was looking for. Every single conversation. My context was scattered across ten files, never up to date, and no AI has a durable memory that I control.
 
 This article tells how I built a "second brain" to fix that. Step by step, with the struggles and the solutions. The final result matters less to me than the road to get there.
+
+## The architecture principles
+
+Behind the tools, there's a chain of principles. It's what structures everything else.
+
+```
+Source of truth
+      ↓
+Projection
+      ↓
+Retrieval
+      ↓
+Controlled access
+      ↓
+Controlled write
+      ↓
+Verification
+```
+
+The vault is the source of truth. Everything else is just a projection of it. The AI never touches the source directly: it goes through controlled access, a controlled write, then human verification. That thread ties together everything that follows.
 
 ## The starting point: re-explaining my life to a machine
 
@@ -76,6 +96,8 @@ https://n8n.samensteeve.com/mcp/second-brain-kb
 ```
 
 In practice, in a Claude conversation, I can write "query my second brain: what are my Laravel projects?" and it searches my notes, with sources.
+
+The key point isn't the RAG itself: a classic "Obsidian + chatbot" already does that. What changes everything is **interoperability**: the same base serves ChatGPT, Claude, Cursor and opencode, with no duplication. And the server exposes only my tools, never n8n's admin surface.
 
 ![The dedicated MCP server and its tools](/blog/second-brain-mcp-server.png)
 
