@@ -1,0 +1,201 @@
+---
+title: "Building a 'second brain' for my AIs — the full story, step by step"
+description: "How I went from a daily frustration to a production MCP server: the decisions I made, the problems I hit (and how I solved them), and — most importantly — what it is actually useful for in my daily life."
+date: "2026-09-20"
+tags: ["AI", "RAG", "MCP", "n8n", "Obsidian", "Self-hosting"]
+published: true
+lang: "en"
+---
+
+Let me be honest: this project wasn't born from a desire to "do AI". It was born from **frustration**. Every time I opened ChatGPT, Claude, Cursor or opencode, I started from zero. I re-explained who I am, my projects, my stack, my studies, what I was looking for. Every single conversation. My context was scattered across ten files, never up to date, and no AI has a durable memory that *I* control.
+
+This article tells how I built a "second brain" to fix that — **step by step**, with the real struggles and the real solutions. Because that's where it gets interesting: not in the final result, but in the road to get there.
+
+## The starting point: re-explaining my life to a machine
+
+The trigger was a simple question: *why do I keep wasting time re-explaining my context to tools that never forget theirs?*
+
+I wanted a memory that was:
+
+- **mine** (not locked inside a tool that might shut down tomorrow);
+- **portable** (readable by any AI, not only the one that created it);
+- **readable *and* writable** (the AI can use it, but also add to it, under my control);
+- **private** (my notes don't go off to be indexed by a third party).
+
+From there, the architecture almost imposed itself.
+
+## Building it, step by step
+
+### Step 1 — The Obsidian vault as the source of truth
+
+First choice: **Obsidian**. Markdown files, one topic per note, with YAML *frontmatter* (`type`, `status`, `importance`, `tags`). Why Markdown? Because it's plain text: readable by a human, diffable, versionable, and it depends on no software. The vault lives on my disk **and** on a **private** GitHub repo — so full history and automatic sync.
+
+That's the foundation: **the vault is the single source of truth.** Everything else is just a projection of it.
+
+### Step 2 — The ingestion pipeline
+
+For an AI to "read" those notes, they must be turned into something searchable by meaning. That's the job of a **RAG** (Retrieval-Augmented Generation): split notes into pieces (*chunks*), compute a **vector** for each (a number that summarizes its meaning), and store them in a vector database.
+
+My pipeline, orchestrated with **n8n** (which I already use everywhere):
+
+```
+GitHub (private vault) → decoding → chunking → embeddings → Qdrant
+```
+
+- **Qdrant** as the vector database: self-hosted on my VPS, open source.
+- **Ollama + bge-m3** for embeddings: the model runs **locally**, multilingual, and no note is ever sent to a third party.
+
+Important: ingestion runs **every 30 minutes**. I write in Obsidian, push, and thirty minutes later it's queryable. No button to click.
+
+### Step 3 — The RAG: asking a question
+
+A question → it's turned into a vector → Qdrant finds the closest pieces → an LLM answers **only from those pieces**, citing the source files.
+
+Choosing the LLM was… eventful (more on that in the problems section). Today, generation goes through the **OpenCode Go** gateway (model `deepseek-v4-flash-vision-exp`).
+
+### Step 4 — The MCP server: plugging in *any* AI
+
+This is the centerpiece, and what sets this project apart from a simple chatbot. The **MCP** protocol (Model Context Protocol) lets any compatible AI — ChatGPT, Claude, Cursor, opencode — connect to my tools.
+
+I built a **dedicated MCP server** that exposes only my tools, never n8n's admin surface. One URL, and my brain is plugged into all my AIs:
+
+```
+https://n8n.samensteeve.com/mcp/second-brain-kb
+```
+
+In practice, in a Claude conversation, I can write "query my second brain: what are my Laravel projects?" and it searches *my* notes, with sources.
+
+### Step 5 — Controlled writing: quarantine
+
+Giving an AI the ability to **write** into my base is powerful… and dangerous. A note read by an AI (or a booby-trapped piece of content) could push it to write anything. My rule: **every AI write goes through quarantine.**
+
+A note proposed by an AI arrives with `status: pending`. It's **invisible** to search until I've validated it by hand. The worst a compromised AI can do is write a note I can see, fix or delete — and everything is versioned by Git, so it's reversible.
+
+### Step 6 — Quality: classification, duplicates, housekeeping
+
+A base that grows quickly becomes a mess. Three safeguards:
+
+- **Automatic classification**: an AI proposing a note assigns it a type, tags and a target folder.
+- **Deduplication**: before writing, the note is compared to what already exists. Too similar (≥ 75%) → refused. Slightly similar (≥ 55%) → warning.
+- **Weekly housekeeping**: a workflow detects redundant note pairs and writes me a report to review.
+
+### Step 7 — Diving into the source
+
+A knowledge base is good. But sometimes the AI needs the **exact detail** — a specific file from a project. Rather than copying everything into the vault, I added a third tool: `second_brain_project_details`. The AI asks for `repo` or `repo#path`, and it reads the source directly on GitHub. The vault stays light, the source stays the truth.
+
+### Step 8 — Authentication
+
+The last brick to make it work everywhere: auth. A static token is simple but limited (Claude.ai web, for instance, can't send a custom header). So I switched the MCP server to **OAuth** (n8n exposes the standard discovery endpoints natively). Result: any serious MCP client can connect by authenticating normally, without me having to explain anything by hand.
+
+### Step 9 — Making it fast and robust
+
+This is the part I'm proudest of, because it's invisible… and it took the most thought (see the problems below). Today, when nothing has changed, ingestion runs in **~2 seconds** instead of 3 to 6 minutes, and it can **never** duplicate or lose a note, even if two executions run at the same time.
+
+## The problems I hit (and how I solved them)
+
+This is the part I wish I'd read when I started. Nothing went as planned.
+
+### 1. The LLM provider that fell through
+
+**The problem**: my first generation choice didn't work — no valid key on one side, no funds on the other. Total dead end at the generation step.
+
+**The solution**: reuse a gateway I already had (OpenCode Go). But it requires a custom header (`x-opencode-session`)… which n8n's model nodes don't expose.
+
+**→ Lesson**: when a node won't let you do what you need, drop a level. I replaced the node with a plain **direct HTTP call** — full control over the payload and headers.
+
+### 2. The loop that stopped by itself
+
+**The problem**: my ingestion used `splitInBatches` (a loop per note). It stopped early as soon as an item was empty.
+
+**The solution**: drop the loop for a **linear pipeline**. A single flow, no fragile intermediate state.
+
+**→ Lesson**: a loop is one more state to manage. When a linear flow works, it's simpler *and* more reliable.
+
+### 3. Embeddings that took forever
+
+**The problem**: no GPU on my VPS. Computing the vectors of ~190 pieces **on CPU** meant ~1 second per piece → **3 to 6 minutes per run**. And it recomputed *everything* every time, even if a single note had changed.
+
+**The solution**: make ingestion **differential**. Each piece gets a **deterministic** identifier — a hash of its content. Before computing, I ask Qdrant which identifiers already exist, and I only **embed the new or changed ones**.
+
+**→ Result**: from 3-6 minutes to **~2 seconds** in steady state. Only the notes I just edited cost anything.
+
+### 4. Ghost duplicates
+
+**The problem**: two concurrent ingestion runs (a scheduled one + a manual one) → the base contained **twice** the same notes.
+
+**The solution**: with deterministic identifiers, an *upsert* overwrites instead of appending. Two simultaneous runs produce exactly the same index.
+
+### 5. …and the data loss that really annoyed me
+
+**The problem**: while fixing duplicates, I introduced something worse. My cleanup deleted points "not in the current batch". But if a run had a **stale** view of the vault, it deleted the notes another run had just written. I lost 4 notes while testing. That kind of bug makes you doubt everything.
+
+**The solution**: timestamp each point (`indexed_at`) and **only delete an orphan if it predates the start of the run**. A concurrent run, even with a stale view, can no longer touch notes written after it started.
+
+**→ Lesson**: "delete what's no longer there" is a **destructive** operation. On a concurrent system, it needs a time guard. I wrote that trap down in the project docs so I never fall into it again.
+
+### 6. The silent leak of an AI note
+
+**The problem**: while digging, I discovered a note written by an AI was `status: active` — so **indexed** — when it should have been quarantined. It came from an old version of the workflow.
+
+**The solution**: on top of quarantine, I **excluded a whole folder** (captures/reports) from indexing. An AI write can no longer leak, even by accident.
+
+### 7. The false friend that made me doubt
+
+**The problem**: a node was called "OpenRouter Model"… but actually pointed to another gateway. A credential named "OpenAI account" had nothing to do with OpenAI. Result: hours hunting an inconsistency… that was in the **names**.
+
+**The solution**: rename things by what they **actually do**, not by a brand. And turn it into a written rule in the project.
+
+**→ Lesson**: bad names cost more than they seem. A lying name is a bug waiting to happen.
+
+### 8. "Why does an AI tell me one thing and the opposite?"
+
+**The problem**: an AI told me my base was misnamed, based on a screenshot… that matched **nothing** in my repository (a file that never existed). I checked the entire Git history: zero trace.
+
+**The solution**: the golden rule — **verify at the source, never trust a screenshot**. That's exactly the point of this project: an AI that makes things up is an AI without access to the truth. Here, it only has access to what's verified.
+
+## What it's actually useful for
+
+This is the real question — and for a long time I hadn't put enough emphasis on it. Here's the concrete utility, today.
+
+<CardGrid>
+  <Card title="Preparing for an interview or internship">
+    I ask any AI: "summarize project X, my technical choices, what I learned". It answers from *my* notes, with exact details — not from an approximate memory.
+  </Card>
+  <Card title="Applications, CV, portfolio">
+    My professional context is ready, up to date and queryable. Writing an application or a post becomes a dialogue with my own base, not a blank page.
+  </Card>
+  <Card title="Freelancing: answer fast and accurately">
+    A client asks a technical question? I have the AI dive into a project's **source** (README, specific file) to find the exact implementation, without digging through my disk.
+  </Card>
+  <Card title="Daily technical memory">
+    A lesson learned, an architecture decision, a trap hit: I capture it in the vault. The "lesson of the day" becomes a queryable note, not a fading memory.
+  </Card>
+  <Card title="One memory for all my AIs">
+    ChatGPT, Claude, Cursor, opencode: all read and write into the same base. I no longer re-explain my context — I plug it in.
+  </Card>
+  <Card title="Feeding my articles and projects">
+    What I write here is fueled by the vault. My notes, retrospectives and articles no longer start from zero: they start from what I actually lived.
+  </Card>
+</CardGrid>
+
+And beyond work, it's a memory for life: my projects, my goals, my admin. An AI that truly knows me — and knows me *with my permission*, because it's **my** base, on **my** server.
+
+## What this project taught me
+
+A few lessons that go far beyond this project:
+
+- **Failure is inevitable**: designing *for* failure (retry, idempotence, graceful degradation) beats hoping nothing breaks.
+- **Data first**: a destructive operation always needs a guardrail (here, a timestamp). Otherwise, it will bite.
+- **Naming is designing**: a badly named component is a bug waiting for its moment.
+- **An AI doesn't need to memorize everything**: it should be able to **read** when needed — and only write with my consent.
+- **Verify at the source**: that's what separates a useful AI from one that confidently makes things up.
+
+## What's next
+
+The foundation is solid, but nothing is frozen. Coming up:
+
+- a **chat interface** (Telegram / WhatsApp) to query the brain without opening an MCP client;
+- **automatic capture** (watch, ideas) so the base feeds itself;
+- and ever more **life notes** — because deep down, this isn't an AI project. It's a memory I'm building, piece by piece.
+
+If you're building something similar: start simple, put guardrails in **before** you get hurt, and document every trap. The problems I listed here, you'll hit too — might as well let them serve you.
