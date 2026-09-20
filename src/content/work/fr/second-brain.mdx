@@ -1,6 +1,6 @@
 ---
 title: "Second Brain — Base de connaissances personnelle accessible via MCP"
-description: "Un « second cerveau » auto-hébergé : un vault Obsidian rendu lisible ET enrichissable par n'importe quelle IA via un serveur MCP dédié — RAG avec embeddings locaux Ollama + Qdrant, génération DeepSeek, écritures IA validées humainement, classification et dédoublonnage automatiques."
+description: "Un « second cerveau » auto-hébergé : un vault Obsidian rendu lisible ET enrichissable par n'importe quelle IA via un serveur MCP dédié (auth OAuth) — RAG avec embeddings locaux Ollama + Qdrant, génération DeepSeek, ingestion différentielle idempotente, écritures IA validées humainement."
 date: "2026-09-19"
 role: "Conception & réalisation (solo) — full-stack, infra, MCP"
 stack: ["n8n", "MCP", "RAG", "Qdrant", "Ollama", "DeepSeek", "Docker", "GitHub"]
@@ -16,9 +16,9 @@ Chaque conversation avec une IA repartait de zéro. Je devais réexpliquer qui j
 
 ## Ce que j'ai construit
 
-Un « second cerveau » auto-hébergé : un **vault Obsidian** comme source de vérité, versionné sur un **repo GitHub privé**, indexé par un pipeline **n8n** dans **Qdrant** (vector store), embarqué en local avec **Ollama bge-m3**, et généré avec **DeepSeek V4 Flash Vision** (via la passerelle OpenCode Go). Le tout est exposé à n'importe quelle IA via un **serveur MCP dédié**.
+Un « second cerveau » auto-hébergé : un **vault Obsidian** comme source de vérité, versionné sur un **repo GitHub privé**, indexé par un pipeline **n8n** dans **Qdrant** (vector store), embarqué en local avec **Ollama bge-m3**, et généré avec **DeepSeek V4 Flash Vision** (via la passerelle OpenCode Go). Le tout est exposé à n'importe quelle IA via un **serveur MCP dédié**, authentifié en **OAuth**.
 
-Deux outils MCP :
+**Trois outils MCP :**
 
 <CardGrid>
   <Card title="second_brain_ask">
@@ -27,8 +27,11 @@ Deux outils MCP :
   <Card title="second_brain_add">
     N'importe quelle IA peut écrire des notes. Chaque note est classée automatiquement (type, tags, dossier), vérifiée contre les doublons, et mise en quarantaine jusqu'à validation.
   </Card>
-  <Card title="Ingestion (toutes les 30 min)">
-    Repo privé → décodage → embeddings locaux → Qdrant. Les notes en attente (écrites par IA) sont exclues tant qu'elles ne sont pas validées.
+  <Card title="second_brain_project_details">
+    L'IA plonge dans la <strong>source</strong> d'un projet (README ou fichier précis sur GitHub) à la demande — sans gonfler le vault.
+  </Card>
+  <Card title="Ingestion différentielle (toutes les 30 min)">
+    Repo privé → chunking à IDs déterministes → seuls les chunks nouveaux ou modifiés sont embarqués (~2 s en régime stable). Idempotente et sans perte.
   </Card>
   <Card title="Housekeeping (hebdomadaire)">
     Un rapport signale les paires de notes redondantes (similarité sémantique), écrit en quarantaine pour relecture.
@@ -39,13 +42,16 @@ Deux outils MCP :
 
 <CardGrid>
   <Card title="Une base, toutes les IA">
-    Une seule URL MCP (`/mcp/second-brain-kb`) permet à ChatGPT, Claude, Cursor ou opencode de LIRE et d'ÉCRIRE dans ma base, avec citations des sources.
+    Une seule URL MCP (`/mcp/second-brain-kb`, auth OAuth) permet à ChatGPT, Claude, Cursor ou opencode de LIRE et d'ÉCRIRE dans ma base, avec citations des sources.
   </Card>
   <Card title="Confidentialité par conception">
     Les embeddings tournent 100 % en local (Ollama) sur mon VPS — aucun tiers n'indexe mes notes. Zéro coût API supplémentaire.
   </Card>
   <Card title="Validation humaine">
     Rien de ce qu'une IA écrit n'entre dans la base interrogeable sans validation (`status: pending`) — un garde-fou contre l'injection de prompt.
+  </Card>
+  <Card title="Ingestion robuste">
+    IDs déterministes → aucun doublon, même en exécutions concurrentes ; nettoyage horodaté → aucune perte. ~2 s en régime stable.
   </Card>
   <Card title="Contrôles qualité">
     Écritures dupliquées refusées à ≥ 75 % de similarité, notes auto-classées, rapport de redondances hebdomadaire.
@@ -54,4 +60,4 @@ Deux outils MCP :
 
 ## Ce que cette expérience m'a appris
 
-Livrer un serveur MCP en production m'a apporté trois leçons dures : **les nœuds de modèle OpenAI n'exposent pas les headers custom** (la passerelle OpenCode Go exige `x-opencode-session`) → appeler l'API directement en HTTP ; **splitInBatches s'arrête sur un item vide** → préférer les pipelines linéaires ; et **les écritures IA non contrôlées sont une vraie menace** → le pattern de quarantaine par statut est le garde-fou le plus simple et le plus efficace.
+Livrer un serveur MCP en production m'a apporté plusieurs leçons dures : **les nœuds de modèle OpenAI n'exposent pas les headers custom** (la passerelle OpenCode Go exige `x-opencode-session`) → appeler l'API directement en HTTP ; **splitInBatches s'arrête sur un item vide** → préférer les pipelines linéaires ; **les écritures IA non contrôlées sont une vraie menace** → le pattern de quarantaine par statut est le garde-fou le plus simple et le plus efficace ; et **une ré-indexation n'est pas idempotente par défaut** → des IDs déterministes (hash du contenu) rendent l'ingestion sans doublon, différentielle et quasi instantanée.
