@@ -40,7 +40,7 @@ L'objectif du projet : proposer une **alternative souveraine et sécurisée aux 
 
 **Architecture & schémas** : la conception de l'infrastructure hybride (datacenter local + accès terrain sécurisés) dessinée sous **EdrawMax**, schéma d'architecture, diagrammes fonctionnels et diagramme de flux.
 
-**Déploiement réel, stack Docker complète** : le TP associé a consisté à déployer réellement Nextcloud 28 dans une stack conteneurisée : **Nextcloud 28 (Apache)** + **MariaDB 11** (avec healthcheck), **Redis 7** pour le cache, **Nginx en reverse proxy** avec headers de sécurité durcis (X-Content-Type-Options, X-Frame-Options, X-XSS-Protection, Referrer-Policy), support WebSocket (Nextcloud Talk), limites de taille de fichiers élevées (uploads 10 Go), credentials gérés via variables d'environnement, pas de secrets en dur.
+**Déploiement réel, stack Docker complète** : le TP associé a consisté à déployer Nextcloud 28 dans une stack conteneurisée : **Nextcloud 28 (Apache)** + **MariaDB 11** (avec healthcheck), **Redis 7** pour le cache, **Nginx en reverse proxy** avec headers de sécurité durcis (X-Content-Type-Options, X-Frame-Options, X-XSS-Protection, Referrer-Policy), support WebSocket (Nextcloud Talk), limites de taille de fichiers élevées (uploads 10 Go), credentials gérés via variables d'environnement, pas de secrets en dur.
 
 **Livrables de synthèse** : document Word de présentation générale du projet, **PowerPoint** de présentation devant l'encadrant, et **tutoriel** de la solution de bout en bout (du déploiement à l'administration).
 
@@ -57,12 +57,12 @@ L'objectif du projet : proposer une **alternative souveraine et sécurisée aux 
     CAPEX, OPEX et analyse coût-bénéfice calés sur un contexte réel (~200 collaborateurs), le document est exploitable par un décideur, pas un exercice théorique.
   </Card>
   <Card title="Du cahier des charges au déploiement">
-    La stack Docker Nextcloud/MariaDB/Redis/Nginx a été réellement déployée et documentée, le projet ne s'arrête pas à la conception.
+    La stack Docker Nextcloud/MariaDB/Redis/Nginx a été déployée et documentée, le projet ne s'arrête pas à la conception.
   </Card>
 </CardGrid>
 
 ## Ce que cette expérience m'a appris
 
-Un cahier des charges n'est pas de la rédaction : c'est de l'ingénierie structurée. Traduire une problématique RGPD réelle, sept risques concrets de non-conformité, en spécifications MoSCoW, puis en coûts CAPEX/OPEX, m'a appris à rendre une solution technique **auditable et défendable devant un décideur** : chaque choix (Nextcloud face aux clouds publics, MariaDB/Redis, reverse proxy, secrets en .env) a une justification économique et réglementaire, pas seulement technique.
+Un cahier des charges relève de l'ingénierie structurée, pas de la rédaction. Traduire une problématique RGPD réelle, sept risques concrets de non-conformité, en spécifications MoSCoW, puis en coûts CAPEX/OPEX, m'a appris à rendre une solution technique **auditable et défendable devant un décideur** : chaque choix (Nextcloud face aux clouds publics, MariaDB/Redis, reverse proxy, secrets en .env) a une justification économique et réglementaire, autant que technique.
 
 Et la boucle complète, cahier des charges, architecture, déploiement réel, tutoriel, soutenance, est le meilleur exercice pour vérifier qu'une architecture conçue sur papier tourne vraiment en pratique.

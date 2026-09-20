@@ -62,7 +62,7 @@ hermes setup
 ```
 </CodeWindow>
 
-Le wizard configure le provider LLM (Anthropic Claude, OpenRouter, Nous Portal, ou tout endpoint compatible OpenAI) et prépare une première config fonctionnelle. À ce stade, tout tourne, mais en root, sans firewall, sans restriction d'outils. C'est là que le vrai travail commence.
+Le wizard configure le provider LLM (Anthropic Claude, OpenRouter, Nous Portal, ou tout endpoint compatible OpenAI) et prépare une première config fonctionnelle. À ce stade, tout tourne, mais en root, sans firewall, sans restriction d'outils. Le vrai travail commence là.
 
 ## 2. Isoler l'agent : migration root : utilisateur dédié
 
@@ -122,7 +122,7 @@ platform_toolsets:
 ```
 </CodeWindow>
 
-Après restriction, en ne gardant que ce qui est réellement nécessaire pour un usage messagerie :
+Après restriction, en ne gardant que ce qui est nécessaire pour un usage messagerie :
 
 <CodeWindow filename="config.yaml · Après restriction">
 ```yaml

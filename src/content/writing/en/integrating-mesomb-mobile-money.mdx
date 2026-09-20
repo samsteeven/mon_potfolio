@@ -1,5 +1,5 @@
 ---
-title: "Integrating mobile money (MeSomb) into a legaltech platform: an escrow that actually holds"
+title: "Integrating mobile money (MeSomb) into a legaltech platform: an escrow that holds"
 description: "What integrating MTN Mobile Money / Orange Money in Cameroon really involves: HMAC request signing, idempotent webhooks, race conditions on escrow, and the engineering discipline that makes money flows safe."
 date: "2026-09-02"
 tags: ["Laravel", "Payments", "MeSomb", "Mobile Money", "Escrow", "Security", "Webhooks"]
@@ -9,7 +9,7 @@ lang: "en"
 
 Integrating a payment gateway is the rare feature where a bug isn't an annoyance, it's money leaving the system. On TribuneJustice, a legaltech where clients pay lawyers for services before they're delivered, the stakes were higher: we needed an **escrow** flow, not just a "charge the card" button.
 
-This is what the integration of mobile money in Cameroon (MeSomb, via MTN Mobile Money and Orange Money) actually looked like, and the engineering that stops a payment stack from leaking money.
+This is what the integration of mobile money in Cameroon (MeSomb, via MTN Mobile Money and Orange Money) looked like, and the engineering that stops a payment stack from leaking money.
 
 ## Why payments are a legaltech's riskiest code
 
@@ -155,7 +155,7 @@ Refunds aren't one button. They're scenarios with different economics:
 
 ## Webhooks: the part that breaks in production
 
-Webhooks are where the money actually gets confirmed, and they're full of traps.
+Webhooks are where the money gets confirmed, and they're full of traps.
 
 **Signature verification with replay protection.** MeSomb sends an `X-MeSomb-Webhook-Signature` header in the format `t=<timestamp>,v1=<signature>`. I verify it with HMAC-SHA256, reject anything outside a **10-minute timestamp window** (anti-replay), and compare with `hash_equals` (constant-time, against timing attacks).
 
