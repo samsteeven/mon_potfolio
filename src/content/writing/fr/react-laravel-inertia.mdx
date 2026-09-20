@@ -13,7 +13,7 @@ J'aurais pu partir sur une API REST + Next.js comme tout le monde. J'ai choisi a
 
 Un backend Laravel qui expose une API JSON, un frontend Next.js qui la consomme : ça a l'air propre sur le papier. En pratique, ça crée une friction constante.
 
-Chaque nouveau champ dans la base de données déclenche une chaîne : migration → contrôleur → ressource API → type TypeScript côté frontend → composant → test. Pour un projet en mouvement, c'est épuisant.
+Chaque nouveau champ dans la base de données déclenche une chaîne : migration, contrôleur, ressource API, type TypeScript côté frontend, composant, test. Pour un projet en mouvement, c'est épuisant.
 
 Et ce n'est pas le seul problème. Il faut gérer l'authentification en double, synchroniser les erreurs de validation, maintenir deux dépôts (ou un monorepo à configurer), et s'assurer que les deux applications se déploient dans le bon ordre.
 

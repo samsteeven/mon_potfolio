@@ -13,9 +13,9 @@ Voici à quoi ressemblait concrètement l'intégration du mobile money au Camero
 
 ## Pourquoi le paiement est le code le plus risqué d'une legaltech
 
-Sur une plateforme juridique, un paiement n'est pas « acheter un produit ». C'est : *un client place de l'argent en dépôt → un avocat réalise la prestation → les fonds sont libérés*. Autrement dit, le moteur de paiement porte :
+Sur une plateforme juridique, un paiement n'est pas « acheter un produit ». C'est : *un client place de l'argent en dépôt, un avocat réalise la prestation, les fonds sont libérés*. Autrement dit, le moteur de paiement porte :
 
-- Un **cycle de vie d'escrow** (`held` → `released` → `refunded`) qui ne doit jamais sauter d'état.
+- Un **cycle de vie d'escrow** (`held`, `released`, `refunded`) qui ne doit jamais sauter d'état.
 - **Deux parties** (client et expert) plus une commission plateforme sur une seule transaction.
 - L'obligation de gérer **échecs, reprises et double-notifications** sans jamais créditer deux fois.
 
@@ -73,7 +73,7 @@ $signature = hash_hmac('sha1', $stringToSign, $this->secretKey);
 Deux autres pièges bien réels avec les numéros de téléphone camerounais :
 
 - Les utilisateurs saisissent leur numéro sous une dizaine de formats (`+237677123456`, `00237 677...`, `67712 34 56`). Je retire tout ce qui n'est pas un chiffre, j'enlève le préfixe `237`, et je garde les **9 chiffres locaux**.
-- L'**opérateur est déduit du préfixe** (`69`, `655`, `656` → Orange ; sinon MTN), car l'API a besoin de savoir quel portefeuille débiter.
+- L'**opérateur est déduit du préfixe** (`69`, `655`, `656` : Orange ; sinon MTN), car l'API a besoin de savoir quel portefeuille débiter.
 
 ## L'idempotence : le bug qui double-encaisse
 

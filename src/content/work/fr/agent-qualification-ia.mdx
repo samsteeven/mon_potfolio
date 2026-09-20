@@ -54,10 +54,10 @@ Form Submission → Normalize Payload → Lead Qualification Agent
 ```
 
 **5 groupes fonctionnels** :
-- **Data Normalization** : Webhook trigger → validation du payload
+- **Data Normalization** : Webhook trigger: validation du payload
 - **AI Agent & Tools** : Agent principal + 6 sous-nœuds (modèle, mémoire, outils)
 - **CRM Persistence** : Save Lead (déterministe, post-agent)
-- **Output & Notification** : Formatage email → envoi Gmail
+- **Output & Notification** : Formatage email: envoi Gmail
 - **Error Handling** : Fallback sur Data Table en cas d'échec
 
 **Sécurité webhook** : La route `/api/contact` de Next.js transfère la soumission vers n8n avec une credential Header Auth (`n8n-webhook-secret`). Le nœud webhook valide ce secret via credential linkée + filtrage IP (`64.29.17.65, 216.198.79.65`) + `ignoreBots: true`. Aucune exécution ne démarre sans authentification.

@@ -32,7 +32,7 @@ Un « second cerveau » auto-hébergé : un **vault Obsidian** comme source de v
     L'IA plonge dans la <strong>source</strong> d'un projet (README ou fichier précis sur GitHub) à la demande, sans gonfler le vault.
   </Card>
   <Card title="Ingestion différentielle (toutes les 30 min)">
-    Repo privé → chunking à IDs déterministes → seuls les chunks nouveaux ou modifiés sont embarqués (~2 s en régime stable). Idempotente et sans perte.
+    Repo privé, chunking à IDs déterministes, seuls les chunks nouveaux ou modifiés sont embarqués (~2 s en régime stable). Idempotente et sans perte.
   </Card>
   <Card title="Housekeeping (hebdomadaire)">
     Un rapport signale les paires de notes redondantes (similarité sémantique), écrit en quarantaine pour relecture.
@@ -54,7 +54,7 @@ Un « second cerveau » auto-hébergé : un **vault Obsidian** comme source de v
     Rien de ce qu'une IA écrit n'entre dans la base interrogeable sans validation (`status: pending`), un garde-fou contre l'injection de prompt.
   </Card>
   <Card title="Ingestion robuste">
-    IDs déterministes → aucun doublon, même en exécutions concurrentes ; nettoyage horodaté → aucune perte. ~2 s en régime stable.
+    IDs déterministes, aucun doublon, même en exécutions concurrentes ; nettoyage horodaté, aucune perte. ~2 s en régime stable.
   </Card>
   <Card title="Contrôles qualité">
     Écritures dupliquées refusées à ≥ 75 % de similarité, notes auto-classées, rapport de redondances hebdomadaire.
@@ -63,4 +63,4 @@ Un « second cerveau » auto-hébergé : un **vault Obsidian** comme source de v
 
 ## Ce que cette expérience m'a appris
 
-Livrer un serveur MCP en production m'a apporté plusieurs leçons dures : **les nœuds de modèle OpenAI n'exposent pas les headers custom** (la passerelle OpenCode Go exige `x-opencode-session`) → appeler l'API directement en HTTP ; **splitInBatches s'arrête sur un item vide** → préférer les pipelines linéaires ; **les écritures IA non contrôlées sont une vraie menace** → le pattern de quarantaine par statut est le garde-fou le plus simple et le plus efficace ; et **une ré-indexation n'est pas idempotente par défaut** → des IDs déterministes (hash du contenu) rendent l'ingestion sans doublon, différentielle et quasi instantanée.
+Livrer un serveur MCP en production m'a apporté plusieurs leçons dures : **les nœuds de modèle OpenAI n'exposent pas les headers custom** (la passerelle OpenCode Go exige `x-opencode-session`), appeler l'API directement en HTTP ; **splitInBatches s'arrête sur un item vide**, préférer les pipelines linéaires ; **les écritures IA non contrôlées sont une vraie menace**, le pattern de quarantaine par statut est le garde-fou le plus simple et le plus efficace ; et **une ré-indexation n'est pas idempotente par défaut**, des IDs déterministes (hash du contenu) rendent l'ingestion sans doublon, différentielle et quasi instantanée.

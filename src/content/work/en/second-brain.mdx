@@ -32,7 +32,7 @@ A self-hosted "second brain": an **Obsidian vault** as the source of truth, vers
     The AI dives into a project's <strong>source</strong> (README or a specific GitHub file) on demand, without bloating the vault.
   </Card>
   <Card title="Differential ingestion (every 30 min)">
-    Private repo → deterministic-ID chunking → only new or changed chunks are embedded (~2 s in steady state). Idempotent, loss-free.
+    Private repo, deterministic-ID chunking, only new or changed chunks are embedded (~2 s in steady state). Idempotent, loss-free.
   </Card>
   <Card title="Housekeeping (weekly)">
     A report flags redundant note pairs (semantic similarity), written in quarantine for me to review.
@@ -54,7 +54,7 @@ A self-hosted "second brain": an **Obsidian vault** as the source of truth, vers
     Nothing an AI writes enters the searchable base without my validation (`status: pending`), a guard against prompt injection.
   </Card>
   <Card title="Robust ingestion">
-    Deterministic IDs → no duplicates even under concurrent runs; timestamped cleanup → no data loss. ~2 s in steady state.
+    Deterministic IDs, no duplicates even under concurrent runs; timestamped cleanup, no data loss. ~2 s in steady state.
   </Card>
   <Card title="Quality controls">
     Duplicate writes refused at ≥ 75% similarity, notes auto-classified, weekly redundancy report.
@@ -63,4 +63,4 @@ A self-hosted "second brain": an **Obsidian vault** as the source of truth, vers
 
 ## What This Experience Taught Me
 
-Shipping a production MCP server surfaced several hard-won lessons: **OpenAI model nodes don't expose custom headers** (the OpenCode Go gateway requires `x-opencode-session`) → call the API directly over HTTP; **splitInBatches aborts on empty items** → prefer linear pipelines; **uncontrolled AI writes are a real threat** → the quarantine-by-status pattern is the simplest effective gate; and **re-indexing is not idempotent by default** → deterministic IDs (content hash) make ingestion duplicate-free, differential and near-instant.
+Shipping a production MCP server surfaced several hard-won lessons: **OpenAI model nodes don't expose custom headers** (the OpenCode Go gateway requires `x-opencode-session`), call the API directly over HTTP; **splitInBatches aborts on empty items**, prefer linear pipelines; **uncontrolled AI writes are a real threat**, the quarantine-by-status pattern is the simplest effective gate; and **re-indexing is not idempotent by default**, deterministic IDs (content hash) make ingestion duplicate-free, differential and near-instant.

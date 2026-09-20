@@ -1,6 +1,6 @@
 ---
 title: "Tribunejustice"
-description: "Plateforme legaltech pour le marché camerounais, construite de bout en bout pour son fondateur expert juridique : API Laravel, frontend Angular SSR+PWA, blog Next.js, paiements séquestrés, consultations vidéo, messagerie temps réel, 41 vulnérabilités corrigées, LCP 5s → 1.5s."
+description: "Plateforme legaltech pour le marché camerounais, construite de bout en bout pour son fondateur expert juridique : API Laravel, frontend Angular SSR+PWA, blog Next.js, paiements séquestrés, consultations vidéo, messagerie temps réel, 41 vulnérabilités corrigées, LCP 5s à 1.5s."
 date: "2026-06-14"
 role: "Tech Lead"
 stack: ["Laravel", "Angular 20", "Next.js", "Typesense", "MeSomb", "Redis", "Laravel Reverb", "Docker"]
@@ -62,7 +62,7 @@ Ce n'est pas un site web. C'est une plateforme produit complète, le produit dig
 
 **Bilingue par conception (FR/EN)** : Les deux langues officielles du système judiciaire camerounais, sur les trois applications, avec des outils de traduction, un audit des clés i18n, et une télémétrie qui remonte les chaînes non traduites avant que les utilisateurs ne les voient.
 
-**Performance & fiabilité** : Le LCP est passé de 5 004 ms à moins de 1 500 ms. Les images ont été converties en WebP, 68 Mo → 3,9 Mo (94 % plus léger). Les déploiements sont devenus zero-downtime, les crashs de cache périmé s'auto-réparent, PM2 maintient les processus, Redis a remplacé le cache fichier, et les sauvegardes sont automatisées. La plateforme ne casse plus quand on la met à jour.
+**Performance & fiabilité** : Le LCP est passé de 5 004 ms à moins de 1 500 ms. Les images ont été converties en WebP, 68 Mo à 3,9 Mo (94 % plus léger). Les déploiements sont devenus zero-downtime, les crashs de cache périmé s'auto-réparent, PM2 maintient les processus, Redis a remplacé le cache fichier, et les sauvegardes sont automatisées. La plateforme ne casse plus quand on la met à jour.
 
 **Sécurité, défense en profondeur** : Les données juridiques sont hautement sensibles, la plateforme a donc été durcie à travers deux campagnes d'audit (pentest externe + revue interne) :
 
@@ -80,7 +80,7 @@ Ce n'est pas un site web. C'est une plateforme produit complète, le produit dig
     Deux campagnes d'audit (pentest externe + revue interne) ont identifié et fermé 41 failles de sécurité sur le blog, le RBAC, et le frontend, avant qu'elles ne soient exploitées.
   </Card>
   <Card title="Chargement 3x plus rapide">
-    LCP passé de 5 secondes à moins de 1,5 seconde, images 94 % plus légères (68 Mo → 3,9 Mo), stratégie de cache reconstruite, budget de poids divisé par deux.
+    LCP passé de 5 secondes à moins de 1,5 seconde, images 94 % plus légères (68 Mo à 3,9 Mo), stratégie de cache reconstruite, budget de poids divisé par deux.
   </Card>
   <Card title="Déploiements zero-downtime">
     La plateforme affichait une page blanche (520) après chaque mise à jour. Les déploiements sont désormais atomiques, avec auto-récupération des caches périmés, plus de lancement cassé.
@@ -92,7 +92,7 @@ Ce n'est pas un site web. C'est une plateforme produit complète, le produit dig
 
 ## Résultats de l'audit sécurité
 
-- **17 vulnérabilités blog corrigées** : proxy SSRF, GET→POST logout, middleware auth manquant, open redirect
+- **17 vulnérabilités blog corrigées** : proxy SSRF, GET/POST logout, middleware auth manquant, open redirect
 - **14 failles RBAC** : séparation Admin/Super Admin, protection des permissions critiques (roles, permissions, settings)
 - **10 correctifs frontend** : XSS via isomorphic-dompurify, open redirect via `isSafeRedirectUrl()`, guards fail-closed
 - **Audit mode sudo** : routes 2FA enable/confirm sans protection, change-password sans sudo, route admin verify-email cassée

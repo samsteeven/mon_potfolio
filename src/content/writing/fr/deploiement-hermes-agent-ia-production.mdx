@@ -64,7 +64,7 @@ hermes setup
 
 Le wizard configure le provider LLM (Anthropic Claude, OpenRouter, Nous Portal, ou tout endpoint compatible OpenAI) et prépare une première config fonctionnelle. À ce stade, tout tourne, mais en root, sans firewall, sans restriction d'outils. C'est là que le vrai travail commence.
 
-## 2. Isoler l'agent : migration root → utilisateur dédié
+## 2. Isoler l'agent : migration root : utilisateur dédié
 
 Faire tourner un agent qui a accès à un terminal, à l'exécution de code et à Internet **en tant que root** est le genre de raccourci qui semble anodin jusqu'au jour où il ne l'est plus. Première étape : créer un utilisateur système dédié, sans droits sudo.
 

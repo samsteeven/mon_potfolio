@@ -1,6 +1,6 @@
 ---
 title: "Tribunejustice"
-description: "Legaltech platform for the Cameroonian market, built end-to-end for its legal-expert founder: Laravel API, Angular SSR+PWA frontend, Next.js blog, escrow payments, video consultations, real-time messaging, 41 vulnerabilities closed, LCP 5s → 1.5s."
+description: "Legaltech platform for the Cameroonian market, built end-to-end for its legal-expert founder: Laravel API, Angular SSR+PWA frontend, Next.js blog, escrow payments, video consultations, real-time messaging, 41 vulnerabilities closed, LCP 5s to 1.5s."
 date: "2026-06-14"
 role: "Tech Lead"
 stack: ["Laravel", "Angular 20", "Next.js", "Typesense", "MeSomb", "Redis", "Laravel Reverb", "Docker"]
@@ -62,7 +62,7 @@ This wasn't a website. It's a full product platform, the digital product of Mr B
 
 **Bilingual by design (FR/EN)**: Both official languages of the Cameroonian justice system, across all three applications, with translation tooling, i18n key auditing, and telemetry that reports untranslated strings so gaps are fixed before users see them.
 
-**Performance & reliability**: LCP went from 5,004 ms to under 1,500 ms. Image assets were converted to WebP, 68 MB → 3.9 MB (94% lighter). Deployments became zero-downtime, stale-cache crashes auto-recover, PM2 keeps processes alive, Redis replaced file cache, and backups are automated. The platform stopped breaking when it was updated.
+**Performance & reliability**: LCP went from 5,004 ms to under 1,500 ms. Image assets were converted to WebP, 68 MB to 3.9 MB (94% lighter). Deployments became zero-downtime, stale-cache crashes auto-recover, PM2 keeps processes alive, Redis replaced file cache, and backups are automated. The platform stopped breaking when it was updated.
 
 **Security, defense-in-depth**: Legal data is highly sensitive, so the platform was hardened through two audit campaigns (external pentest + internal review):
 
@@ -80,7 +80,7 @@ This wasn't a website. It's a full product platform, the digital product of Mr B
     Two audit campaigns (external pentest + internal review) identified and closed 41 security flaws across the blog, RBAC, and frontend, before any breach could occur.
   </Card>
   <Card title="3x faster loading">
-    LCP went from 5 seconds to under 1.5 seconds, images 94% lighter (68 MB → 3.9 MB), cache strategy rebuilt, budget halved.
+    LCP went from 5 seconds to under 1.5 seconds, images 94% lighter (68 MB to 3.9 MB), cache strategy rebuilt, budget halved.
   </Card>
   <Card title="Zero-downtime deployments">
     The platform used to go blank (520) after every update. Deployments are now atomic, with automatic recovery from stale caches, no more broken launches.
@@ -92,7 +92,7 @@ This wasn't a website. It's a full product platform, the digital product of Mr B
 
 ## Security Audit Results
 
-- **17 blog vulnerabilities fixed**: SSRF proxy, GET→POST logout, missing auth middleware, open redirect
+- **17 blog vulnerabilities fixed**: SSRF proxy, GET/POST logout, missing auth middleware, open redirect
 - **14 RBAC flaws**: Admin/Super Admin separation, critical permission protection (roles, permissions, settings)
 - **10 frontend fixes**: XSS via isomorphic-dompurify, open redirect via `isSafeRedirectUrl()`, fail-closed guards
 - **Sudo mode audit**: 2FA enable/confirm routes without protection, change-password without sudo, broken admin verify-email route

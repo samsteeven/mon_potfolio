@@ -51,7 +51,7 @@ The reconstructed scenario: CAMTECH SOLUTIONS S.A., a Cameroonian IT services co
 
 **Hybrid cloud infrastructure**: AWS af-south-1 (Cape Town) for compute, ECS Fargate, RDS PostgreSQL Multi-AZ, ElastiCache Redis, ALB. Azure South Africa North for enterprise identity (Azure AD). On-premise Douala for HR and financial data (legal compliance). Entirely managed by Terraform across 8 modules, with 90-day secret rotation and GuardDuty monitoring.
 
-**CI/CD pipeline (GitHub Actions, 5 stages)**: Lint → Jest tests → Python lint (Ruff) → Docker multi-stage build + ECR push → ECS deploy. Separate environments for staging and production.
+**CI/CD pipeline (GitHub Actions, 5 stages)**: Lint, Jest tests, Python lint (Ruff), Docker multi-stage build + ECR push, ECS deploy. Separate environments for staging and production.
 
 **Part II, security report (C25–C26)**: analysis of 4 major cloud risks under the shared responsibility model, multi-role IAM policy, developer offboarding procedure, key rotation, incident response plan, encryption in transit and at rest. Plus the traceability solution: Hyperledger Fabric chosen and justified against project constraints (private enterprise network, latency, local hosting), block structure, adapted consensus, smart contracts hardened against classic vulnerabilities (reentrancy, integer overflow), compliance with Law n°2010/012.
 

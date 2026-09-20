@@ -13,9 +13,9 @@ This is what the integration of mobile money in Cameroon (MeSomb, via MTN Mobile
 
 ## Why payments are a legaltech's riskiest code
 
-On a legal platform, a payment is not "buy a product". It's: *a client puts money in trust → a lawyer performs a service → the funds are released*. That means the payment engine carries:
+On a legal platform, a payment is not "buy a product". It's: *a client puts money in trust, a lawyer performs a service, the funds are released*. That means the payment engine carries:
 
-- An **escrow lifecycle** (`held` → `released` → `refunded`) that must never skip a state.
+- An **escrow lifecycle** (`held`, `released`, `refunded`) that must never skip a state.
 - **Two parties** (client and expert) plus a platform commission in a single transaction.
 - The requirement to handle **failures, retries, and double-notifications** without ever crediting twice.
 
@@ -73,7 +73,7 @@ $signature = hash_hmac('sha1', $stringToSign, $this->secretKey);
 Two more real-world traps when dealing with Cameroonian phone numbers:
 
 - Users type their number in a dozen formats (`+237677123456`, `00237 677...`, `67712 34 56`). I strip everything non-digit, drop the `237` prefix, and keep the **9 local digits**.
-- The **operator is inferred from the prefix** (`69`, `655`, `656` → Orange; otherwise MTN), because the API needs to know which wallet to debit.
+- The **operator is inferred from the prefix** (`69`, `655`, `656`: Orange; otherwise MTN), because the API needs to know which wallet to debit.
 
 ## Idempotence: the bug that double-charges
 
