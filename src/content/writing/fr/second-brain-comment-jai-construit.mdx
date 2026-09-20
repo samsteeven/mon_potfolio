@@ -5,6 +5,7 @@ date: "2026-09-20"
 tags: ["IA", "RAG", "MCP", "n8n", "Obsidian", "Auto-hébergement"]
 published: true
 lang: "fr"
+cover: "/blog/second-brain-architecture.png"
 ---
 
 Je vais être honnête. Ce projet n'est pas né d'une envie de faire de l'IA. Il est né d'une frustration. Chaque fois que j'ouvrais ChatGPT, Claude, Cursor ou opencode, je recommençais à zéro. Je réexpliquais qui je suis, mes projets, ma stack, mes études, ce que je cherchais. À chaque conversation. Mon contexte était éparpillé dans dix fichiers, jamais à jour, et aucune IA n'a une mémoire durable que je contrôle.
@@ -26,11 +27,19 @@ Je voulais une mémoire qui soit :
 
 ## La construction, étape par étape
 
+![Architecture du second cerveau : ingestion Obsidian → Git → n8n → Qdrant/Ollama, et accès via MCP](/blog/second-brain-architecture.png)
+
+*Vue d'ensemble. Le vault est la source de vérité, l'ingestion le projette dans Qdrant, et le serveur MCP l'ouvre à n'importe quelle IA.*
+
 ### Étape 1 : le vault Obsidian comme source de vérité
 
 Premier choix : Obsidian. Des fichiers Markdown, un sujet par note, un frontmatter YAML (type, status, importance, tags). Pourquoi Markdown ? Parce que c'est du texte brut. Lisible par un humain, diffable, versionnable, et ça ne dépend d'aucun logiciel. Le vault vit sur mon disque et sur un repo GitHub privé, donc historique complet et synchronisation automatique.
 
 C'est le socle. Le vault est la seule source de vérité. Tout le reste n'est qu'une projection de ce vault.
+
+![Le vault Obsidian : arborescence et vue graphique des notes](/blog/second-brain-vault.png)
+
+*Des fichiers Markdown, un sujet par note, reliés entre eux par des liens.*
 
 ### Étape 2 : le pipeline d'ingestion
 
@@ -45,6 +54,10 @@ GitHub (vault privé) → décodage → chunking → embeddings → Qdrant
 Qdrant sert de base vectorielle. Elle est auto-hébergée sur mon VPS et open source. Pour les embeddings, j'utilise Ollama avec le modèle bge-m3 : il tourne en local, il est multilingue, et aucune note n'est envoyée à un tiers.
 
 Point important : l'ingestion tourne toutes les 30 minutes. J'écris dans Obsidian, je pousse, et trente minutes plus tard c'est interrogeable. Pas de bouton à cliquer.
+
+![Le workflow n8n d'ingestion : de GitHub à Qdrant, avec le filtre différentiel](/blog/second-brain-ingestion.png)
+
+*Le pipeline d'ingestion dans n8n : lecture du vault, découpage, filtre des chunks déjà indexés, embeddings, upsert et nettoyage.*
 
 ### Étape 3 : le RAG, poser une question
 
@@ -63,6 +76,10 @@ https://n8n.samensteeve.com/mcp/second-brain-kb
 ```
 
 Concrètement, dans une conversation Claude, je peux écrire « interroge mon second cerveau : quels sont mes projets Laravel ? » et il va chercher dans mes notes, avec les sources.
+
+![Le serveur MCP dédié et ses outils](/blog/second-brain-mcp-server.png)
+
+*Le serveur MCP expose uniquement mes outils (lecture, écriture en quarantaine, lecture de la source), jamais l'administration de n8n.*
 
 ### Étape 5 : l'écriture contrôlée, la quarantaine
 
@@ -87,6 +104,8 @@ Dernière brique pour que ça marche partout : l'authentification. Un token stat
 ### Étape 9 : rendre ça rapide et robuste
 
 C'est la partie dont je suis le plus fier, parce qu'elle est invisible et qu'elle a demandé le plus de réflexion. Aujourd'hui, quand rien n'a changé, l'ingestion tourne en deux secondes au lieu de trois à six minutes. Et elle ne peut jamais dupliquer ni perdre une note, même si deux exécutions tournent en même temps.
+
+![Avant / après : l'ingestion passe de plusieurs minutes à deux secondes](/blog/second-brain-perf.png)
 
 ## Les problèmes rencontrés (et comment je les ai réglés)
 
