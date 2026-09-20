@@ -65,6 +65,8 @@ Un « second cerveau » auto-hébergé : un **vault Obsidian** comme source de v
 
 Le CV a été le déclencheur, mais la même base sert à bien d'autres choses : préparer un entretien (« résume le projet X et mes choix techniques »), retrouver une décision d'architecture dans mes notes, faire plonger l'IA dans la source d'un projet, ou alimenter mes articles. Chaque fois, c'est du temps gagné à ne pas réexpliquer ni refouiller.
 
+Et surtout : l'IA connaît **ma manière de développer** (structure, nommage, patterns, bonnes pratiques). Sur un nouveau projet, elle applique ce que j'ai déjà bien fait ailleurs, au lieu de produire du code générique.
+
 ## Ce que cette expérience m'a appris
 
 Livrer un serveur MCP en production m'a apporté plusieurs leçons dures : **les nœuds de modèle OpenAI n'exposent pas les headers custom** (la passerelle OpenCode Go exige `x-opencode-session`), appeler l'API directement en HTTP ; **splitInBatches s'arrête sur un item vide**, préférer les pipelines linéaires ; **les écritures IA non contrôlées sont une vraie menace**, le pattern de quarantaine par statut est le garde-fou le plus simple et le plus efficace ; et **une ré-indexation n'est pas idempotente par défaut**, des IDs déterministes (hash du contenu) rendent l'ingestion sans doublon, différentielle et quasi instantanée.

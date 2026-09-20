@@ -65,6 +65,8 @@ A self-hosted "second brain": an **Obsidian vault** as the source of truth, vers
 
 The CV was the trigger, but the same base serves many other things: preparing an interview ("summarize project X and my technical choices"), finding an architecture decision in my notes, having the AI dive into a project's source, or feeding my articles. Each time, it's time saved by not re-explaining or digging around.
 
+And above all: the AI knows **how I develop** (structure, naming, patterns, best practices). On a new project, it applies what I've already done well elsewhere, instead of producing generic code.
+
 ## What This Experience Taught Me
 
 Shipping a production MCP server surfaced several hard-won lessons: **OpenAI model nodes don't expose custom headers** (the OpenCode Go gateway requires `x-opencode-session`), call the API directly over HTTP; **splitInBatches aborts on empty items**, prefer linear pipelines; **uncontrolled AI writes are a real threat**, the quarantine-by-status pattern is the simplest effective gate; and **re-indexing is not idempotent by default**, deterministic IDs (content hash) make ingestion duplicate-free, differential and near-instant.
