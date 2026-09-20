@@ -1,95 +1,92 @@
 ---
-title: "Construire un « second cerveau » pour mes IA — le récit complet, étape par étape"
-description: "Comment je suis passé d'une frustration quotidienne à un serveur MCP en production : les décisions prises, les problèmes rencontrés (et les solutions trouvées), et surtout à quoi ça me sert vraiment au quotidien."
+title: "Construire un « second cerveau » pour mes IA, le récit complet étape par étape"
+description: "Comment je suis passé d'une frustration quotidienne à un serveur MCP en production : les décisions prises, les problèmes rencontrés, les solutions trouvées, et surtout à quoi ça me sert vraiment au quotidien."
 date: "2026-09-20"
 tags: ["IA", "RAG", "MCP", "n8n", "Obsidian", "Auto-hébergement"]
 published: true
 lang: "fr"
 ---
 
-Je vais être honnête : ce projet n'est pas né d'une envie de « faire de l'IA ». Il est né d'une **frustration**. Chaque fois que j'ouvrais ChatGPT, Claude, Cursor ou opencode, je recommençais à zéro. Je réexpliquais qui je suis, mes projets, ma stack, mes études, ce que je cherchais. À chaque conversation. Le contexte était éparpillé dans dix fichiers, jamais à jour, et aucune IA n'a une mémoire durable que *je* contrôle.
+Je vais être honnête. Ce projet n'est pas né d'une envie de faire de l'IA. Il est né d'une frustration. Chaque fois que j'ouvrais ChatGPT, Claude, Cursor ou opencode, je recommençais à zéro. Je réexpliquais qui je suis, mes projets, ma stack, mes études, ce que je cherchais. À chaque conversation. Mon contexte était éparpillé dans dix fichiers, jamais à jour, et aucune IA n'a une mémoire durable que je contrôle.
 
-Cet article raconte comment j'ai construit un « second cerveau » pour régler ça — **pas à pas**, avec les vraies galères et les vraies solutions. Parce que c'est là que ça devient intéressant : pas dans le résultat final, mais dans le chemin pour y arriver.
+Cet article raconte comment j'ai construit un « second cerveau » pour régler ça. Pas à pas, avec les vraies galères et les vraies solutions. Parce que c'est là que ça devient intéressant : pas dans le résultat final, mais dans le chemin pour y arriver.
 
 ## Le point de départ : réexpliquer ma vie à une machine
 
-Le déclic est venu d'une question simple : *pourquoi est-ce que je perds mon temps à réexpliquer mon contexte à des outils qui, eux, ne l'oublient jamais ?*
+Le déclic est venu d'une question simple. Pourquoi est-ce que je perds mon temps à réexpliquer mon contexte à des outils qui, eux, ne l'oublient jamais ?
 
 Je voulais une mémoire qui soit :
 
-- **à moi** (pas enfermée dans un outil qui peut fermer demain) ;
-- **portable** (lisible par n'importe quelle IA, pas seulement celle qui l'a créée) ;
-- **lisible *et* enrichissable** (que l'IA puisse s'en servir, mais aussi y ajouter, sous mon contrôle) ;
-- **privée** (mes notes ne partent pas s'indexer chez un tiers).
+- à moi, pas enfermée dans un outil qui peut fermer demain ;
+- portable, lisible par n'importe quelle IA, pas seulement celle qui l'a créée ;
+- lisible et enrichissable, pour que l'IA puisse s'en servir mais aussi y ajouter, sous mon contrôle ;
+- privée, pour que mes notes ne partent pas s'indexer chez un tiers.
 
 À partir de là, l'architecture s'est imposée presque d'elle-même.
 
 ## La construction, étape par étape
 
-### Étape 1 — Le vault Obsidian comme source de vérité
+### Étape 1 : le vault Obsidian comme source de vérité
 
-Premier choix : **Obsidian**. Des fichiers Markdown, un sujet par note, un *frontmatter* YAML (`type`, `status`, `importance`, `tags`). Pourquoi Markdown ? Parce que c'est du texte brut : lisible par un humain, diffable, versionnable, et ça ne dépend d'aucun logiciel. Le vault vit sur mon disque **et** sur un repo GitHub **privé** — donc historique complet et synchronisation automatique.
+Premier choix : Obsidian. Des fichiers Markdown, un sujet par note, un frontmatter YAML (type, status, importance, tags). Pourquoi Markdown ? Parce que c'est du texte brut. Lisible par un humain, diffable, versionnable, et ça ne dépend d'aucun logiciel. Le vault vit sur mon disque et sur un repo GitHub privé, donc historique complet et synchronisation automatique.
 
-C'est le socle : **le vault est la seule source de vérité.** Tout le reste n'est qu'une projection de ce vault.
+C'est le socle. Le vault est la seule source de vérité. Tout le reste n'est qu'une projection de ce vault.
 
-### Étape 2 — Le pipeline d'ingestion
+### Étape 2 : le pipeline d'ingestion
 
-Pour qu'une IA puisse « lire » ces notes, il faut les transformer en quelque chose d'interrogeable par le sens. C'est le rôle d'un **RAG** (Retrieval-Augmented Generation) : découper les notes en morceaux (*chunks*), calculer pour chacun un **vecteur** (un nombre qui résume son sens), et les stocker dans une base vectorielle.
+Pour qu'une IA puisse lire ces notes, il faut les transformer en quelque chose d'interrogeable par le sens. C'est le rôle d'un RAG (Retrieval-Augmented Generation) : découper les notes en morceaux (chunks), calculer pour chacun un vecteur (un nombre qui résume son sens), et les stocker dans une base vectorielle.
 
-Mon pipeline, orchestré avec **n8n** (que j'utilise déjà partout) :
+Mon pipeline, orchestré avec n8n que j'utilise déjà partout :
 
 ```
 GitHub (vault privé) → décodage → chunking → embeddings → Qdrant
 ```
 
-- **Qdrant** comme base vectorielle : auto-hébergée sur mon VPS, open source.
-- **Ollama + bge-m3** pour les embeddings : le modèle tourne **en local**, multilingue, aucune note envoyée à un tiers.
+Qdrant sert de base vectorielle. Elle est auto-hébergée sur mon VPS et open source. Pour les embeddings, j'utilise Ollama avec le modèle bge-m3 : il tourne en local, il est multilingue, et aucune note n'est envoyée à un tiers.
 
-Point important : l'ingestion tourne **toutes les 30 minutes**. J'écris dans Obsidian, je pousse, et trente minutes plus tard c'est interrogeable. Pas de bouton à cliquer.
+Point important : l'ingestion tourne toutes les 30 minutes. J'écris dans Obsidian, je pousse, et trente minutes plus tard c'est interrogeable. Pas de bouton à cliquer.
 
-### Étape 3 — Le RAG : poser une question
+### Étape 3 : le RAG, poser une question
 
-Une question → elle est transformée en vecteur → Qdrant retrouve les morceaux les plus proches → un LLM répond **uniquement à partir de ces morceaux**, en citant les fichiers sources.
+Une question arrive. Elle est transformée en vecteur. Qdrant retrouve les morceaux les plus proches. Un LLM répond uniquement à partir de ces morceaux, en citant les fichiers sources.
 
-Le choix du LLM a été… mouvementé (j'y reviens dans les problèmes). Aujourd'hui, la génération passe par la passerelle **OpenCode Go** (modèle `deepseek-v4-flash-vision-exp`).
+Le choix du LLM a été mouvementé (j'y reviens dans les problèmes). Aujourd'hui, la génération passe par la passerelle OpenCode Go, avec le modèle deepseek-v4-flash-vision-exp.
 
-### Étape 4 — Le serveur MCP : brancher *n'importe quelle* IA
+### Étape 4 : le serveur MCP, brancher n'importe quelle IA
 
-C'est la pièce maîtresse, et ce qui distingue ce projet d'un simple chatbot. Le protocole **MCP** (Model Context Protocol) permet à n'importe quelle IA compatible — ChatGPT, Claude, Cursor, opencode — de se connecter à mes outils.
+C'est la pièce maîtresse, et ce qui distingue ce projet d'un simple chatbot. Le protocole MCP (Model Context Protocol) permet à n'importe quelle IA compatible de se connecter à mes outils : ChatGPT, Claude, Cursor, opencode.
 
-J'ai construit un **serveur MCP dédié** qui n'expose que mes outils, jamais l'administration de n8n. Une URL, et mon cerveau est branché à toutes mes IA :
+J'ai construit un serveur MCP dédié qui n'expose que mes outils, jamais l'administration de n8n. Une URL suffit, et mon cerveau est branché à toutes mes IA :
 
 ```
 https://n8n.samensteeve.com/mcp/second-brain-kb
 ```
 
-Concrètement, dans une conversation Claude, je peux écrire « interroge mon second cerveau : quels sont mes projets Laravel ? » et il va chercher dans *mes* notes, avec les sources.
+Concrètement, dans une conversation Claude, je peux écrire « interroge mon second cerveau : quels sont mes projets Laravel ? » et il va chercher dans mes notes, avec les sources.
 
-### Étape 5 — L'écriture contrôlée : la quarantaine
+### Étape 5 : l'écriture contrôlée, la quarantaine
 
-Donner à une IA la capacité d'**écrire** dans ma base, c'est puissant… et dangereux. Une note lue par une IA (ou un contenu piégé) pourrait l'inciter à écrire n'importe quoi. Ma règle : **toute écriture IA passe par une quarantaine.**
+Donner à une IA la capacité d'écrire dans ma base, c'est puissant et dangereux. Une note lue par une IA, ou un contenu piégé, pourrait l'inciter à écrire n'importe quoi. Ma règle est simple : toute écriture IA passe par une quarantaine.
 
-Une note proposée par une IA arrive avec `status: pending`. Elle est **invisible** pour la recherche tant que je ne l'ai pas validée à la main. Le pire qu'une IA compromise puisse faire, c'est écrire une note que je vois, que je peux corriger ou supprimer — et tout est versionné par Git, donc réversible.
+Une note proposée par une IA arrive avec status: pending. Elle est invisible pour la recherche tant que je ne l'ai pas validée à la main. Le pire qu'une IA compromise puisse faire, c'est écrire une note que je vois, que je peux corriger ou supprimer. Et tout est versionné par Git, donc réversible.
 
-### Étape 6 — La qualité : classement, doublons, ménage
+### Étape 6 : la qualité, classement, doublons, ménage
 
-Une base qui grossit devient vite un bordel. Trois garde-fous :
+Une base qui grossit devient vite un bordel. J'ai mis trois garde-fous.
 
-- **Classification automatique** : une IA qui propose une note lui donne un type, des tags et un dossier cible.
-- **Dédoublonnage** : avant d'écrire, on compare la note à l'existant. Trop similaire (≥ 75 %) → refus. Un peu similaire (≥ 55 %) → avertissement.
-- **Housekeeping hebdomadaire** : un workflow détecte les paires de notes redondantes et m'écrit un rapport à relire.
+D'abord la classification automatique. Une IA qui propose une note lui donne un type, des tags et un dossier cible. Ensuite le dédoublonnage : avant d'écrire, on compare la note à l'existant. Trop similaire (au-dessus de 75 %), c'est refusé. Un peu similaire (au-dessus de 55 %), c'est un avertissement. Enfin, un housekeeping hebdomadaire : un workflow détecte les paires de notes redondantes et m'écrit un rapport à relire.
 
-### Étape 7 — Plonger dans la source
+### Étape 7 : plonger dans la source
 
-Une base de connaissances, c'est bien. Mais parfois, l'IA a besoin du **détail exact** — un fichier précis d'un projet. Plutôt que de tout recopier dans le vault, j'ai ajouté un troisième outil : `second_brain_project_details`. L'IA demande `repo` ou `repo#chemin`, et elle va lire la source directement sur GitHub. Le vault reste léger, la source reste la vérité.
+Une base de connaissances, c'est bien. Mais parfois, l'IA a besoin du détail exact, un fichier précis d'un projet. Plutôt que de tout recopier dans le vault, j'ai ajouté un troisième outil : second_brain_project_details. L'IA demande repo ou repo#chemin, et elle va lire la source directement sur GitHub. Le vault reste léger, la source reste la vérité.
 
-### Étape 8 — L'authentification
+### Étape 8 : l'authentification
 
-Dernière brique pour que ça marche partout : l'auth. Un token statique, c'est simple mais limité (et Claude.ai web, par exemple, ne peut pas envoyer d'en-tête personnalisé). J'ai donc basculé le serveur MCP en **OAuth** (le n8n expose nativement les points de découverte standards). Résultat : n'importe quel client MCP sérieux peut se connecter en s'authentifiant normalement, sans que j'aie à lui expliquer quoi que ce soit à la main.
+Dernière brique pour que ça marche partout : l'authentification. Un token statique, c'est simple mais limité. Claude.ai web, par exemple, ne peut pas envoyer d'en-tête personnalisé. J'ai donc basculé le serveur MCP en OAuth, que n8n expose nativement avec les points de découverte standards. Résultat : n'importe quel client MCP sérieux peut se connecter en s'authentifiant normalement, sans que j'aie à lui expliquer quoi que ce soit à la main.
 
-### Étape 9 — Rendre ça rapide et robuste
+### Étape 9 : rendre ça rapide et robuste
 
-C'est la partie dont je suis le plus fier, parce qu'elle est invisible… et qu'elle a demandé le plus de réflexion (voir les problèmes ci-dessous). Aujourd'hui, quand rien n'a changé, l'ingestion tourne en **~2 secondes** au lieu de 3 à 6 minutes, et elle ne peut **jamais** dupliquer ni perdre une note, même si deux exécutions tournent en même temps.
+C'est la partie dont je suis le plus fier, parce qu'elle est invisible et qu'elle a demandé le plus de réflexion. Aujourd'hui, quand rien n'a changé, l'ingestion tourne en deux secondes au lieu de trois à six minutes. Et elle ne peut jamais dupliquer ni perdre une note, même si deux exécutions tournent en même temps.
 
 ## Les problèmes rencontrés (et comment je les ai réglés)
 
@@ -97,105 +94,99 @@ C'est la partie que j'aurais aimé lire quand j'ai commencé. Rien ne s'est pass
 
 ### 1. Le fournisseur LLM qui tombe à l'eau
 
-**Le problème** : mon premier choix de génération ne marchait pas — pas de clé valide d'un côté, pas de fonds de l'autre. Blocage total au moment de la génération.
+Le problème : mon premier choix de génération ne marchait pas. Pas de clé valide d'un côté, pas de fonds de l'autre. Blocage total au moment de la génération.
 
-**La solution** : réutiliser une passerelle que j'avais déjà (OpenCode Go). Mais elle exige un en-tête personnalisé (`x-opencode-session`)… que les nœuds de modèle d'n8n n'exposent pas.
+La solution : réutiliser une passerelle que j'avais déjà, OpenCode Go. Mais elle exige un en-tête personnalisé, x-opencode-session, que les nœuds de modèle d'n8n n'exposent pas.
 
-**→ Leçon** : quand un nœud ne permet pas ce dont tu as besoin, descends d'un niveau. J'ai remplacé le nœud par un simple **appel HTTP direct** — contrôle total du payload et des en-têtes.
+La leçon : quand un nœud ne permet pas ce dont tu as besoin, descends d'un niveau. J'ai remplacé le nœud par un simple appel HTTP direct, avec un contrôle total du payload et des en-têtes.
 
 ### 2. La boucle qui s'arrête toute seule
 
-**Le problème** : mon ingestion utilisait `splitInBatches` (une boucle par note). Elle s'arrêtait prématurément dès qu'un item était vide.
+Le problème : mon ingestion utilisait splitInBatches, une boucle par note. Elle s'arrêtait prématurément dès qu'un item était vide.
 
-**La solution** : abandonner la boucle pour un **pipeline linéaire**. Un seul flux, sans état intermédiaire fragile.
+La solution : abandonner la boucle pour un pipeline linéaire. Un seul flux, sans état intermédiaire fragile.
 
-**→ Leçon** : une boucle, c'est un état de plus à gérer. Quand un flux linéaire suffit, il est plus simple *et* plus fiable.
+La leçon : une boucle, c'est un état de plus à gérer. Quand un flux linéaire suffit, il est plus simple et plus fiable.
 
 ### 3. Les embeddings qui prennent une éternité
 
-**Le problème** : pas de GPU sur mon VPS. Calculer les vecteurs de ~190 morceaux **sur CPU**, c'était ~1 seconde par morceau → **3 à 6 minutes à chaque exécution**. Et ça recalculait *tout* à chaque fois, même si une seule note avait changé.
+Le problème : pas de GPU sur mon VPS. Calculer les vecteurs de 190 morceaux sur CPU, c'était environ une seconde par morceau, donc trois à six minutes à chaque exécution. Et ça recalculait tout à chaque fois, même si une seule note avait changé.
 
-**La solution** : rendre l'ingestion **différentielle**. Chaque morceau reçoit un identifiant **déterministe** — un hash de son contenu. Avant de calculer, on demande à Qdrant quels identifiants existent déjà, et on **n'embarque que les nouveaux ou modifiés**.
+La solution : rendre l'ingestion différentielle. Chaque morceau reçoit un identifiant déterministe, un hash de son contenu. Avant de calculer, on demande à Qdrant quels identifiants existent déjà, et on n'embarque que les nouveaux ou les modifiés.
 
-**→ Résultat** : de 3-6 minutes à **~2 secondes** en régime stable. Seules les notes que je viens de modifier coûtent quelque chose.
+Le résultat : de trois à six minutes, on passe à deux secondes en régime stable. Seules les notes que je viens de modifier coûtent quelque chose.
 
 ### 4. Les doublons fantômes
 
-**Le problème** : deux exécutions concurrentes de l'ingestion (une planifiée + une manuelle) → la base contenait **deux fois** les mêmes notes.
+Le problème : deux exécutions concurrentes de l'ingestion, une planifiée et une manuelle, et la base contenait deux fois les mêmes notes.
 
-**La solution** : avec des identifiants déterministes, un *upsert* écrase au lieu d'ajouter. Deux exécutions simultanées produisent exactement le même index.
+La solution : avec des identifiants déterministes, un upsert écrase au lieu d'ajouter. Deux exécutions simultanées produisent exactement le même index.
 
-### 5. … et la perte de données qui m'a vraiment vexé
+### 5. La perte de données qui m'a vraiment vexé
 
-**Le problème** : en corrigeant les doublons, j'ai introduit pire. Mon nettoyage supprimait les points « absents du lot courant ». Mais si une exécution avait une vue **périmée** du vault, elle supprimait les notes qu'une autre venait d'écrire. J'ai perdu 4 notes en testant. C'est le genre de bug qui te fait douter de tout.
+Le problème : en corrigeant les doublons, j'ai introduit pire. Mon nettoyage supprimait les points absents du lot courant. Mais si une exécution avait une vue périmée du vault, elle supprimait les notes qu'une autre venait d'écrire. J'ai perdu quatre notes en testant. C'est le genre de bug qui te fait douter de tout.
 
-**La solution** : horodater chaque point (`indexed_at`) et **ne supprimer un orphelin que s'il est antérieur au début de l'exécution**. Un run concurrent, même avec une vue périmée, ne peut plus toucher aux notes écrites après son démarrage.
+La solution : horodater chaque point avec indexed_at, et ne supprimer un orphelin que s'il est antérieur au début de l'exécution. Un run concurrent, même avec une vue périmée, ne peut plus toucher aux notes écrites après son démarrage.
 
-**→ Leçon** : « supprimer ce qui n'est plus là » est une opération **destructive**. Sur un système concurrent, elle a besoin d'une garde temporelle. J'ai écrit ce piège noir sur blanc dans la doc du projet pour ne jamais y retomber.
+La leçon : supprimer ce qui n'est plus là est une opération destructive. Sur un système concurrent, elle a besoin d'une garde temporelle. J'ai écrit ce piège noir sur blanc dans la doc du projet pour ne jamais y retomber.
 
 ### 6. La fuite silencieuse d'une note IA
 
-**Le problème** : en fouillant, j'ai découvert qu'une note écrite par une IA était en `status: active` — donc **indexée** — alors qu'elle aurait dû être en quarantaine. Elle venait d'une ancienne version du workflow.
+Le problème : en fouillant, j'ai découvert qu'une note écrite par une IA était en status: active, donc indexée, alors qu'elle aurait dû être en quarantaine. Elle venait d'une ancienne version du workflow.
 
-**La solution** : en plus de la quarantaine, j'ai **exclu tout un dossier** (les captures/rapports) de l'indexation. Une écriture IA ne peut plus fuiter, même par accident.
+La solution : en plus de la quarantaine, j'ai exclu tout un dossier, celui des captures et des rapports, de l'indexation. Une écriture IA ne peut plus fuiter, même par accident.
 
 ### 7. Le faux-ami qui m'a fait douter
 
-**Le problème** : un nœud s'appelait « OpenRouter Model »… mais pointait en réalité vers une autre passerelle. Une credential nommée « OpenAI account » n'avait rien d'OpenAI. Résultat : des heures à chercher une incohérence… qui était dans les **noms**.
+Le problème : un nœud s'appelait « OpenRouter Model », mais pointait en réalité vers une autre passerelle. Une credential nommée « OpenAI account » n'avait rien d'OpenAI. Résultat : des heures à chercher une incohérence qui était dans les noms.
 
-**La solution** : renommer selon ce que les choses **font réellement**, pas selon une marque. Et en faire une règle écrite dans le projet.
+La solution : renommer selon ce que les choses font réellement, pas selon une marque. Et en faire une règle écrite dans le projet.
 
-**→ Leçon** : les mauvais noms coûtent plus cher qu'ils n'en ont l'air. Un nom mensonger, c'est un bug en attente.
+La leçon : les mauvais noms coûtent plus cher qu'ils n'en ont l'air. Un nom mensonger, c'est un bug en attente.
 
 ### 8. « Pourquoi une IA me dit un truc et le contraire ? »
 
-**Le problème** : une IA m'a affirmé que ma base était mal nommée, en s'appuyant sur une capture d'écran… qui ne correspondait à **rien** dans mon dépôt (un fichier qui n'a jamais existé). J'ai vérifié l'historique Git complet : zéro trace.
+Le problème : une IA m'a affirmé que ma base était mal nommée, en s'appuyant sur une capture d'écran qui ne correspondait à rien dans mon dépôt. Un fichier qui n'a jamais existé. J'ai vérifié l'historique Git complet, zéro trace.
 
-**La solution** : la règle d'or — **vérifier à la source, jamais faire confiance à une capture**. C'est exactement la raison d'être de ce projet : une IA qui invente, c'est une IA qui n'a pas accès à la vérité. Ici, elle n'a accès qu'à ce qui est vérifié.
+La solution : la règle d'or, vérifier à la source et ne jamais faire confiance à une capture. C'est exactement la raison d'être de ce projet. Une IA qui invente, c'est une IA qui n'a pas accès à la vérité. Ici, elle n'a accès qu'à ce qui est vérifié.
 
 ## À quoi ça me sert, concrètement
 
-C'est la vraie question — et pendant longtemps, je ne l'avais pas assez mise en avant. Voici l'utilité réelle, aujourd'hui.
+C'est la vraie question, et pendant longtemps je ne l'avais pas assez mise en avant. Voici l'utilité réelle, aujourd'hui.
 
 <CardGrid>
   <Card title="Préparer un entretien ou un stage">
-    Je demande à n'importe quelle IA : « résume le projet X, mes choix techniques, ce que j'y ai appris ». Elle répond depuis *mes* notes, avec les détails exacts — pas depuis une mémoire approximative.
+    Je demande à n'importe quelle IA : « résume le projet X, mes choix techniques, ce que j'y ai appris ». Elle répond depuis mes notes, avec les détails exacts, pas depuis une mémoire approximative.
   </Card>
   <Card title="Candidatures, CV, portfolio">
     Mon contexte professionnel est prêt, à jour et interrogeable. Rédiger une candidature ou un post devient un dialogue avec ma propre base, pas une page blanche.
   </Card>
   <Card title="Freelance : répondre vite et juste">
-    Un client pose une question technique ? Je fais plonger l'IA dans la **source** d'un projet (README, fichier précis) pour retrouver l'implémentation exacte, sans fouiller mon disque.
+    Un client pose une question technique ? Je fais plonger l'IA dans la source d'un projet (README, fichier précis) pour retrouver l'implémentation exacte, sans fouiller mon disque.
   </Card>
   <Card title="Mémoire technique quotidienne">
-    Une leçon apprise, une décision d'archi, un piège rencontré : je le capture dans le vault. La « leçon du jour » devient une note interrogeable, pas un souvenir qui s'efface.
+    Une leçon apprise, une décision d'archi, un piège rencontré : je le capture dans le vault. La leçon du jour devient une note interrogeable, pas un souvenir qui s'efface.
   </Card>
   <Card title="Une seule mémoire pour toutes mes IA">
-    ChatGPT, Claude, Cursor, opencode : toutes lisent et écrivent dans la même base. Je ne réexplique plus mon contexte — je le branche.
+    ChatGPT, Claude, Cursor, opencode : toutes lisent et écrivent dans la même base. Je ne réexplique plus mon contexte, je le branche.
   </Card>
   <Card title="Alimenter mes articles et mes projets">
     Ce que j'écris ici est nourri par le vault. Mes notes, mes retours d'expérience et mes articles ne partent plus de zéro : ils partent de ce que j'ai réellement vécu.
   </Card>
 </CardGrid>
 
-Et au-delà du travail, c'est une mémoire de vie : mes projets, mes objectifs, mes démarches. Une IA qui me connaît vraiment — et qui me connaît *avec ma permission*, parce que c'est **ma** base, sur **mon** serveur.
+Et au-delà du travail, c'est une mémoire de vie : mes projets, mes objectifs, mes démarches. Une IA qui me connaît vraiment, et qui me connaît avec ma permission, parce que c'est ma base, sur mon serveur.
 
 ## Ce que ce projet m'a appris
 
-Quelques leçons qui dépassent largement ce projet :
-
-- **L'erreur est inévitable** : concevoir *pour* l'échec (retry, idempotence, dégradation gracieuse) vaut mieux que d'espérer que rien ne casse.
-- **La donnée d'abord** : une opération destructive a toujours besoin d'un garde-fou (ici, un horodatage). Sinon, elle finit par mordre.
-- **Nommer, c'est concevoir** : un composant mal nommé est un bug qui attend son heure.
-- **L'IA n'a pas besoin de tout mémoriser** : elle doit pouvoir **lire** quand il faut — et n'écrire qu'avec mon accord.
-- **Vérifier à la source** : c'est ce qui sépare une IA utile d'une IA qui invente avec aplomb.
+- L'erreur est inévitable : concevoir pour l'échec (retry, idempotence, dégradation gracieuse) vaut mieux que d'espérer que rien ne casse.
+- La donnée d'abord : une opération destructive a toujours besoin d'un garde-fou. Ici, un horodatage. Sinon, elle finit par mordre.
+- Nommer, c'est concevoir : un composant mal nommé est un bug qui attend son heure.
+- L'IA n'a pas besoin de tout mémoriser : elle doit pouvoir lire quand il faut, et n'écrire qu'avec mon accord.
+- Vérifier à la source : c'est ce qui sépare une IA utile d'une IA qui invente avec aplomb.
 
 ## Et après ?
 
-Le socle est solide, mais rien n'est figé. Ce qui vient :
+Le socle est solide, mais rien n'est figé. Ce qui vient : une interface de chat (Telegram ou WhatsApp) pour interroger le cerveau sans ouvrir un client MCP, la capture automatique (veille, idées) pour que la base se nourrisse toute seule, et toujours plus de notes de vie. Parce qu'au fond, ce projet n'est pas un projet d'IA. C'est une mémoire que je construis, morceau par morceau.
 
-- une **interface de chat** (Telegram / WhatsApp) pour interroger le cerveau sans ouvrir un client MCP ;
-- la **capture automatique** (veille, idées) pour que la base se nourrisse toute seule ;
-- et toujours plus de **notes de vie** — parce qu'au fond, ce projet n'est pas un projet d'IA. C'est une mémoire que je construis, morceau par morceau.
-
-Si tu construis quelque chose de similaire : commence simple, mets des garde-fous **avant** d'avoir mal, et documente chaque piège. Les problèmes que j'ai listés ici, tu les rencontreras aussi — autant qu'ils te servent.
+Si tu construis quelque chose de similaire, commence simple, mets des garde-fous avant d'avoir mal, et documente chaque piège. Les problèmes que j'ai listés ici, tu les rencontreras aussi. Autant qu'ils te servent.
