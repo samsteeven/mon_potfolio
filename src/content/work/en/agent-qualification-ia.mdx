@@ -3,7 +3,7 @@ title: "AI Lead Qualification Agent"
 description: "Autonomous intelligent pipeline: form interception, real-time web enrichment (Tavily), service Knowledge Base, prospect scoring and personalized email in < 30 seconds."
 date: "2026-07-21"
 role: "AI Architect & Software Engineer"
-stack: ["n8n", "OpenRouter", "DeepSeek v4 Flash", "Tavily API", "Redis", "Next.js", "Data Tables", "MCP"]
+stack: ["n8n", "OpenCode Go", "DeepSeek v4 Flash", "Tavily API", "Redis", "Next.js", "Data Tables", "MCP"]
 status: "shipped"
 featured: true
 lang: "en"
@@ -34,7 +34,7 @@ Form Submission → Normalize Payload → Lead Qualification Agent
                                               │
                         ┌─────────────────────┴──────────────────────┐
                         │ Tools                                        │
-                        │  • OpenRouter Model (DeepSeek v4 Flash)     │
+                        │  • OpenCode Go Model (DeepSeek v4 Flash)    │
                         │  • Lead Memory (Redis Chat Memory)          │
                         │  • Knowledge Base (service catalog)         │
                         │  • CRM - Get Lead                           │
@@ -74,9 +74,9 @@ Form Submission → Normalize Payload → Lead Qualification Agent
 
 ## What I Built
 
-**OpenRouter orchestration**: The agent runs on DeepSeek v4 Flash via OpenRouter — enabling model switching (Mistral, GPT-4o, Gemini) without modifying the agent, just changing the model identifier.
+**OpenCode Go orchestration**: The agent runs on DeepSeek v4 Flash through the **OpenCode Go** gateway (OpenAI-compatible endpoint) — the model is decoupled from the agent, so it can be swapped without touching the logic, just by changing the identifier.
 
-**Strict Structured Output Parser with auto-fix**: The agent's output is constrained to a strict JSON schema with `enum` for discrete choices (budget, fit, urgency), `minimum`/`maximum` for the 1-10 score, and `required` on all critical fields. The `autoFix: true` option with a sub-node model (OpenRouter + DeepSeek v4 Flash) automatically corrects invalid schemas. The agent is forced to pass through lead metadata (leadName, leadEmail, leadCompany) in its output, ensuring complete contact traceability.
+**Strict Structured Output Parser with auto-fix**: The agent's output is constrained to a strict JSON schema with `enum` for discrete choices (budget, fit, urgency), `minimum`/`maximum` for the 1-10 score, and `required` on all critical fields. The `autoFix: true` option with a sub-node model (OpenCode Go + DeepSeek v4 Flash) automatically corrects invalid schemas. The agent is forced to pass through lead metadata (leadName, leadEmail, leadCompany) in its output, ensuring complete contact traceability.
 
 **Persistent CRM Data Table**: Leads are persisted in n8n native Data Tables — data survives restarts, is queryable via the n8n API, and requires no external database. The *Get Lead* node enables email deduplication before scoring.
 
