@@ -83,6 +83,10 @@ Important: ingestion runs every 30 minutes. I write in Obsidian, push, and thirt
 
 A question comes in. It's turned into a vector. Qdrant finds the closest pieces. An LLM answers only from those pieces, citing the source files.
 
+![The vault's 190 chunks projected in 2D inside Qdrant: each point is a note fragment, placed by meaning](/blog/second-brain-qdrant.png)
+
+*The vector map. Each point is a chunk, and the tooltip shows the direct link between a vector and its content.*
+
 Choosing the LLM was eventful (more on that in the problems section). Today, generation goes through the OpenCode Go gateway, with the model deepseek-v4-flash-vision-exp.
 
 ### Step 4: the MCP server, plugging in any AI

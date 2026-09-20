@@ -83,6 +83,10 @@ Point important : l'ingestion tourne toutes les 30 minutes. J'écris dans Obsidi
 
 Une question arrive. Elle est transformée en vecteur. Qdrant retrouve les morceaux les plus proches. Un LLM répond uniquement à partir de ces morceaux, en citant les fichiers sources.
 
+![Les 190 chunks du vault projetés en 2D dans Qdrant : chaque point est un morceau de note, positionné selon son sens](/blog/second-brain-qdrant.png)
+
+*La carte des vecteurs. Chaque point est un chunk, et l'infobulle montre le lien direct entre un vecteur et son contenu.*
+
 Le choix du LLM a été mouvementé (j'y reviens dans les problèmes). Aujourd'hui, la génération passe par la passerelle OpenCode Go, avec le modèle deepseek-v4-flash-vision-exp.
 
 ### Étape 4 : le serveur MCP, brancher n'importe quelle IA
