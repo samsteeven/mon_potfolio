@@ -189,7 +189,7 @@ export default async function WritingPage({ params }: PageProps) {
             {/* Prev */}
             {prevPost ? (
               <Link
-                href={prevPost.url}
+                href={`${prefix}${prevPost.url}`}
                 className="group flex flex-col justify-between rounded-xl border border-line bg-paper-raised/40 p-5 transition-all duration-300 hover:-translate-y-0.5 hover:border-accent/40 hover:bg-paper-raised/70 hover:shadow-md"
               >
                 <div>
@@ -212,7 +212,7 @@ export default async function WritingPage({ params }: PageProps) {
             {/* Next */}
             {nextPost ? (
               <Link
-                href={nextPost.url}
+                href={`${prefix}${nextPost.url}`}
                 className="group flex flex-col justify-between rounded-xl border border-line bg-paper-raised/40 p-5 transition-all duration-300 hover:-translate-y-0.5 hover:border-accent/40 hover:bg-paper-raised/70 hover:shadow-md sm:text-right"
               >
                 <div>
