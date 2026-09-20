@@ -1,6 +1,6 @@
 ---
 title: "Building a 'second brain' for my AIs, the full story step by step"
-description: "How I went from a daily frustration to a production MCP server: the decisions I made, the problems I hit, the solutions I found, and what it is actually useful for in my daily life."
+description: "How I went from a daily frustration to a production MCP server: the decisions I made, the problems I hit, the solutions I found, and what it is useful for in my daily life."
 date: "2026-09-20"
 tags: ["AI", "RAG", "MCP", "n8n", "Obsidian", "Self-hosting"]
 published: true
@@ -9,7 +9,7 @@ lang: "en"
 
 Let me be honest. This project wasn't born from a desire to "do AI". It was born from frustration. Every time I opened ChatGPT, Claude, Cursor or opencode, I started from zero. I re-explained who I am, my projects, my stack, my studies, what I was looking for. Every single conversation. My context was scattered across ten files, never up to date, and no AI has a durable memory that I control.
 
-This article tells how I built a "second brain" to fix that. Step by step, with the real struggles and the real solutions. Because that's where it gets interesting: not in the final result, but in the road to get there.
+This article tells how I built a "second brain" to fix that. Step by step, with the struggles and the solutions. The final result matters less to me than the road to get there.
 
 ## The starting point: re-explaining my life to a machine
 
@@ -18,7 +18,7 @@ The trigger was a simple question. Why do I keep wasting time re-explaining my c
 I wanted a memory that was:
 
 - mine, not locked inside a tool that might shut down tomorrow;
-- portable, readable by any AI, not only the one that created it;
+- portable, readable by any AI, whichever it is;
 - readable and writable, so the AI can use it but also add to it, under my control;
 - private, so my notes don't go off to be indexed by a third party.
 
@@ -34,7 +34,7 @@ That's the foundation. The vault is the single source of truth. Everything else 
 
 ### Step 2: the ingestion pipeline
 
-For an AI to read those notes, they must be turned into something searchable by meaning. That's the job of a RAG (Retrieval-Augmented Generation): split notes into pieces (chunks), compute a vector for each (a number that summarizes its meaning), and store them in a vector database.
+For an AI to read those notes, they must be turned into data searchable by meaning. That's the job of a RAG (Retrieval-Augmented Generation): split notes into pieces (chunks), compute a vector for each (a number that summarizes its meaning), and store them in a vector database.
 
 My pipeline, orchestrated with n8n, which I already use everywhere:
 
@@ -114,15 +114,15 @@ The problem: no GPU on my VPS. Computing the vectors of 190 pieces on CPU meant 
 
 The solution: make ingestion differential. Each piece gets a deterministic identifier, a hash of its content. Before computing, I ask Qdrant which identifiers already exist, and I only embed the new or changed ones.
 
-The result: from three to six minutes, down to two seconds in steady state. Only the notes I just edited cost anything.
+The result: from three to six minutes, down to two seconds in steady state. Only the notes I just edited cost time.
 
 ### 4. Ghost duplicates
 
 The problem: two concurrent ingestion runs, one scheduled and one manual, and the base contained twice the same notes.
 
-The solution: with deterministic identifiers, an upsert overwrites instead of appending. Two simultaneous runs produce exactly the same index.
+The solution: with deterministic identifiers, an upsert overwrites instead of appending. Two simultaneous runs produce the same index.
 
-### 5. The data loss that really annoyed me
+### 5. The data loss that annoyed me
 
 The problem: while fixing duplicates, I introduced something worse. My cleanup deleted points missing from the current batch. But if a run had a stale view of the vault, it deleted the notes another run had just written. I lost four notes while testing. That kind of bug makes you doubt everything.
 
@@ -138,9 +138,9 @@ The solution: on top of quarantine, I excluded a whole folder, the one for captu
 
 ### 7. The false friend that made me doubt
 
-The problem: a node was called "OpenRouter Model", but actually pointed to another gateway. A credential named "OpenAI account" had nothing to do with OpenAI. Result: hours hunting an inconsistency that was in the names.
+The problem: a node was called "OpenRouter Model", but pointed to another gateway. A credential named "OpenAI account" had nothing to do with OpenAI. Result: hours hunting an inconsistency that was in the names.
 
-The solution: rename things by what they actually do, not by a brand. And turn it into a written rule in the project.
+The solution: rename things by what they do, not by a brand. And turn it into a written rule in the project.
 
 The lesson: bad names cost more than they seem. A lying name is a bug waiting to happen.
 
@@ -148,9 +148,9 @@ The lesson: bad names cost more than they seem. A lying name is a bug waiting to
 
 The problem: an AI told me my base was misnamed, based on a screenshot that matched nothing in my repository. A file that never existed. I checked the entire Git history, zero trace.
 
-The solution: the golden rule, verify at the source and never trust a screenshot. That's exactly the point of this project. An AI that makes things up is an AI without access to the truth. Here, it only has access to what's verified.
+The solution: the golden rule, verify at the source and never trust a screenshot. That's the point of this project. An AI that makes things up is an AI without access to the truth. Here, it only has access to what's verified.
 
-## What it's actually useful for
+## What it's useful for
 
 This is the real question, and for a long time I hadn't put enough emphasis on it. Here's the concrete utility, today.
 
@@ -171,11 +171,11 @@ This is the real question, and for a long time I hadn't put enough emphasis on i
     ChatGPT, Claude, Cursor, opencode: all read and write into the same base. I no longer re-explain my context, I plug it in.
   </Card>
   <Card title="Feeding my articles and projects">
-    What I write here is fueled by the vault. My notes, retrospectives and articles no longer start from zero: they start from what I actually lived.
+    What I write here is fueled by the vault. My notes, retrospectives and articles no longer start from zero: they start from what I lived.
   </Card>
 </CardGrid>
 
-And beyond work, it's a memory for life: my projects, my goals, my admin. An AI that truly knows me, and knows me with my permission, because it's my base, on my server.
+Beyond work, it's also a memory for life: my projects, my goals, my admin. An AI that knows me, and knows me with my permission, because it's my base, on my server.
 
 ## What this project taught me
 
@@ -189,4 +189,4 @@ And beyond work, it's a memory for life: my projects, my goals, my admin. An AI 
 
 The foundation is solid, but nothing is frozen. Coming up: a chat interface (Telegram or WhatsApp) to query the brain without opening an MCP client, automatic capture (watch, ideas) so the base feeds itself, and ever more life notes. Because deep down, this isn't an AI project. It's a memory I'm building, piece by piece.
 
-If you're building something similar, start simple, put guardrails in before you get hurt, and document every trap. The problems I listed here, you'll hit too. Might as well let them serve you.
+If you're building a similar project, start simple, put guardrails in before you get hurt, and document every trap. The problems I listed here, you'll hit too. Might as well let them serve you.

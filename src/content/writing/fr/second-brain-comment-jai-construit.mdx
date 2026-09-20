@@ -1,6 +1,6 @@
 ---
 title: "Construire un « second cerveau » pour mes IA, le récit complet étape par étape"
-description: "Comment je suis passé d'une frustration quotidienne à un serveur MCP en production : les décisions prises, les problèmes rencontrés, les solutions trouvées, et surtout à quoi ça me sert vraiment au quotidien."
+description: "Comment je suis passé d'une frustration quotidienne à un serveur MCP en production : les décisions prises, les problèmes rencontrés, les solutions trouvées, et surtout à quoi ça me sert au quotidien."
 date: "2026-09-20"
 tags: ["IA", "RAG", "MCP", "n8n", "Obsidian", "Auto-hébergement"]
 published: true
@@ -9,7 +9,7 @@ lang: "fr"
 
 Je vais être honnête. Ce projet n'est pas né d'une envie de faire de l'IA. Il est né d'une frustration. Chaque fois que j'ouvrais ChatGPT, Claude, Cursor ou opencode, je recommençais à zéro. Je réexpliquais qui je suis, mes projets, ma stack, mes études, ce que je cherchais. À chaque conversation. Mon contexte était éparpillé dans dix fichiers, jamais à jour, et aucune IA n'a une mémoire durable que je contrôle.
 
-Cet article raconte comment j'ai construit un « second cerveau » pour régler ça. Pas à pas, avec les vraies galères et les vraies solutions. Parce que c'est là que ça devient intéressant : pas dans le résultat final, mais dans le chemin pour y arriver.
+Cet article raconte comment j'ai construit un « second cerveau » pour régler ça. Pas à pas, avec les galères et les solutions. Le résultat final m'importe moins que le chemin pour y arriver.
 
 ## Le point de départ : réexpliquer ma vie à une machine
 
@@ -18,7 +18,7 @@ Le déclic est venu d'une question simple. Pourquoi est-ce que je perds mon temp
 Je voulais une mémoire qui soit :
 
 - à moi, pas enfermée dans un outil qui peut fermer demain ;
-- portable, lisible par n'importe quelle IA, pas seulement celle qui l'a créée ;
+- portable, lisible par n'importe quelle IA, quelle qu'elle soit ;
 - lisible et enrichissable, pour que l'IA puisse s'en servir mais aussi y ajouter, sous mon contrôle ;
 - privée, pour que mes notes ne partent pas s'indexer chez un tiers.
 
@@ -34,7 +34,7 @@ C'est le socle. Le vault est la seule source de vérité. Tout le reste n'est qu
 
 ### Étape 2 : le pipeline d'ingestion
 
-Pour qu'une IA puisse lire ces notes, il faut les transformer en quelque chose d'interrogeable par le sens. C'est le rôle d'un RAG (Retrieval-Augmented Generation) : découper les notes en morceaux (chunks), calculer pour chacun un vecteur (un nombre qui résume son sens), et les stocker dans une base vectorielle.
+Pour qu'une IA puisse lire ces notes, il faut les transformer en données interrogeables par le sens. C'est le rôle d'un RAG (Retrieval-Augmented Generation) : découper les notes en morceaux (chunks), calculer pour chacun un vecteur (un nombre qui résume son sens), et les stocker dans une base vectorielle.
 
 Mon pipeline, orchestré avec n8n que j'utilise déjà partout :
 
@@ -114,15 +114,15 @@ Le problème : pas de GPU sur mon VPS. Calculer les vecteurs de 190 morceaux sur
 
 La solution : rendre l'ingestion différentielle. Chaque morceau reçoit un identifiant déterministe, un hash de son contenu. Avant de calculer, on demande à Qdrant quels identifiants existent déjà, et on n'embarque que les nouveaux ou les modifiés.
 
-Le résultat : de trois à six minutes, on passe à deux secondes en régime stable. Seules les notes que je viens de modifier coûtent quelque chose.
+Le résultat : de trois à six minutes, on passe à deux secondes en régime stable. Seules les notes que je viens de modifier coûtent du temps.
 
 ### 4. Les doublons fantômes
 
 Le problème : deux exécutions concurrentes de l'ingestion, une planifiée et une manuelle, et la base contenait deux fois les mêmes notes.
 
-La solution : avec des identifiants déterministes, un upsert écrase au lieu d'ajouter. Deux exécutions simultanées produisent exactement le même index.
+La solution : avec des identifiants déterministes, un upsert écrase au lieu d'ajouter. Deux exécutions simultanées produisent le même index.
 
-### 5. La perte de données qui m'a vraiment vexé
+### 5. La perte de données qui m'a agacé
 
 Le problème : en corrigeant les doublons, j'ai introduit pire. Mon nettoyage supprimait les points absents du lot courant. Mais si une exécution avait une vue périmée du vault, elle supprimait les notes qu'une autre venait d'écrire. J'ai perdu quatre notes en testant. C'est le genre de bug qui te fait douter de tout.
 
@@ -140,7 +140,7 @@ La solution : en plus de la quarantaine, j'ai exclu tout un dossier, celui des c
 
 Le problème : un nœud s'appelait « OpenRouter Model », mais pointait en réalité vers une autre passerelle. Une credential nommée « OpenAI account » n'avait rien d'OpenAI. Résultat : des heures à chercher une incohérence qui était dans les noms.
 
-La solution : renommer selon ce que les choses font réellement, pas selon une marque. Et en faire une règle écrite dans le projet.
+La solution : renommer selon ce que les choses font, pas selon une marque. Et en faire une règle écrite dans le projet.
 
 La leçon : les mauvais noms coûtent plus cher qu'ils n'en ont l'air. Un nom mensonger, c'est un bug en attente.
 
@@ -148,7 +148,7 @@ La leçon : les mauvais noms coûtent plus cher qu'ils n'en ont l'air. Un nom me
 
 Le problème : une IA m'a affirmé que ma base était mal nommée, en s'appuyant sur une capture d'écran qui ne correspondait à rien dans mon dépôt. Un fichier qui n'a jamais existé. J'ai vérifié l'historique Git complet, zéro trace.
 
-La solution : la règle d'or, vérifier à la source et ne jamais faire confiance à une capture. C'est exactement la raison d'être de ce projet. Une IA qui invente, c'est une IA qui n'a pas accès à la vérité. Ici, elle n'a accès qu'à ce qui est vérifié.
+La solution : la règle d'or, vérifier à la source et ne jamais faire confiance à une capture. C'est la raison d'être de ce projet. Une IA qui invente, c'est une IA qui n'a pas accès à la vérité. Ici, elle n'a accès qu'à ce qui est vérifié.
 
 ## À quoi ça me sert, concrètement
 
@@ -171,11 +171,11 @@ C'est la vraie question, et pendant longtemps je ne l'avais pas assez mise en av
     ChatGPT, Claude, Cursor, opencode : toutes lisent et écrivent dans la même base. Je ne réexplique plus mon contexte, je le branche.
   </Card>
   <Card title="Alimenter mes articles et mes projets">
-    Ce que j'écris ici est nourri par le vault. Mes notes, mes retours d'expérience et mes articles ne partent plus de zéro : ils partent de ce que j'ai réellement vécu.
+    Ce que j'écris ici est nourri par le vault. Mes notes, mes retours d'expérience et mes articles ne partent plus de zéro : ils partent de ce que j'ai vécu.
   </Card>
 </CardGrid>
 
-Et au-delà du travail, c'est une mémoire de vie : mes projets, mes objectifs, mes démarches. Une IA qui me connaît vraiment, et qui me connaît avec ma permission, parce que c'est ma base, sur mon serveur.
+Au-delà du travail, c'est aussi une mémoire de vie : mes projets, mes objectifs, mes démarches. Une IA qui me connaît, et qui me connaît avec ma permission, parce que c'est ma base, sur mon serveur.
 
 ## Ce que ce projet m'a appris
 
@@ -189,4 +189,4 @@ Et au-delà du travail, c'est une mémoire de vie : mes projets, mes objectifs, 
 
 Le socle est solide, mais rien n'est figé. Ce qui vient : une interface de chat (Telegram ou WhatsApp) pour interroger le cerveau sans ouvrir un client MCP, la capture automatique (veille, idées) pour que la base se nourrisse toute seule, et toujours plus de notes de vie. Parce qu'au fond, ce projet n'est pas un projet d'IA. C'est une mémoire que je construis, morceau par morceau.
 
-Si tu construis quelque chose de similaire, commence simple, mets des garde-fous avant d'avoir mal, et documente chaque piège. Les problèmes que j'ai listés ici, tu les rencontreras aussi. Autant qu'ils te servent.
+Si tu construis un projet similaire, commence simple, mets des garde-fous avant d'avoir mal, et documente chaque piège. Les problèmes que j'ai listés ici, tu les rencontreras aussi. Autant qu'ils te servent.
