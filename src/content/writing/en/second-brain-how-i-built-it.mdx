@@ -107,7 +107,7 @@ The key point isn't the RAG itself: a classic "Obsidian + chatbot" already does 
 
 Giving an AI the ability to write into my base is powerful and dangerous. A note read by an AI, or a booby-trapped piece of content, could push it to write anything. My rule is simple: every AI write goes through quarantine.
 
-A note proposed by an AI arrives with status: pending. It's invisible to search until I've validated it by hand. The worst a compromised AI can do is write a note I can see, that I can fix or delete. And everything is versioned by Git, so it's reversible.
+A note proposed by an AI arrives with status: pending. It's invisible to search until I've validated it by hand. Within that frame, the worst a compromised AI can do is write a note I can see, that I can fix or delete. And everything is versioned by Git, so it's reversible.
 
 ![The quarantine flow: the AI writes, the note stays invisible until validation](/blog/second-brain-quarantine.png)
 
@@ -127,7 +127,7 @@ The last brick to make it work everywhere: authentication. A static token is sim
 
 ### Step 9: making it fast and robust
 
-This is the part I'm proudest of, because it's invisible and it took the most thought. Today, when nothing has changed, ingestion runs in two seconds instead of three to six minutes. And it can never duplicate or lose a note, even if two executions run at the same time.
+This is the part I'm proudest of, because it's invisible and it took the most thought. Today, when nothing has changed, ingestion runs in two seconds instead of three to six minutes. And it's designed to avoid duplicates and losses caused by concurrent runs.
 
 ![Before / after: ingestion drops from several minutes to two seconds](/blog/second-brain-perf.png)
 
@@ -163,13 +163,13 @@ The result: from three to six minutes, down to two seconds in steady state. Only
 
 The problem: two concurrent ingestion runs, one scheduled and one manual, and the base contained twice the same notes.
 
-The solution: with deterministic identifiers, an upsert overwrites instead of appending. Two simultaneous runs produce the same index.
+The solution: with deterministic identifiers, an upsert overwrites instead of appending. Two simultaneous runs converge on the same index.
 
 ### 5. The data loss that annoyed me
 
 The problem: while fixing duplicates, I introduced something worse. My cleanup deleted points missing from the current batch. But if a run had a stale view of the vault, it deleted the notes another run had just written. I lost four notes while testing. That kind of bug makes you doubt everything.
 
-The solution: timestamp each point with indexed_at, and only delete an orphan if it predates the start of the run. A concurrent run, even with a stale view, can no longer touch notes written after it started.
+The solution: timestamp each point with indexed_at, and only delete an orphan if it predates the start of the run. A concurrent run, even with a stale view, does not touch notes written after it started.
 
 The lesson: deleting what's no longer there is a destructive operation. On a concurrent system, it needs a time guard. I wrote that trap down in the project docs so I never fall into it again.
 
@@ -177,7 +177,7 @@ The lesson: deleting what's no longer there is a destructive operation. On a con
 
 The problem: while digging, I discovered a note written by an AI was status: active, so indexed, when it should have been quarantined. It came from an old version of the workflow.
 
-The solution: on top of quarantine, I excluded a whole folder, the one for captures and reports, from indexing. An AI write can no longer leak, even by accident.
+The solution: on top of quarantine, I excluded a whole folder, the one for captures and reports, from indexing. This double protection now keeps AI notes out of the index through that path.
 
 ### 7. The false friend that made me doubt
 

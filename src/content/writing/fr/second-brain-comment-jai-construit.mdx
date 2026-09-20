@@ -107,7 +107,7 @@ Le point clé n'est pas le RAG en lui-même : un « Obsidian + chatbot » classi
 
 Donner à une IA la capacité d'écrire dans ma base, c'est puissant et dangereux. Une note lue par une IA, ou un contenu piégé, pourrait l'inciter à écrire n'importe quoi. Ma règle est simple : toute écriture IA passe par une quarantaine.
 
-Une note proposée par une IA arrive avec status: pending. Elle est invisible pour la recherche tant que je ne l'ai pas validée à la main. Le pire qu'une IA compromise puisse faire, c'est écrire une note que je vois, que je peux corriger ou supprimer. Et tout est versionné par Git, donc réversible.
+Une note proposée par une IA arrive avec status: pending. Elle est invisible pour la recherche tant que je ne l'ai pas validée à la main. Dans ce cadre, le pire qu'une IA compromise puisse faire est d'écrire une note que je vois, que je peux corriger ou supprimer. Et tout est versionné par Git, donc réversible.
 
 ![Le flux de quarantaine : l'IA écrit, la note reste invisible jusqu'à validation](/blog/second-brain-quarantine.png)
 
@@ -127,7 +127,7 @@ Dernière brique pour que ça marche partout : l'authentification. Un token stat
 
 ### Étape 9 : rendre ça rapide et robuste
 
-C'est la partie dont je suis le plus fier, parce qu'elle est invisible et qu'elle a demandé le plus de réflexion. Aujourd'hui, quand rien n'a changé, l'ingestion tourne en deux secondes au lieu de trois à six minutes. Et elle ne peut jamais dupliquer ni perdre une note, même si deux exécutions tournent en même temps.
+C'est la partie dont je suis le plus fier, parce qu'elle est invisible et qu'elle a demandé le plus de réflexion. Aujourd'hui, quand rien n'a changé, l'ingestion tourne en deux secondes au lieu de trois à six minutes. Et elle est conçue pour éviter les duplications et les pertes liées aux exécutions concurrentes.
 
 ![Avant / après : l'ingestion passe de plusieurs minutes à deux secondes](/blog/second-brain-perf.png)
 
@@ -163,13 +163,13 @@ Le résultat : de trois à six minutes, on passe à deux secondes en régime sta
 
 Le problème : deux exécutions concurrentes de l'ingestion, une planifiée et une manuelle, et la base contenait deux fois les mêmes notes.
 
-La solution : avec des identifiants déterministes, un upsert écrase au lieu d'ajouter. Deux exécutions simultanées produisent le même index.
+La solution : avec des identifiants déterministes, un upsert écrase au lieu d'ajouter. Deux exécutions simultanées convergent vers le même index.
 
 ### 5. La perte de données qui m'a agacé
 
 Le problème : en corrigeant les doublons, j'ai introduit pire. Mon nettoyage supprimait les points absents du lot courant. Mais si une exécution avait une vue périmée du vault, elle supprimait les notes qu'une autre venait d'écrire. J'ai perdu quatre notes en testant. C'est le genre de bug qui te fait douter de tout.
 
-La solution : horodater chaque point avec indexed_at, et ne supprimer un orphelin que s'il est antérieur au début de l'exécution. Un run concurrent, même avec une vue périmée, ne peut plus toucher aux notes écrites après son démarrage.
+La solution : horodater chaque point avec indexed_at, et ne supprimer un orphelin que s'il est antérieur au début de l'exécution. Un run concurrent, même avec une vue périmée, ne touche pas aux notes écrites après son démarrage.
 
 La leçon : supprimer ce qui n'est plus là est une opération destructive. Sur un système concurrent, elle a besoin d'une garde temporelle. J'ai écrit ce piège noir sur blanc dans la doc du projet pour ne jamais y retomber.
 
@@ -177,7 +177,7 @@ La leçon : supprimer ce qui n'est plus là est une opération destructive. Sur 
 
 Le problème : en fouillant, j'ai découvert qu'une note écrite par une IA était en status: active, donc indexée, alors qu'elle aurait dû être en quarantaine. Elle venait d'une ancienne version du workflow.
 
-La solution : en plus de la quarantaine, j'ai exclu tout un dossier, celui des captures et des rapports, de l'indexation. Une écriture IA ne peut plus fuiter, même par accident.
+La solution : en plus de la quarantaine, j'ai exclu tout un dossier, celui des captures et des rapports, de l'indexation. Cette double protection empêche désormais une note IA de rejoindre l'index par ce chemin.
 
 ### 7. Le faux-ami qui m'a fait douter
 
