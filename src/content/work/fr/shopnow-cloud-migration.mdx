@@ -1,5 +1,5 @@
 ---
-title: "ShopNow — Architecture Cloud Hybride & Infrastructure Multi-Sites"
+title: "ShopNow : Architecture Cloud Hybride & Infrastructure Multi-Sites"
 description: "Conception d'une infrastructure cloud hybride pour une entreprise e-commerce : 3 sites interconnectés, migration Microsoft 365, plan de reprise, et 56M FCFA de budget maîtrisé."
 date: "2026-04-01"
 role: "Architecte Cloud"
@@ -16,43 +16,43 @@ lang: "fr"
 
 ShopNow opérait l'intégralité de son activité e-commerce sur un serveur monolithique dans un seul datacenter à Douala. Chaque pic de trafic risquait de mettre le site au sol. Chaque coupure électrique déclenchait une restauration manuelle. L'équipe IT passait l'essentiel de son temps à maintenir une infrastructure vieillissante plutôt qu'à construire.
 
-Trois sites physiques — Douala (siège), Yaoundé (antenne), Bafoussam (agence) — n'avaient aucune interconnexion fiable. Les équipes s'échangeaient des fichiers par email. Le travail à distance était pratiquement impossible. Et il n'existait aucun plan de reprise : si le datacenter de Douala brûlait ou subissait une coupure prolongée, toute l'activité s'arrêtait.
+Trois sites physiques, Douala (siège), Yaoundé (antenne), Bafoussam (agence), n'avaient aucune interconnexion fiable. Les équipes s'échangeaient des fichiers par email. Le travail à distance était pratiquement impossible. Et il n'existait aucun plan de reprise : si le datacenter de Douala brûlait ou subissait une coupure prolongée, toute l'activité s'arrêtait.
 
 La direction voulait moderniser, avec une contrainte ferme : zéro interruption pendant la migration.
 
 ## Ce que j'ai conçu
 
-J'ai conçu une architecture hybride on-premise + Azure permettant une migration progressive et réversible — chacune des 6 phases peut être annulée sans impacter les autres.
+J'ai conçu une architecture hybride on-premise + Azure permettant une migration progressive et réversible, chacune des 6 phases peut être annulée sans impacter les autres.
 
 **Réseau** : Chaque site est relié à Douala via MPLS (QoS garantie pour la VoIP) avec un tunnel IPSec de secours à basculement automatique. Sans ça, une dégradation du lien principal rend les appels entre sites inaudibles.
 
-**Identité** : Active Directory on-premise synchronisé avec Azure AD. Les utilisateurs gardent le même mot de passe partout, sans friction supplémentaire. MFA obligatoire sur tous les accès distants — dans un contexte où les connexions se font souvent depuis des appareils personnels, c'est non-négociable.
+**Identité** : Active Directory on-premise synchronisé avec Azure AD. Les utilisateurs gardent le même mot de passe partout, sans friction supplémentaire. MFA obligatoire sur tous les accès distants, dans un contexte où les connexions se font souvent depuis des appareils personnels, c'est non-négociable.
 
-**Email & collaboration** : Le serveur Exchange on-premise consommait 30% du temps de l'équipe IT en maintenance. Migration vers Microsoft 365 — Teams, SharePoint, calendriers partagés. Les utilisateurs ont vu la différence en 3 mois. Ce genre de victoire rapide donne de la crédibilité pour les phases plus complexes.
+**Email & collaboration** : Le serveur Exchange on-premise consommait 30% du temps de l'équipe IT en maintenance. Migration vers Microsoft 365, Teams, SharePoint, calendriers partagés. Les utilisateurs ont vu la différence en 3 mois. Ce genre de victoire rapide donne de la crédibilité pour les phases plus complexes.
 
-**Plan de reprise** : Veeam avec Cloud Tier vers Azure Blob. Sauvegardes quotidiennes répliquées dans le cloud automatiquement. Si le datacenter de Douala tombe — coupures, incendie, inondation — la reprise se fait sur Azure en moins de 4 heures.
+**Plan de reprise** : Veeam avec Cloud Tier vers Azure Blob. Sauvegardes quotidiennes répliquées dans le cloud automatiquement. Si le datacenter de Douala tombe, coupures, incendie, inondation, la reprise se fait sur Azure en moins de 4 heures.
 
-**Pourquoi Azure et pas AWS** : Azure gagne sur un point précis — l'intégration Active Directory est native, aucune passerelle tierce nécessaire. La région Azure South Africa North offre ~60ms de latence depuis le Cameroun. AWS aurait nécessité un bricolage LDAP pour l'AD et transformé la migration M365 en projet parallèle.
+**Pourquoi Azure et pas AWS** : Azure gagne sur un point précis, l'intégration Active Directory est native, aucune passerelle tierce nécessaire. La région Azure South Africa North offre ~60ms de latence depuis le Cameroun. AWS aurait nécessité un bricolage LDAP pour l'AD et transformé la migration M365 en projet parallèle.
 
 ## Impact
 
 <CardGrid>
   <Card title="~50% de réduction des coûts récurrents">
-    Budget première année : 56M FCFA (86 000 €). Récurrent à partir de l'an 2 : ~27M FCFA — bien en dessous du coût de maintenance du système legacy, pour une fiabilité bien supérieure.
+    Budget première année : 56M FCFA (86 000 €). Récurrent à partir de l'an 2 : ~27M FCFA, bien en dessous du coût de maintenance du système legacy, pour une fiabilité bien supérieure.
   </Card>
   <Card title="Cible 99,9% de disponibilité">
     D'un point de défaillance unique à une architecture multi-régions avec basculement automatique. La plateforme peut désormais absorber les pics de trafic qui mettaient autrefois le site au sol.
   </Card>
   <Card title="30% du temps IT libéré">
-    La migration Exchange → M365 seule a libéré 30% de la bande passante de l'équipe IT, précédemment consommée par la maintenance serveur — redirigée vers le produit et l'infrastructure.
+    La migration Exchange → M365 seule a libéré 30% de la bande passante de l'équipe IT, précédemment consommée par la maintenance serveur, redirigée vers le produit et l'infrastructure.
   </Card>
   <Card title="RTO < 4 heures">
-    En cas de panne totale du datacenter, l'activité peut reprendre sur Azure en moins de 4 heures — contre 2 à 3 jours estimés avec le setup legacy.
+    En cas de panne totale du datacenter, l'activité peut reprendre sur Azure en moins de 4 heures, contre 2 à 3 jours estimés avec le setup legacy.
   </Card>
 </CardGrid>
 
 ## Ce que j'ai appris
 
-Ce projet m'a confirmé quelque chose de spécifique au contexte africain : le cloud hybride n'est pas une préférence architecturale — c'est une nécessité. La connectivité Internet n'est pas assez fiable pour du 100% cloud, les datacenters locaux ne répondent pas aux normes internationales, et la réglementation impose de garder certaines données sur le territoire.
+Ce projet m'a confirmé quelque chose de spécifique au contexte africain : le cloud hybride n'est pas une préférence architecturale, c'est une nécessité. La connectivité Internet n'est pas assez fiable pour du 100% cloud, les datacenters locaux ne répondent pas aux normes internationales, et la réglementation impose de garder certaines données sur le territoire.
 
-J'ai aussi appris à vendre une migration technique à une direction non technique. Je n'ai pas parlé de VPC ou de Terraform. J'ai dit : *"vous aurez 99,9% de disponibilité, vos équipes pourront travailler depuis n'importe où, et vous paierez moins cher qu'aujourd'hui."* C'est le bon cadre — et ça reste vrai.
+J'ai aussi appris à vendre une migration technique à une direction non technique. Je n'ai pas parlé de VPC ou de Terraform. J'ai dit : *"vous aurez 99,9% de disponibilité, vos équipes pourront travailler depuis n'importe où, et vous paierez moins cher qu'aujourd'hui."* C'est le bon cadre, et ça reste vrai.

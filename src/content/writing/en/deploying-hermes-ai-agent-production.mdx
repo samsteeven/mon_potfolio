@@ -1,6 +1,6 @@
 ---
 title: "Deploying an Autonomous AI Agent in Production: Hermes Agent Retrospective"
-description: "Hardened security migration, Telegram gateway, web UI, automated remote backups — the complete log of a self-hosted agent deployment."
+description: "Hardened security migration, Telegram gateway, web UI, automated remote backups, the complete log of a self-hosted agent deployment."
 date: "2026-07-24"
 tags: ["AI", "DevOps", "Agents", "Security", "Infrastructure"]
 published: true
@@ -10,9 +10,9 @@ cover: "/blog/hermes-cover.jpg"
 
 Autonomous, self-hosted AI agents have become a compelling alternative to traditional SaaS assistants: full data control, no recurring fees, and deep integration into existing infrastructure. I wanted to test this under real production conditions with **Hermes Agent**, an open-source (MIT) project by Nous Research running as a persistent daemon with long-term memory, cron tasks, and a multi-platform gateway (Telegram, Discord, Slack, WhatsApp, etc.).
 
-The goal wasn't just running a five-minute `curl | bash` script — anyone can do that. The goal was deploying it **production-style**: proper user isolation, reduced attack surface, credential encryption, and a backup strategy resilient to server failures.
+The goal wasn't just running a five-minute `curl | bash` script, anyone can do that. The goal was deploying it **production-style**: proper user isolation, reduced attack surface, credential encryption, and a backup strategy resilient to server failures.
 
-This guide documents every step, including real-world troubleshooting encounters — because real deployments never go strictly according to initial docs.
+This guide documents every step, including real-world troubleshooting encounters, because real deployments never go strictly according to initial docs.
 
 ## Final Architecture
 
@@ -54,7 +54,7 @@ Two separate systemd services (`hermes-gateway.service` and `hermes-webui.servic
 
 Hermes provides a one-liner installer managing runtime dependencies (Python 3.11, Node.js, ripgrep, ffmpeg) automatically:
 
-<CodeWindow filename="Terminal — Setup">
+<CodeWindow filename="Terminal · Setup">
 ```bash
 curl -fsSL https://raw.githubusercontent.com/NousResearch/hermes-agent/main/scripts/install.sh | bash
 source ~/.bashrc
@@ -62,13 +62,13 @@ hermes setup
 ```
 </CodeWindow>
 
-The interactive wizard configures LLM providers (Anthropic Claude, OpenRouter, Nous Portal, or any OpenAI-compatible endpoint). At this stage everything runs — but under root, without firewall policies, and with unrestricted tools.
+The interactive wizard configures LLM providers (Anthropic Claude, OpenRouter, Nous Portal, or any OpenAI-compatible endpoint). At this stage everything runs, but under root, without firewall policies, and with unrestricted tools.
 
 ## 2. Agent Isolation: Root → Dedicated User Migration
 
 Running an agent with terminal access, code execution, and network access **as root** is a shortcut that feels fine right up until it isn't. Step one: creating a dedicated unprivileged user.
 
-<CodeWindow filename="Terminal — User Creation">
+<CodeWindow filename="Terminal · User Creation">
 ```bash
 adduser hermes
 ```
@@ -97,7 +97,7 @@ WantedBy=multi-user.target
 </CodeWindow>
 
 <Callout type="warning">
-  **Gotcha Encountered:** After migration, running `hermes config show` as root printed empty configuration — expected, as the CLI inspects the active user's `$HOME`. Always verify with `sudo -u hermes -i` before concluding there's a bug.
+  **Gotcha Encountered:** After migration, running `hermes config show` as root printed empty configuration, expected, as the CLI inspects the active user's `$HOME`. Always verify with `sudo -u hermes -i` before concluding there's a bug.
 </Callout>
 
 ## 3. Hardening Telegram Bot Attack Surface
@@ -106,7 +106,7 @@ This is the single most critical security hardening step: **by default, messagin
 
 `config.yaml` snippet before hardening:
 
-<CodeWindow filename="config.yaml — Before restriction">
+<CodeWindow filename="config.yaml · Before restriction">
 ```yaml
 platform_toolsets:
   telegram:
@@ -124,7 +124,7 @@ platform_toolsets:
 
 After hardening (retaining only essential messaging tools):
 
-<CodeWindow filename="config.yaml — After restriction">
+<CodeWindow filename="config.yaml · After restriction">
 ```yaml
 platform_toolsets:
   telegram:
@@ -146,7 +146,7 @@ platform_toolsets:
 
 Security guardrails explicitly enabled:
 
-<CodeWindow filename="config.yaml — Security Policies">
+<CodeWindow filename="config.yaml · Security Policies">
 ```yaml
 security:
   redact_secrets: true      # Redacts API keys / tokens from logs & responses
@@ -166,7 +166,7 @@ Using third-party tooling requires risk trade-offs offset here by: loopback bind
 ![Hermes WebUI live in production on hermes.samensteeve.com](/blog/hermes-workspace.png)
 *Hermes WebUI running in active production on hermes.samensteeve.com with multi-channel sessions (WebUI & Telegram).*
 
-<CodeWindow filename="Terminal — WebUI Installation">
+<CodeWindow filename="Terminal · WebUI Installation">
 ```bash
 git clone https://github.com/nesquena/hermes-webui.git
 cd hermes-webui
@@ -191,7 +191,7 @@ HERMES_WEBUI_ALLOWED_ORIGINS=https://hermes.yourdomain.com
 
 2. **Zombie process blocking the port**: A stale process from a failed restart prevented the new service from starting (`FATAL: Another server is already responding on 127.0.0.1:8787`). Resolved by identifying the PID with `ss -tlnp` and killing it explicitly.
 
-3. **Malformed YAML**: A manual config edit left a commented section header (`# security:`) with uncommented children below it — orphaned nodes to the YAML parser. Always validate with `python3 -c "import yaml; yaml.safe_load(...)"` before restarting a production service.
+3. **Malformed YAML**: A manual config edit left a commented section header (`# security:`) with uncommented children below it, orphaned nodes to the YAML parser. Always validate with `python3 -c "import yaml; yaml.safe_load(...)"` before restarting a production service.
 
 Nginx reverse proxy + Let's Encrypt for public HTTPS exposure:
 
@@ -212,7 +212,7 @@ server {
 ```
 </CodeWindow>
 
-<CodeWindow filename="Terminal — TLS Certificate">
+<CodeWindow filename="Terminal · TLS Certificate">
 ```bash
 sudo certbot --nginx -d hermes.yourdomain.com
 ```
@@ -220,7 +220,7 @@ sudo certbot --nginx -d hermes.yourdomain.com
 
 ## 5. Automated, Encrypted, Redundant Backups
 
-An agent accumulating long-term memory and auto-generated skills becomes increasingly valuable over time — losing it to a server incident would be a real cost. Strategy: daily local backup + replication to Google Drive, with 14-day rotation on both ends.
+An agent accumulating long-term memory and auto-generated skills becomes increasingly valuable over time, losing it to a server incident would be a real cost. Strategy: daily local backup + replication to Google Drive, with 14-day rotation on both ends.
 
 <CodeWindow filename="/home/hermes/scripts/backup-hermes.sh">
 ```bash
@@ -275,4 +275,4 @@ Security points applied to this component:
   </Card>
 </CardGrid>
 
-Code is only half the work on this kind of project — the other half, often overlooked, is the question: "who can do what, and what happens when things go wrong?" That second half is what separates a five-minute `curl | bash` from a deployment you can reasonably leave running unsupervised.
+Code is only half the work on this kind of project, the other half, often overlooked, is the question: "who can do what, and what happens when things go wrong?" That second half is what separates a five-minute `curl | bash` from a deployment you can reasonably leave running unsupervised.

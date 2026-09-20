@@ -1,6 +1,6 @@
 ---
-title: "EasyPharma — Recherche & Commande de Médicaments (Web + Mobile + API)"
-description: "Application de gestion de pharmacie et de commande de médicaments en ligne, livrée sur 3 plateformes (Spring Boot, Angular, Flutter) par une équipe de 4 que j'ai coordonnée — 12+ PRs fusionnées, CI/CD GitHub Actions, SonarQube et OWASP ZAP."
+title: "EasyPharma : Recherche & Commande de Médicaments (Web + Mobile + API)"
+description: "Application de gestion de pharmacie et de commande de médicaments en ligne, livrée sur 3 plateformes (Spring Boot, Angular, Flutter) par une équipe de 4 que j'ai coordonnée, 12+ PRs fusionnées, CI/CD GitHub Actions, SonarQube et OWASP ZAP."
 date: "2026-01-15"
 role: "Tech Lead & Développeur Full-Stack (équipe de 4)"
 stack: ["Spring Boot", "Java 21", "Angular", "Flutter", "PostgreSQL", "Docker", "SonarQube", "GitHub Actions"]
@@ -12,9 +12,9 @@ lang: "fr"
 
 ## Le contexte
 
-Trouver un médicament au Cameroun, c'est souvent appeler pharmacie par pharmacie, sans savoir qui a le produit en stock, à quel prix, ni où il se trouve. EasyPharma répond à ce problème : une application de **recherche et commande de médicaments** qui connecte patients, pharmacies et livreurs — livrée sur **trois plateformes** (backend, web, mobile).
+Trouver un médicament au Cameroun, c'est souvent appeler pharmacie par pharmacie, sans savoir qui a le produit en stock, à quel prix, ni où il se trouve. EasyPharma répond à ce problème : une application de **recherche et commande de médicaments** qui connecte patients, pharmacies et livreurs, livrée sur **trois plateformes** (backend, web, mobile).
 
-Projet de groupe du Semestre 1 à EADL : une **équipe de 4 développeurs** que j'ai coordonnée de bout en bout — organisation des tâches, revue de code, intégration continue.
+Projet de groupe du Semestre 1 à EADL : une **équipe de 4 développeurs** que j'ai coordonnée de bout en bout, organisation des tâches, revue de code, intégration continue.
 
 <CardGrid>
   <Card title="Pour les patients">
@@ -32,11 +32,11 @@ Projet de groupe du Semestre 1 à EADL : une **équipe de 4 développeurs** que 
 
 **Rôle : Tech Lead & coordinateur d'équipe.** J'ai organisé le travail par branches feature, revu et **fusionné 12+ pull requests**, et mis en place le pipeline **GitHub Actions** (build backend, build frontend, analyse SonarQube) qui validait chaque contribution avant merge. Contributions personnelles majeures : upload d'ordonnances, **notifications multi-canaux (In-App, SMS, Push, Email)**, dashboard admin avec statistiques et suivi des recherches, **notes et avis avec modération**, reversements aux pharmacies.
 
-**Backend — Spring Boot 3 (Java 21)** : architecture propre en 4 couches (présentation, application, domaine, infrastructure), authentification **JWT** (Spring Security), PostgreSQL (avec **PostGIS** pour la recherche géographique) / H2 en test, migrations **Flyway**, documentation **Swagger/OpenAPI**, **75 tests** unitaires et d'intégration (JUnit 5, Mockito, AssertJ), gestion des commandes, paiements et livraisons, **WebSocket** pour les notifications temps réel.
+**Backend, Spring Boot 3 (Java 21)** : architecture propre en 4 couches (présentation, application, domaine, infrastructure), authentification **JWT** (Spring Security), PostgreSQL (avec **PostGIS** pour la recherche géographique) / H2 en test, migrations **Flyway**, documentation **Swagger/OpenAPI**, **75 tests** unitaires et d'intégration (JUnit 5, Mockito, AssertJ), gestion des commandes, paiements et livraisons, **WebSocket** pour les notifications temps réel.
 
-**Frontend — Angular 21** : interface web (Tailwind) pour patients, pharmacies et admin, tests e2e **Cypress**, tests unitaires Vitest.
+**Frontend, Angular 21** : interface web (Tailwind) pour patients, pharmacies et admin, tests e2e **Cypress**, tests unitaires Vitest.
 
-**Mobile — Flutter** : application pour **patients et livreurs** — authentification et profils, panier avec **vérification de stock** et groupement des articles par pharmacie, traitement des commandes (une commande par pharmacie, **succès partiels gérés**), **historique des commandes** avec statuts colorés et pull-to-refresh, gestion d'erreurs réseau (Dio).
+**Mobile, Flutter** : application pour **patients et livreurs**, authentification et profils, panier avec **vérification de stock** et groupement des articles par pharmacie, traitement des commandes (une commande par pharmacie, **succès partiels gérés**), **historique des commandes** avec statuts colorés et pull-to-refresh, gestion d'erreurs réseau (Dio).
 
 **Qualité & sécurité (DevSecOps)** : **SonarQube** (analyse statique backend + frontend dans la CI), **OWASP ZAP** pour les tests de pénétration, Docker Compose multi-services (PostgreSQL, Redis, RabbitMQ, Mailhog).
 
@@ -44,13 +44,13 @@ Projet de groupe du Semestre 1 à EADL : une **équipe de 4 développeurs** que 
 
 <CardGrid>
   <Card title="3 plateformes, 1 produit">
-    Backend Spring Boot + web Angular + mobile Flutter — un seul produit livré sur tous les écrans, API partagée.
+    Backend Spring Boot + web Angular + mobile Flutter, un seul produit livré sur tous les écrans, API partagée.
   </Card>
   <Card title="Équipe de 4 coordonnée">
-    12+ pull requests revues et fusionnées via un workflow de branches feature + CI GitHub Actions — la preuve d'un vrai travail d'équipe industrialisé.
+    12+ pull requests revues et fusionnées via un workflow de branches feature + CI GitHub Actions, la preuve d'un vrai travail d'équipe industrialisé.
   </Card>
   <Card title="Qualité mesurée">
-    75 tests backend, SonarQube dans la CI, OWASP ZAP en sécurité — un niveau de rigueur rare pour un projet étudiant.
+    75 tests backend, SonarQube dans la CI, OWASP ZAP en sécurité, un niveau de rigueur rare pour un projet étudiant.
   </Card>
   <Card title="Fonctionnalités métier originales">
     Recherche par symptôme et proximité géographique (PostGIS), notifications multi-canaux, paiement et reversements pharmacies.
@@ -59,4 +59,4 @@ Projet de groupe du Semestre 1 à EADL : une **équipe de 4 développeurs** que 
 
 ## Ce que cette expérience m'a appris
 
-Coordonner une équipe sur un vrai workflow git m'a confirmé que le rôle du Tech Lead dépasse le code : découper le travail en branches cohérentes, rendre la CI exigeante (tout PR non vert ne passe pas), et intégrer des contributions de niveaux variés sans casser la cohérence d'ensemble. Livrer le même produit sur trois plateformes m'a aussi appris à définir une **API unique et stable** que le web et le mobile consomment identiquement — la discipline qui rend une application multi-plateforme maintenable.
+Coordonner une équipe sur un vrai workflow git m'a confirmé que le rôle du Tech Lead dépasse le code : découper le travail en branches cohérentes, rendre la CI exigeante (tout PR non vert ne passe pas), et intégrer des contributions de niveaux variés sans casser la cohérence d'ensemble. Livrer le même produit sur trois plateformes m'a aussi appris à définir une **API unique et stable** que le web et le mobile consomment identiquement, la discipline qui rend une application multi-plateforme maintenable.

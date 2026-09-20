@@ -7,7 +7,7 @@ published: true
 lang: "en"
 ---
 
-I could have gone with a REST API + Next.js like everyone else. I chose something different — and I haven't regretted it.
+I could have gone with a REST API + Next.js like everyone else. I chose something different, and I haven't regretted it.
 
 ## The problem with the classic API-first model
 
@@ -19,7 +19,7 @@ And that's not the only problem. You have to manage authentication twice, synchr
 
 ## What Inertia.js actually changes
 
-Inertia isn't a framework. It's a communication protocol between a server-side backend and a JavaScript frontend — without building an API.
+Inertia isn't a framework. It's a communication protocol between a server-side backend and a JavaScript frontend, without building an API.
 
 The Laravel controller passes data directly to the React component, as if it were returning a Blade view. On the React side, you receive that data as regular props. No `fetch`, no server state management, no loading states to handle.
 
@@ -38,7 +38,7 @@ public function index(): Response
 
 <CodeWindow filename="Dashboard.tsx">
 ```tsx
-// React component — data arrives as props
+// React component, data arrives as props
 export default function Dashboard({ projects, stats }: PageProps) {
   return (
     <main>
@@ -62,7 +62,7 @@ Laravel isn't just an HTTP framework. It's a mature ecosystem with ready-made so
 - **Jobs & Queues** for heavy background tasks
 - **Sanctum / Fortify** for frictionless authentication
 
-What I prefer most: complex business rules stay in dedicated Services and Actions. The controller just routes — receive the request, call the service, return the Inertia response.
+What I prefer most: complex business rules stay in dedicated Services and Actions. The controller just routes, receive the request, call the service, return the Inertia response.
 
 ## React as a presentation layer, nothing more
 

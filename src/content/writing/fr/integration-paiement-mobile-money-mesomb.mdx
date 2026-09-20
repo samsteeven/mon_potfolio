@@ -23,7 +23,7 @@ Si un SaaS tolère « le paiement est passé deux fois, on remboursera », un es
 
 ## Une abstraction, trois fournisseurs
 
-Première décision : ne jamais coder en dur un fournisseur. Chaque paiement passe par une interface unique — ainsi, changer ou ajouter un PSP ne touche jamais la logique métier.
+Première décision : ne jamais coder en dur un fournisseur. Chaque paiement passe par une interface unique, ainsi, changer ou ajouter un PSP ne touche jamais la logique métier.
 
 ```php
 interface PaymentGatewayInterface
@@ -46,12 +46,12 @@ return $this->cinetPay;
 ```
 
 <Callout type="tip">
-  L'abstraction fait tout le travail. Quand une passerelle change d'API ou qu'un nouvel agrégateur apparaît, on ajoute un adaptateur — on ne réécrit pas l'escrow.
+  L'abstraction fait tout le travail. Quand une passerelle change d'API ou qu'un nouvel agrégateur apparaît, on ajoute un adaptateur, on ne réécrit pas l'escrow.
 </Callout>
 
 ## La partie dure : signer ses requêtes comme le SDK
 
-MeSomb n'utilise pas une simple clé d'API. Chaque requête porte un en-tête `Authorization` construit à partir d'une signature **HMAC-SHA1** sur une requête canonique. Le SDK PHP officiel (`hachther/mesomb-php`) la construit d'une manière *très* précise — et si l'ordre d'insertion de tes en-têtes ne correspond pas exactement, toutes les requêtes sont rejetées avec un 401.
+MeSomb n'utilise pas une simple clé d'API. Chaque requête porte un en-tête `Authorization` construit à partir d'une signature **HMAC-SHA1** sur une requête canonique. Le SDK PHP officiel (`hachther/mesomb-php`) la construit d'une manière *très* précise, et si l'ordre d'insertion de tes en-têtes ne correspond pas exactement, toutes les requêtes sont rejetées avec un 401.
 
 Les détails subtils qui font toute la différence :
 
@@ -67,17 +67,17 @@ $signature = hash_hmac('sha1', $stringToSign, $this->secretKey);
 ```
 
 <Callout type="warning">
-  C'est le genre de code où on ne peut pas « improviser ». J'ai reconstruit la signature en lisant le code du SDK source ligne par ligne — le commentaire de la méthode note d'ailleurs l'ordre d'insertion exact copié depuis `AOperation::executeRequest` et `Signature::signRequest`. C'est cette attention qui transforme un 401 opaque en un vrai paiement fonctionnel.
+  C'est le genre de code où on ne peut pas « improviser ». J'ai reconstruit la signature en lisant le code du SDK source ligne par ligne, le commentaire de la méthode note d'ailleurs l'ordre d'insertion exact copié depuis `AOperation::executeRequest` et `Signature::signRequest`. C'est cette attention qui transforme un 401 opaque en un vrai paiement fonctionnel.
 </Callout>
 
 Deux autres pièges bien réels avec les numéros de téléphone camerounais :
 
 - Les utilisateurs saisissent leur numéro sous une dizaine de formats (`+237677123456`, `00237 677...`, `67712 34 56`). Je retire tout ce qui n'est pas un chiffre, j'enlève le préfixe `237`, et je garde les **9 chiffres locaux**.
-- L'**opérateur est déduit du préfixe** (`69`, `655`, `656` → Orange ; sinon MTN) — car l'API a besoin de savoir quel portefeuille débiter.
+- L'**opérateur est déduit du préfixe** (`69`, `655`, `656` → Orange ; sinon MTN), car l'API a besoin de savoir quel portefeuille débiter.
 
 ## L'idempotence : le bug qui double-encaisse
 
-La signature de tout moteur de paiement, c'est une **course conditionnelle**. Imagine une confirmation où un webhook et une vérification manuelle de statut arrivent pour la même transaction — ou où le PSP rejoue une notification. Sans protection, deux requêtes concurrentes passent toutes les deux le garde `if ($tx->status !== 'completed')`, et on génère **deux factures et on marque la prestation comme payée deux fois**.
+La signature de tout moteur de paiement, c'est une **course conditionnelle**. Imagine une confirmation où un webhook et une vérification manuelle de statut arrivent pour la même transaction, ou où le PSP rejoue une notification. Sans protection, deux requêtes concurrentes passent toutes les deux le garde `if ($tx->status !== 'completed')`, et on génère **deux factures et on marque la prestation comme payée deux fois**.
 
 Le correctif est un verrouillage pessimiste à l'intérieur de la transaction :
 
@@ -96,7 +96,7 @@ return DB::transaction(function () use ($transaction) {
 ```
 
 <Callout type="warning">
-  `lockForUpdate()` prend un verrou de ligne pour qu'une transaction concurrente **attende**, relise l'état frais, et constate qu'il est déjà `completed`. Sans ça, deux requêtes au même millisecond passent toutes deux le test — et l'argent coule deux fois. C'est invisible dans les tests unitaires et quasi impossible à reproduire à la main.
+  `lockForUpdate()` prend un verrou de ligne pour qu'une transaction concurrente **attende**, relise l'état frais, et constate qu'il est déjà `completed`. Sans ça, deux requêtes au même millisecond passent toutes deux le test, et l'argent coule deux fois. C'est invisible dans les tests unitaires et quasi impossible à reproduire à la main.
 </Callout>
 
 Le même motif protège **chaque transition qui touche à l'argent** : la libération d'escrow (retour anticipé si déjà `released`) et le remboursement (retour anticipé si déjà `refunded`).
@@ -136,11 +136,11 @@ Rembourser n'est pas un bouton. Ce sont des scénarios aux économies différent
 
 - **Remboursement total** (annulation avant le début) : 100 % du brut payé, frais PSP absorbés par la plateforme.
 - **Remboursement partiel** (annulation après le début) : un pourcentage saisi au cas par cas par un admin.
-- **Litige** : 100 % du brut **plus** recouvrement de la commission plateforme auprès de l'expert — soit débitée de sa balance interne, soit récupérée via un payout net *négatif* (`net_amount` négatif) absorbé sur ses futurs versements.
+- **Litige** : 100 % du brut **plus** recouvrement de la commission plateforme auprès de l'expert, soit débitée de sa balance interne, soit récupérée via un payout net *négatif* (`net_amount` négatif) absorbé sur ses futurs versements.
 
 <CardGrid>
   <Card title="Remboursement idempotent">
-    Le remboursement verrouille la ligne et retourne anticipé si déjà remboursé — une reprise ne rembourse jamais deux fois.
+    Le remboursement verrouille la ligne et retourne anticipé si déjà remboursé, une reprise ne rembourse jamais deux fois.
   </Card>
   <Card title="Refund PSP best-effort">
     Si le remboursement passerelle échoue, la ligne reste `pending` et sera rejouée, plutôt que de faire échouer toute l'opération.
@@ -168,24 +168,24 @@ $expectedSignature = hash_hmac('sha256', $payloadToSign, $secret);
 return hash_equals($expectedSignature, $receivedSignature);
 ```
 
-**Les formats de payload changent sous vos pieds.** La passerelle a évolué d'un payload legacy `{status, pk, reference}` vers une forme imbriquée `{event_type, data.object}`. Le handler normalise les deux — le processeur de webhook doit survivre à la dérive d'API de votre fournisseur.
+**Les formats de payload changent sous vos pieds.** La passerelle a évolué d'un payload legacy `{status, pk, reference}` vers une forme imbriquée `{event_type, data.object}`. Le handler normalise les deux, le processeur de webhook doit survivre à la dérive d'API de votre fournisseur.
 
-**Un bug de log qui pouvait faire tomber les paiements.** Le canal de log de production (Nightwatch) avait parfois un problème de permissions fichier. Tout `Log::` qui levait une exception à l'intérieur du handler faisait échouer tout le webhook avec un 500 — que le PSP rejouait en boucle, bloquant potentiellement des paiements légitimes. Le correctif : envelopper le log dans un `try/catch` best-effort pour qu'un échec d'écriture ne puisse jamais faire échouer un paiement.
+**Un bug de log qui pouvait faire tomber les paiements.** Le canal de log de production (Nightwatch) avait parfois un problème de permissions fichier. Tout `Log::` qui levait une exception à l'intérieur du handler faisait échouer tout le webhook avec un 500, que le PSP rejouait en boucle, bloquant potentiellement des paiements légitimes. Le correctif : envelopper le log dans un `try/catch` best-effort pour qu'un échec d'écriture ne puisse jamais faire échouer un paiement.
 
 ```php
 try {
     Log::info("Webhook reçu ({$gatewayName})", ['payload' => $request->all()]);
 } catch (\Throwable $logE) {
-    // silencieux — un échec de log ne doit jamais bloquer un paiement
+    // silencieux, un échec de log ne doit jamais bloquer un paiement
 }
 ```
 
 ## Ce que ça m'a appris
 
-Le paiement exige un tempérament d'ingénierie spécifique. Les bugs intéressants ne sont pas sur les chemins heureux — ils sont dans **les reprises, les courses et la dérive des fournisseurs**. Trois règles que j'applique désormais partout :
+Le paiement exige un tempérament d'ingénierie spécifique. Les bugs intéressants ne sont pas sur les chemins heureux, ils sont dans **les reprises, les courses et la dérive des fournisseurs**. Trois règles que j'applique désormais partout :
 
 <Callout type="tip">
   **1. Verrouille chaque transition d'argent.** `lockForUpdate()` + retour anticipé idempotent sur chaque changement d'état. **2. Ne laisse jamais un effet de bord faire échouer un paiement.** Log, notifications ou appels secondaires doivent être best-effort, pas bloquants. **3. Traite les API de fournisseurs comme des contrats hostiles.** Vérifie les signatures, tolère la fenêtre de rejeu, normalise les payloads multi-formats, et lis le code du SDK quand une requête renvoie un 401 cryptique.
 </Callout>
 
-Pour une legaltech — où la confiance *est* le produit — l'escrow n'est pas une fonctionnalité. C'est tout l'enjeu. Et il ne tient que si le code en dessous refuse de laisser l'argent couler deux fois, ou de laisser une ligne de log faire tomber un paiement.
+Pour une legaltech, où la confiance *est* le produit, l'escrow n'est pas une fonctionnalité. C'est tout l'enjeu. Et il ne tient que si le code en dessous refuse de laisser l'argent couler deux fois, ou de laisser une ligne de log faire tomber un paiement.

@@ -1,8 +1,8 @@
 ---
-title: "Second Brain — Base de connaissances personnelle accessible via MCP"
-description: "Un « second cerveau » auto-hébergé : un vault Obsidian rendu lisible ET enrichissable par n'importe quelle IA via un serveur MCP dédié (auth OAuth) — RAG avec embeddings locaux Ollama + Qdrant, génération DeepSeek, ingestion différentielle idempotente, écritures IA validées humainement."
+title: "Second Brain : Base de connaissances personnelle accessible via MCP"
+description: "Un « second cerveau » auto-hébergé : un vault Obsidian rendu lisible ET enrichissable par n'importe quelle IA via un serveur MCP dédié (auth OAuth), RAG avec embeddings locaux Ollama + Qdrant, génération DeepSeek, ingestion différentielle idempotente, écritures IA validées humainement."
 date: "2026-09-19"
-role: "Conception & réalisation (solo) — full-stack, infra, MCP"
+role: "Conception & réalisation (solo), full-stack, infra, MCP"
 stack: ["n8n", "MCP", "RAG", "Qdrant", "Ollama", "DeepSeek", "Docker", "GitHub"]
 status: "shipped"
 featured: false
@@ -13,7 +13,7 @@ cover: "/blog/second-brain-cover.png"
 
 ## Le contexte
 
-Chaque conversation avec une IA repartait de zéro. Je devais réexpliquer qui je suis, mes projets, mes compétences, mon CV — un contexte dispersé, jamais à jour, et aucune IA n'a une mémoire durable que je contrôle. Je voulais que ma base de connaissances soit **accessible par n'importe quelle IA** (ChatGPT, Claude, Cursor, opencode), pas enfermée dans un seul outil.
+Chaque conversation avec une IA repartait de zéro. Je devais réexpliquer qui je suis, mes projets, mes compétences, mon CV, un contexte dispersé, jamais à jour, et aucune IA n'a une mémoire durable que je contrôle. Je voulais que ma base de connaissances soit **accessible par n'importe quelle IA** (ChatGPT, Claude, Cursor, opencode), pas enfermée dans un seul outil.
 
 ## Ce que j'ai construit
 
@@ -29,7 +29,7 @@ Un « second cerveau » auto-hébergé : un **vault Obsidian** comme source de v
     N'importe quelle IA peut écrire des notes. Chaque note est classée automatiquement (type, tags, dossier), vérifiée contre les doublons, et mise en quarantaine jusqu'à validation.
   </Card>
   <Card title="second_brain_project_details">
-    L'IA plonge dans la <strong>source</strong> d'un projet (README ou fichier précis sur GitHub) à la demande — sans gonfler le vault.
+    L'IA plonge dans la <strong>source</strong> d'un projet (README ou fichier précis sur GitHub) à la demande, sans gonfler le vault.
   </Card>
   <Card title="Ingestion différentielle (toutes les 30 min)">
     Repo privé → chunking à IDs déterministes → seuls les chunks nouveaux ou modifiés sont embarqués (~2 s en régime stable). Idempotente et sans perte.
@@ -48,10 +48,10 @@ Un « second cerveau » auto-hébergé : un **vault Obsidian** comme source de v
     Une seule URL MCP (`/mcp/second-brain-kb`, auth OAuth) permet à ChatGPT, Claude, Cursor ou opencode de LIRE et d'ÉCRIRE dans ma base, avec citations des sources.
   </Card>
   <Card title="Confidentialité par conception">
-    Les embeddings tournent 100 % en local (Ollama) sur mon VPS — aucun tiers n'indexe mes notes. Zéro coût API supplémentaire.
+    Les embeddings tournent 100 % en local (Ollama) sur mon VPS, aucun tiers n'indexe mes notes. Zéro coût API supplémentaire.
   </Card>
   <Card title="Validation humaine">
-    Rien de ce qu'une IA écrit n'entre dans la base interrogeable sans validation (`status: pending`) — un garde-fou contre l'injection de prompt.
+    Rien de ce qu'une IA écrit n'entre dans la base interrogeable sans validation (`status: pending`), un garde-fou contre l'injection de prompt.
   </Card>
   <Card title="Ingestion robuste">
     IDs déterministes → aucun doublon, même en exécutions concurrentes ; nettoyage horodaté → aucune perte. ~2 s en régime stable.

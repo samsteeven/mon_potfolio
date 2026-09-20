@@ -7,7 +7,7 @@ published: true
 lang: "fr"
 ---
 
-La plupart des développeurs pensent à la sécurité comme à une étape — un audit à faire après avoir codé une feature. La recherche en sécurité t'apprend que c'est une façon de penser.
+La plupart des développeurs pensent à la sécurité comme à une étape, un audit à faire après avoir codé une feature. La recherche en sécurité t'apprend que c'est une façon de penser.
 
 ## Le changement de perspective
 
@@ -25,14 +25,14 @@ La faille IDOR (Insecure Direct Object Reference) consiste à manipuler un ident
 
 <CodeWindow filename="DocumentController.php">
 ```php
-// ❌ DANGEREUX — l'ID vient de la requête sans vérification de propriété
+// ❌ DANGEREUX, l'ID vient de la requête sans vérification de propriété
 public function destroy(Request $request): RedirectResponse
 {
     Document::findOrFail($request->id)->delete();
     return back();
 }
 
-//  SÉCURISÉ — Laravel Policy valide l'ownership
+//  SÉCURISÉ, Laravel Policy valide l'ownership
 public function destroy(Document $document): RedirectResponse
 {
     $this->authorize('delete', $document); 
@@ -50,10 +50,10 @@ Le mass assignment survient quand un utilisateur soumet des paramètres inattend
 
 <CodeWindow filename="UserController.php">
 ```php
-// ❌ RISQUÉ — si le modèle n'a pas de $fillable ou $guarded restrictif
+// ❌ RISQUÉ, si le modèle n'a pas de $fillable ou $guarded restrictif
 User::create($request->all());
 
-//  SÉCURISÉ — définition explicite des champs autorisés
+//  SÉCURISÉ, définition explicite des champs autorisés
 User::create($request->only(['name', 'email', 'password']));
 ```
 </CodeWindow>
@@ -64,12 +64,12 @@ Ce type de bug survient lorsque deux requêtes concurrentes s'exécutent simulta
 
 <CodeWindow filename="WalletService.php">
 ```php
-// ❌ DANGEREUX — les deux requêtes simultanées peuvent passer le check avant le décrément
+// ❌ DANGEREUX, les deux requêtes simultanées peuvent passer le check avant le décrément
 if ($wallet->balance >= $amount) {
     $wallet->decrement('balance', $amount);
 }
 
-//  SÉCURISÉ — verrouillage pessimiste lockForUpdate dans une transaction SQL
+//  SÉCURISÉ, verrouillage pessimiste lockForUpdate dans une transaction SQL
 DB::transaction(function () use ($wallet, $amount) {
     $wallet->lockForUpdate()->find($wallet->id);
 

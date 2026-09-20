@@ -7,7 +7,7 @@ published: true
 lang: "en"
 ---
 
-Most developers think of security as a stage — an audit to be done after a feature is coded. Security research teaches you that it's a way of thinking.
+Most developers think of security as a stage, an audit to be done after a feature is coded. Security research teaches you that it's a way of thinking.
 
 ## The shift in perspective
 
@@ -25,14 +25,14 @@ An IDOR (Insecure Direct Object Reference) occurs when an application exposes a 
 
 <CodeWindow filename="DocumentController.php">
 ```php
-// ❌ DANGEROUS — the ID comes directly from the request without owner validation
+// ❌ DANGEROUS, the ID comes directly from the request without owner validation
 public function destroy(Request $request): RedirectResponse
 {
     Document::findOrFail($request->id)->delete();
     return back();
 }
 
-//  SECURE — Laravel Policy validates ownership
+//  SECURE, Laravel Policy validates ownership
 public function destroy(Document $document): RedirectResponse
 {
     $this->authorize('delete', $document); 
@@ -50,10 +50,10 @@ Mass Assignment occurs when an application saves user input parameters (e.g. `is
 
 <CodeWindow filename="UserController.php">
 ```php
-// ❌ RISKY — unless the model has a very restrictive $fillable array
+// ❌ RISKY, unless the model has a very restrictive $fillable array
 User::create($request->all());
 
-//  SECURE — explicitly defining only allowed input fields
+//  SECURE, explicitly defining only allowed input fields
 User::create($request->only(['name', 'email', 'password']));
 ```
 </CodeWindow>
@@ -64,12 +64,12 @@ This type of bug occurs when two concurrent requests execute at the exact same m
 
 <CodeWindow filename="WalletService.php">
 ```php
-// ❌ DANGEROUS — both concurrent requests might pass the check before decrementing
+// ❌ DANGEROUS, both concurrent requests might pass the check before decrementing
 if ($wallet->balance >= $amount) {
     $wallet->decrement('balance', $amount);
 }
 
-//  SECURE — pessimistic locking lockForUpdate within a SQL transaction
+//  SECURE, pessimistic locking lockForUpdate within a SQL transaction
 DB::transaction(function () use ($wallet, $amount) {
     $wallet->lockForUpdate()->find($wallet->id);
 

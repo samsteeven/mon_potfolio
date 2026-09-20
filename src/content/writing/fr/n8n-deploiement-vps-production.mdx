@@ -12,13 +12,13 @@ L'outil d'automatisation autopilote peut lui-même mal tourner : une mauvaise is
 
 ## Le contexte : rentabiliser un VPS déjà en place
 
-Pour mes propres automatisations — un pipeline de qualification de leads qui intercepte les soumissions de formulaire de contact, les enrichit via une recherche web, les score, et alimente une CRM partagée, plus un assistant CRM WhatsApp — j'avais besoin d'un orchestrateur de workflows. Plutôt que de payer un abonnement cloud facturé à l'exécution, j'ai choisi d'auto-héberger [n8n](https://n8n.io) sur un VPS déjà utilisé pour mon activité — histoire de rentabiliser des ressources disponibles plutôt que de multiplier les infrastructures.
+Pour mes propres automatisations, un pipeline de qualification de leads qui intercepte les soumissions de formulaire de contact, les enrichit via une recherche web, les score, et alimente une CRM partagée, plus un assistant CRM WhatsApp, j'avais besoin d'un orchestrateur de workflows. Plutôt que de payer un abonnement cloud facturé à l'exécution, j'ai choisi d'auto-héberger [n8n](https://n8n.io) sur un VPS déjà utilisé pour mon activité, histoire de rentabiliser des ressources disponibles plutôt que de multiplier les infrastructures.
 
 Le VPS tournait déjà sous Ubuntu, avec Docker, nginx, Redis et une base MySQL locale. L'objectif : ajouter n8n proprement, via un sous-domaine dédié, sans affecter la disponibilité du reste.
 
 ## L'architecture retenue : isolation complète
 
-La tentation était de faire cohabiter n8n avec la base MySQL de production. J'ai refusé — un crash ou une saturation de disque côté n8n aurait eu un impact direct sur le site principal. L'architecture retenue repose sur une isolation stricte :
+La tentation était de faire cohabiter n8n avec la base MySQL de production. J'ai refusé, un crash ou une saturation de disque côté n8n aurait eu un impact direct sur le site principal. L'architecture retenue repose sur une isolation stricte :
 
 - Un conteneur **PostgreSQL 16 dédié** (n8n recommande officiellement Postgres, pas MySQL, en production)
 - Un **réseau Docker isolé** reliant uniquement n8n et sa base
@@ -32,7 +32,7 @@ Cette isolation garantit qu'un problème sur n8n (crash, faille, usage disque ex
 
 ### 1. Préparer l'arborescence dédiée
 
-<CodeWindow filename="Terminal — Bash">
+<CodeWindow filename="Terminal · Bash">
 ```bash
 sudo mkdir -p /opt/n8n
 cd /opt/n8n
@@ -44,7 +44,7 @@ sudo mkdir -p n8n_data postgres_data
 
 Cette clé chiffre tous les credentials stockés par n8n (mots de passe d'API, tokens OAuth). Sans elle, impossible de restaurer un backup sur une nouvelle instance.
 
-<CodeWindow filename="Terminal — OpenSSL">
+<CodeWindow filename="Terminal · OpenSSL">
 ```bash
 openssl rand -hex 32
 ```
@@ -77,7 +77,7 @@ POSTGRES_DB=n8n
 
 ### 4. Écrire le `docker-compose.yml`
 
-Deux services : Postgres (dédié, isolé) et n8n, reliés par un réseau Docker privé. La condition `service_healthy` sur Postgres garantit que n8n ne démarre qu'une fois la base réellement prête — pas juste le conteneur lancé.
+Deux services : Postgres (dédié, isolé) et n8n, reliés par un réseau Docker privé. La condition `service_healthy` sur Postgres garantit que n8n ne démarre qu'une fois la base réellement prête, pas juste le conteneur lancé.
 
 <CodeWindow filename="docker-compose.yml">
 ```yaml
@@ -142,7 +142,7 @@ server {
 ```
 </CodeWindow>
 
-<CodeWindow filename="Terminal — Activation & SSL">
+<CodeWindow filename="Terminal · Activation & SSL">
 ```bash
 sudo ln -s /etc/nginx/sites-available/n8n.samensteeve.com /etc/nginx/sites-enabled/
 sudo nginx -t
@@ -165,7 +165,7 @@ Le processus n8n dans le conteneur tourne sous l'UID `1000` (utilisateur `node`)
 
 ### 2. Le sous-domaine flaggé "site dangereux" par Google
 
-Une fois le service opérationnel et le HTTPS activé, Chrome s'est mis à bloquer l'accès au sous-domaine avec un avertissement "hameçonnage" — alors que le contenu était parfaitement légitime.
+Une fois le service opérationnel et le HTTPS activé, Chrome s'est mis à bloquer l'accès au sous-domaine avec un avertissement "hameçonnage", alors que le contenu était parfaitement légitime.
 
 ![Avertissement Google Safe Browsing - Site Dangereux](/blog/n8n-google-warning.png)
 *Figure 1 : Blocage heuristique Chrome / Google Safe Browsing lors du premier accès au sous-domaine n8n.*
@@ -183,19 +183,19 @@ Une fois le faux positif levé par Google et les permissions de volumes corrigé
 
 ## Ce qui tourne en production aujourd'hui
 
-L'instance n8n est déployée et sécurisée sur n8n.samensteeve.com (2FA, sauvegardes PostgreSQL automatisées). Le **Lead Qualification Agent** y tourne en production, connecté au WhatsApp CRM Assistant (construit et testé) par une **même Data Table CRM** — le cœur du système.
+L'instance n8n est déployée et sécurisée sur n8n.samensteeve.com (2FA, sauvegardes PostgreSQL automatisées). Le **Lead Qualification Agent** y tourne en production, connecté au WhatsApp CRM Assistant (construit et testé) par une **même Data Table CRM**, le cœur du système.
 
-### Lead Qualification Agent (écriture) — en production
+### Lead Qualification Agent (écriture) : en production
 
-Agent IA autonome qui intercepte les soumissions de formulaire, enrichit les données via Tavily, score le lead de 1 à 10, et **écrit** dans la CRM Data Table (upsert par email). Email de notification personnalisé envoyé au prospect en < 30 secondes. Mémoire Redis, Output Parser strict (schéma JSON contraint), retry sur Gmail et Tavily. Webhook sécurisé par header + filtrage IP — le workflow est publié et reçoit les soumissions de formulaire.
+Agent IA autonome qui intercepte les soumissions de formulaire, enrichit les données via Tavily, score le lead de 1 à 10, et **écrit** dans la CRM Data Table (upsert par email). Email de notification personnalisé envoyé au prospect en < 30 secondes. Mémoire Redis, Output Parser strict (schéma JSON contraint), retry sur Gmail et Tavily. Webhook sécurisé par header + filtrage IP, le workflow est publié et reçoit les soumissions de formulaire.
 
-### WhatsApp CRM Assistant (lecture & opérationnel) — en attente de credentials
+### WhatsApp CRM Assistant (lecture & opérationnel) : en attente de credentials
 
-Agent WhatsApp qui permet de **lire** et interroger la même CRM en langage naturel — consulter les leads récents, chercher par email, mettre à jour un statut, envoyer un email professionnel. Mémoire Redis pour le contexte conversationnel. Construit et testé en manuel ; la publication n'attend que les credentials WhatsApp Business.
+Agent WhatsApp qui permet de **lire** et interroger la même CRM en langage naturel, consulter les leads récents, chercher par email, mettre à jour un statut, envoyer un email professionnel. Mémoire Redis pour le contexte conversationnel. Construit et testé en manuel ; la publication n'attend que les credentials WhatsApp Business.
 
 ### Le pipeline complet
 
-Les deux workflows forment un système unifié : le Lead Agent **peuple** la CRM avec des leads qualifiés et enrichis, le WhatsApp Assistant permet de **consulter** et **agir** sur ces données directement depuis WhatsApp — sans ouvrir l'interface n8n. Mémoire Redis partagée pour la continuité conversationnelle entre les deux agents.
+Les deux workflows forment un système unifié : le Lead Agent **peuple** la CRM avec des leads qualifiés et enrichis, le WhatsApp Assistant permet de **consulter** et **agir** sur ces données directement depuis WhatsApp, sans ouvrir l'interface n8n. Mémoire Redis partagée pour la continuité conversationnelle entre les deux agents.
 
 <Callout type="tip">
   Chaque workflow a sa propre logique de sécurité : le Lead Qualification Agent utilise une credential Header Auth (`n8n-webhook-secret`) sur son webhook, tandis que le WhatsApp CRM Assistant s'appuiera sur l'authentification WhatsApp Business de n8n une fois ses credentials renseignées. Les deux ont un `retryOnFail` configuré sur les nœuds critiques.
@@ -212,4 +212,4 @@ Les deux workflows forment un système unifié : le Lead Agent **peuple** la CRM
   </Card>
 </CardGrid>
 
-Ce type de déploiement — modeste en apparence — mobilise tout un spectre de compétences : architecture système (isolation, réseaux Docker), sécurité (permissions, chiffrement, authentification), réseau (DNS, reverse proxy, certificats SSL), et une méthode rigoureuse pour diagnostiquer des pannes réelles.
+Ce type de déploiement, modeste en apparence, mobilise tout un spectre de compétences : architecture système (isolation, réseaux Docker), sécurité (permissions, chiffrement, authentification), réseau (DNS, reverse proxy, certificats SSL), et une méthode rigoureuse pour diagnostiquer des pannes réelles.

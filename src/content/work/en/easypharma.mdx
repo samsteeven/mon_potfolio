@@ -1,6 +1,6 @@
 ---
-title: "EasyPharma — Medicine Search & Ordering (Web + Mobile + API)"
-description: "Online pharmacy management and medicine ordering platform delivered on 3 platforms (Spring Boot, Angular, Flutter) by a team of 4 I coordinated — 12+ merged PRs, GitHub Actions CI/CD, SonarQube and OWASP ZAP."
+title: "EasyPharma : Medicine Search & Ordering (Web + Mobile + API)"
+description: "Online pharmacy management and medicine ordering platform delivered on 3 platforms (Spring Boot, Angular, Flutter) by a team of 4 I coordinated, 12+ merged PRs, GitHub Actions CI/CD, SonarQube and OWASP ZAP."
 date: "2026-01-15"
 role: "Tech Lead & Full-Stack Developer (team of 4)"
 stack: ["Spring Boot", "Java 21", "Angular", "Flutter", "PostgreSQL", "Docker", "SonarQube", "GitHub Actions"]
@@ -12,9 +12,9 @@ lang: "en"
 
 ## The Context
 
-Finding a medicine in Cameroon usually means calling pharmacies one by one — without knowing who has it in stock, at what price, or where. EasyPharma solves this: a **medicine search and ordering** application connecting patients, pharmacies and couriers — delivered on **three platforms** (backend, web, mobile).
+Finding a medicine in Cameroon usually means calling pharmacies one by one, without knowing who has it in stock, at what price, or where. EasyPharma solves this: a **medicine search and ordering** application connecting patients, pharmacies and couriers, delivered on **three platforms** (backend, web, mobile).
 
-A Semester 1 group project at EADL: a **team of 4 developers** I coordinated end-to-end — task organization, code review, continuous integration.
+A Semester 1 group project at EADL: a **team of 4 developers** I coordinated end-to-end, task organization, code review, continuous integration.
 
 <CardGrid>
   <Card title="For patients">
@@ -32,11 +32,11 @@ A Semester 1 group project at EADL: a **team of 4 developers** I coordinated end
 
 **Role: Tech Lead & team coordinator.** I organized the work into feature branches, reviewed and **merged 12+ pull requests**, and set up the **GitHub Actions** pipeline (backend build, frontend build, SonarQube analysis) that validated every contribution before merge. Major personal contributions: prescription upload, **multi-channel notifications (In-App, SMS, Push, Email)**, admin dashboard with statistics and search tracking, **reviews & ratings with moderation**, pharmacy payouts.
 
-**Backend — Spring Boot 3 (Java 21)**: clean architecture in 4 layers (presentation, application, domain, infrastructure), **JWT** authentication (Spring Security), PostgreSQL (with **PostGIS** for geographic search) / H2 for tests, **Flyway** migrations, **Swagger/OpenAPI** documentation, **75 unit & integration tests** (JUnit 5, Mockito, AssertJ), order, payment and delivery management, **WebSocket** for real-time notifications.
+**Backend, Spring Boot 3 (Java 21)**: clean architecture in 4 layers (presentation, application, domain, infrastructure), **JWT** authentication (Spring Security), PostgreSQL (with **PostGIS** for geographic search) / H2 for tests, **Flyway** migrations, **Swagger/OpenAPI** documentation, **75 unit & integration tests** (JUnit 5, Mockito, AssertJ), order, payment and delivery management, **WebSocket** for real-time notifications.
 
-**Frontend — Angular 21**: web interface (Tailwind) for patients, pharmacies and admin, e2e tests with **Cypress**, unit tests with Vitest.
+**Frontend, Angular 21**: web interface (Tailwind) for patients, pharmacies and admin, e2e tests with **Cypress**, unit tests with Vitest.
 
-**Mobile — Flutter**: application for **patients and couriers** — authentication and profiles, cart with **stock verification** and items grouped by pharmacy, order processing (one order per pharmacy, **partial successes handled**), **order history** with colored statuses and pull-to-refresh, network error handling (Dio).
+**Mobile, Flutter**: application for **patients and couriers**, authentication and profiles, cart with **stock verification** and items grouped by pharmacy, order processing (one order per pharmacy, **partial successes handled**), **order history** with colored statuses and pull-to-refresh, network error handling (Dio).
 
 **Quality & security (DevSecOps)**: **SonarQube** (backend + frontend static analysis in CI), **OWASP ZAP** for penetration tests, multi-service Docker Compose (PostgreSQL, Redis, RabbitMQ, Mailhog).
 
@@ -44,13 +44,13 @@ A Semester 1 group project at EADL: a **team of 4 developers** I coordinated end
 
 <CardGrid>
   <Card title="3 platforms, 1 product">
-    Spring Boot backend + Angular web + Flutter mobile — one product delivered on every screen, sharing a single API.
+    Spring Boot backend + Angular web + Flutter mobile, one product delivered on every screen, sharing a single API.
   </Card>
   <Card title="Coordinated team of 4">
-    12+ pull requests reviewed and merged through a feature-branch workflow + GitHub Actions CI — proof of industrialized teamwork.
+    12+ pull requests reviewed and merged through a feature-branch workflow + GitHub Actions CI, proof of industrialized teamwork.
   </Card>
   <Card title="Measured quality">
-    75 backend tests, SonarQube in CI, OWASP ZAP for security — a level of rigor rare for a student project.
+    75 backend tests, SonarQube in CI, OWASP ZAP for security, a level of rigor rare for a student project.
   </Card>
   <Card title="Original business features">
     Search by symptom and geographic proximity (PostGIS), multi-channel notifications, payments and pharmacy payouts.
@@ -59,4 +59,4 @@ A Semester 1 group project at EADL: a **team of 4 developers** I coordinated end
 
 ## What This Experience Taught Me
 
-Coordinating a team on a real git workflow confirmed that the Tech Lead role goes beyond code: splitting work into coherent branches, making the CI demanding (no merge without a green build), and integrating contributions of varying quality without breaking overall coherence. Delivering the same product on three platforms also taught me to define a **single, stable API** that web and mobile consume identically — the discipline that keeps a multi-platform application maintainable.
+Coordinating a team on a real git workflow confirmed that the Tech Lead role goes beyond code: splitting work into coherent branches, making the CI demanding (no merge without a green build), and integrating contributions of varying quality without breaking overall coherence. Delivering the same product on three platforms also taught me to define a **single, stable API** that web and mobile consume identically, the discipline that keeps a multi-platform application maintainable.

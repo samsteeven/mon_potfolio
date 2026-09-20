@@ -1,6 +1,6 @@
 ---
 title: "Déployer un agent IA autonome en production : retour d'expérience complet sur Hermes Agent"
-description: "Migration sécurisée, gateway Telegram, interface web, backups automatisés — le journal de bord d'un déploiement self-hosted de bout en bout."
+description: "Migration sécurisée, gateway Telegram, interface web, backups automatisés, le journal de bord d'un déploiement self-hosted de bout en bout."
 date: "2026-07-24"
 tags: ["IA", "DevOps", "Agents", "Sécurité", "Infrastructure"]
 published: true
@@ -10,9 +10,9 @@ cover: "/blog/hermes-cover.jpg"
 
 Les agents IA autonomes et self-hosted sont devenus une alternative crédible aux assistants SaaS classiques : contrôle total des données, pas d'abonnement récurrent, et intégration profonde avec son infrastructure existante. J'ai voulu tester ça en conditions réelles avec **Hermes Agent**, un projet open source (MIT) de Nous Research qui tourne comme un daemon persistant sur un serveur, avec mémoire long terme, tâches planifiées (cron), et une passerelle multi-plateforme (Telegram, Discord, Slack, WhatsApp, etc.).
 
-L'objectif n'était pas juste de "faire tourner un `curl | bash`" — n'importe qui peut le faire en cinq minutes. L'objectif était de le déployer **comme en production** : avec une isolation utilisateur correcte, une surface d'attaque réduite, un chiffrement des credentials, et une stratégie de sauvegarde qui survit à un incident serveur.
+L'objectif n'était pas juste de "faire tourner un `curl | bash`", n'importe qui peut le faire en cinq minutes. L'objectif était de le déployer **comme en production** : avec une isolation utilisateur correcte, une surface d'attaque réduite, un chiffrement des credentials, et une stratégie de sauvegarde qui survit à un incident serveur.
 
-Ce guide documente chaque étape, y compris les erreurs rencontrées en cours de route — parce qu'un déploiement réel ne se passe jamais exactement comme la documentation le promet.
+Ce guide documente chaque étape, y compris les erreurs rencontrées en cours de route, parce qu'un déploiement réel ne se passe jamais exactement comme la documentation le promet.
 
 ## Architecture finale
 
@@ -54,7 +54,7 @@ Deux services systemd distincts (`hermes-gateway.service` et `hermes-webui.servi
 
 Hermes fournit un installeur one-liner qui gère les dépendances (Python 3.11, Node.js, ripgrep, ffmpeg) automatiquement :
 
-<CodeWindow filename="Terminal — Installation">
+<CodeWindow filename="Terminal · Installation">
 ```bash
 curl -fsSL https://raw.githubusercontent.com/NousResearch/hermes-agent/main/scripts/install.sh | bash
 source ~/.bashrc
@@ -62,13 +62,13 @@ hermes setup
 ```
 </CodeWindow>
 
-Le wizard configure le provider LLM (Anthropic Claude, OpenRouter, Nous Portal, ou tout endpoint compatible OpenAI) et prépare une première config fonctionnelle. À ce stade, tout tourne — mais en root, sans firewall, sans restriction d'outils. C'est là que le vrai travail commence.
+Le wizard configure le provider LLM (Anthropic Claude, OpenRouter, Nous Portal, ou tout endpoint compatible OpenAI) et prépare une première config fonctionnelle. À ce stade, tout tourne, mais en root, sans firewall, sans restriction d'outils. C'est là que le vrai travail commence.
 
 ## 2. Isoler l'agent : migration root → utilisateur dédié
 
 Faire tourner un agent qui a accès à un terminal, à l'exécution de code et à Internet **en tant que root** est le genre de raccourci qui semble anodin jusqu'au jour où il ne l'est plus. Première étape : créer un utilisateur système dédié, sans droits sudo.
 
-<CodeWindow filename="Terminal — Création d'utilisateur">
+<CodeWindow filename="Terminal · Création d'utilisateur">
 ```bash
 adduser hermes
 ```
@@ -97,7 +97,7 @@ WantedBy=multi-user.target
 </CodeWindow>
 
 <Callout type="warning">
-  **Piège rencontré :** Après la migration, `hermes config show` lancé en root affichait une config vide — logique, puisque la CLI regarde le `$HOME` de l'utilisateur qui l'exécute, et non celui déclaré dans le service. Toujours vérifier avec `sudo -u hermes -i` avant de conclure à un bug.
+  **Piège rencontré :** Après la migration, `hermes config show` lancé en root affichait une config vide, logique, puisque la CLI regarde le `$HOME` de l'utilisateur qui l'exécute, et non celui déclaré dans le service. Toujours vérifier avec `sudo -u hermes -i` avant de conclure à un bug.
 </Callout>
 
 ## 3. Réduire la surface d'attaque du bot Telegram
@@ -106,7 +106,7 @@ C'est le point de sécurité le plus important de tout ce déploiement, et proba
 
 Extrait de `config.yaml` avant restriction :
 
-<CodeWindow filename="config.yaml — Avant restriction">
+<CodeWindow filename="config.yaml · Avant restriction">
 ```yaml
 platform_toolsets:
   telegram:
@@ -124,7 +124,7 @@ platform_toolsets:
 
 Après restriction, en ne gardant que ce qui est réellement nécessaire pour un usage messagerie :
 
-<CodeWindow filename="config.yaml — Après restriction">
+<CodeWindow filename="config.yaml · Après restriction">
 ```yaml
 platform_toolsets:
   telegram:
@@ -142,11 +142,11 @@ platform_toolsets:
 ```
 </CodeWindow>
 
-`terminal`, `code_execution`, `computer_use`, `browser` et `delegation` sont retirés — ce dernier parce qu'un sous-agent délégué peut lui-même invoquer les outils exclus, contournant la restriction si on l'oublie.
+`terminal`, `code_execution`, `computer_use`, `browser` et `delegation` sont retirés, ce dernier parce qu'un sous-agent délégué peut lui-même invoquer les outils exclus, contournant la restriction si on l'oublie.
 
 En complément, deux protections activées explicitement dans la config :
 
-<CodeWindow filename="config.yaml — Protections de sécurité">
+<CodeWindow filename="config.yaml · Protections de sécurité">
 ```yaml
 security:
   redact_secrets: true      # masque les clés API / tokens dans les logs et réponses
@@ -157,18 +157,18 @@ security:
 
 Le `fail_open: false` est un choix délibéré : par défaut, si le scanner de sécurité plante ou timeout, la commande s'exécute quand même (comportement permissif). Sur un serveur de production exposé à une messagerie publique, on préfère l'inverse.
 
-Le système d'appariement (`hermes pairing approve telegram <code>`) garantit par ailleurs que seuls les utilisateurs explicitement approuvés peuvent interagir avec le bot — les autres sont automatiquement refusés.
+Le système d'appariement (`hermes pairing approve telegram <code>`) garantit par ailleurs que seuls les utilisateurs explicitement approuvés peuvent interagir avec le bot, les autres sont automatiquement refusés.
 
 ## 4. Interface web : dashboard officiel vs WebUI communautaire
 
 Hermes propose un dashboard intégré (`hermes dashboard`, port 9119, bind loopback par défaut), mais j'ai opté pour **Hermes WebUI**, un projet communautaire MIT (non affilié à Nous Research) qui offre une parité quasi complète avec le CLI dans une interface de chat plus riche (gestion de sessions, navigateur de fichiers, streaming).
 
-Utiliser un outil tiers plutôt que l'officiel implique un compromis de confiance assumé — code non audité par l'éditeur principal — compensé ici par : accès en loopback uniquement, authentification par mot de passe obligatoire, et exposition exclusivement via reverse proxy HTTPS.
+Utiliser un outil tiers plutôt que l'officiel implique un compromis de confiance assumé, code non audité par l'éditeur principal, compensé ici par : accès en loopback uniquement, authentification par mot de passe obligatoire, et exposition exclusivement via reverse proxy HTTPS.
 
 ![Interface Hermes WebUI en production sur hermes.samensteeve.com](/blog/hermes-workspace.png)
 *Hermes WebUI en production active sur hermes.samensteeve.com avec sessions multi-canaux (WebUI & Telegram).*
 
-<CodeWindow filename="Terminal — WebUI Installation">
+<CodeWindow filename="Terminal · WebUI Installation">
 ```bash
 git clone https://github.com/nesquena/hermes-webui.git
 cd hermes-webui
@@ -193,7 +193,7 @@ HERMES_WEBUI_ALLOWED_ORIGINS=https://hermes.mondomaine.com
 
 2. **Process zombie bloquant le port** : un ancien process resté actif après un restart raté empêchait le nouveau service de démarrer (`FATAL: Another server is already responding on 127.0.0.1:8787`). Résolu en identifiant le PID via `ss -tlnp` et en le tuant explicitement.
 
-3. **YAML mal formé** : une édition manuelle du fichier de config a laissé une ligne de titre commentée (`# security:`) avec des clés enfants décommentées en dessous — orphelines aux yeux du parseur YAML. Toujours valider avec `python3 -c "import yaml; yaml.safe_load(...)"` avant de relancer un service en production.
+3. **YAML mal formé** : une édition manuelle du fichier de config a laissé une ligne de titre commentée (`# security:`) avec des clés enfants décommentées en dessous, orphelines aux yeux du parseur YAML. Toujours valider avec `python3 -c "import yaml; yaml.safe_load(...)"` avant de relancer un service en production.
 
 Reverse proxy Nginx + certificat Let's Encrypt pour l'exposition finale :
 
@@ -214,7 +214,7 @@ server {
 ```
 </CodeWindow>
 
-<CodeWindow filename="Terminal — Certbot TLS">
+<CodeWindow filename="Terminal · Certbot TLS">
 ```bash
 sudo certbot --nginx -d hermes.mondomaine.com
 ```
@@ -222,7 +222,7 @@ sudo certbot --nginx -d hermes.mondomaine.com
 
 ## 5. Sauvegardes automatisées, chiffrées, redondantes
 
-Un agent avec mémoire persistante et des skills auto-générées accumule de la valeur avec le temps — le perdre suite à un incident serveur serait dommage. Stratégie retenue : sauvegarde locale quotidienne + réplication vers Google Drive, avec rotation sur 14 jours des deux côtés.
+Un agent avec mémoire persistante et des skills auto-générées accumule de la valeur avec le temps, le perdre suite à un incident serveur serait dommage. Stratégie retenue : sauvegarde locale quotidienne + réplication vers Google Drive, avec rotation sur 14 jours des deux côtés.
 
 <CodeWindow filename="/home/hermes/scripts/backup-hermes.sh">
 ```bash
@@ -277,4 +277,4 @@ Points de sécurité appliqués sur cette brique :
   </Card>
 </CardGrid>
 
-Le code n'est que la moitié du travail sur ce genre de projet — l'autre moitié, souvent négligée, c'est la question "qui peut faire quoi, et qu'est-ce qui se passe si ça tourne mal". C'est cette moitié-là qui distingue un `curl | bash` de cinq minutes d'un déploiement qu'on peut raisonnablement laisser tourner sans surveillance.
+Le code n'est que la moitié du travail sur ce genre de projet, l'autre moitié, souvent négligée, c'est la question "qui peut faire quoi, et qu'est-ce qui se passe si ça tourne mal". C'est cette moitié-là qui distingue un `curl | bash` de cinq minutes d'un déploiement qu'on peut raisonnablement laisser tourner sans surveillance.

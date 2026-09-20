@@ -7,7 +7,7 @@ published: true
 lang: "fr"
 ---
 
-J'aurais pu partir sur une API REST + Next.js comme tout le monde. J'ai choisi autre chose — et je ne l'ai pas regretté.
+J'aurais pu partir sur une API REST + Next.js comme tout le monde. J'ai choisi autre chose, et je ne l'ai pas regretté.
 
 ## Le problème avec le modèle API-first classique
 
@@ -19,7 +19,7 @@ Et ce n'est pas le seul problème. Il faut gérer l'authentification en double, 
 
 ## Ce qu'Inertia.js change vraiment
 
-Inertia n'est pas un framework. C'est un protocole de communication entre un backend server-side et un frontend JavaScript — sans construire d'API.
+Inertia n'est pas un framework. C'est un protocole de communication entre un backend server-side et un frontend JavaScript, sans construire d'API.
 
 Le contrôleur Laravel passe des données directement au composant React, comme s'il retournait une vue Blade. Côté React, tu reçois ces données comme des props normales. Pas de `fetch`, pas de state management pour les données serveur, pas de loading states à gérer.
 
@@ -38,7 +38,7 @@ public function index(): Response
 
 <CodeWindow filename="Dashboard.tsx">
 ```tsx
-// Composant React — les données arrivent comme des props
+// Composant React, les données arrivent comme des props
 export default function Dashboard({ projects, stats }: PageProps) {
   return (
     <main>
@@ -62,7 +62,7 @@ Laravel n'est pas juste un framework HTTP. C'est un écosystème mature avec des
 - **Jobs & Queues** pour les tâches lourdes en arrière-plan
 - **Sanctum / Fortify** pour l'authentification sans friction
 
-Ce que je préfère : les règles métier complexes restent dans des Services et des Actions dédiées. Le contrôleur ne fait que router — il reçoit la requête, appelle le service, retourne la réponse Inertia.
+Ce que je préfère : les règles métier complexes restent dans des Services et des Actions dédiées. Le contrôleur ne fait que router, il reçoit la requête, appelle le service, retourne la réponse Inertia.
 
 ## React comme couche de présentation, rien de plus
 

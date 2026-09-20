@@ -1,6 +1,6 @@
 ---
 title: "Tribunejustice"
-description: "Plateforme legaltech pour le marché camerounais, construite de bout en bout pour son fondateur expert juridique : API Laravel, frontend Angular SSR+PWA, blog Next.js — paiements séquestrés, consultations vidéo, messagerie temps réel, 41 vulnérabilités corrigées, LCP 5s → 1.5s."
+description: "Plateforme legaltech pour le marché camerounais, construite de bout en bout pour son fondateur expert juridique : API Laravel, frontend Angular SSR+PWA, blog Next.js, paiements séquestrés, consultations vidéo, messagerie temps réel, 41 vulnérabilités corrigées, LCP 5s → 1.5s."
 date: "2026-06-14"
 role: "Tech Lead"
 stack: ["Laravel", "Angular 20", "Next.js", "Typesense", "MeSomb", "Redis", "Laravel Reverb", "Docker"]
@@ -15,58 +15,58 @@ lang: "fr"
 
 Trouver un avocat au Cameroun, c'est lent, opaque, et souvent peu fiable. Les clients n'ont aucune visibilité sur les coûts en amont, aucun moyen de suivre l'avancement de leur dossier, et les paiements transitent par des canaux informels sans aucune garantie. Du côté des avocats, gérer un portefeuille de clients, encaisser des honoraires, et communiquer avec les parties se fait à travers des outils éparpillés.
 
-Tribunejustice devait résoudre ça des deux côtés — apporter confiance, structure et rapidité à un marché historiquement informel.
+Tribunejustice devait résoudre ça des deux côtés, apporter confiance, structure et rapidité à un marché historiquement informel.
 
 <CardGrid>
   <Card title="Pour les clients">
-    Trouver le bon expert en quelques minutes, payer en sécurité via séquestre, et suivre chaque étape du dossier en temps réel — au lieu d'attendre des semaines un rappel.
+    Trouver le bon expert en quelques minutes, payer en sécurité via séquestre, et suivre chaque étape du dossier en temps réel, au lieu d'attendre des semaines un rappel.
   </Card>
   <Card title="Pour les avocats">
-    Une boîte de réception structurée, un cycle de vie de dossier automatisé, une facturation intégrée, et un CRM pour gérer les leads et les relations clients — tout au même endroit.
+    Une boîte de réception structurée, un cycle de vie de dossier automatisé, une facturation intégrée, et un CRM pour gérer les leads et les relations clients, tout au même endroit.
   </Card>
 </CardGrid>
 
-## Périmètre — trois applications, construites de bout en bout pour un expert juridique
+## Périmètre : trois applications, construites de bout en bout pour un expert juridique
 
-Ce n'est pas un site web. C'est une plateforme produit complète — le produit digital de M. Badjeu Kuitchouha Ghislain, expert juridique camerounais, qui en a eu l'idée et rédigé les spécifications. Il m'a consulté pour la construire : j'ai dirigé et réalisé toute la partie technique — du modèle de données (MCD) à l'architecture, du durcissement sécurité au déploiement — en 8 mois (~1 650 interventions suivies), en échangeant avec lui sur chaque décision produit, les idées circulant dans les deux sens.
+Ce n'est pas un site web. C'est une plateforme produit complète, le produit digital de M. Badjeu Kuitchouha Ghislain, expert juridique camerounais, qui en a eu l'idée et rédigé les spécifications. Il m'a consulté pour la construire : j'ai dirigé et réalisé toute la partie technique, du modèle de données (MCD) à l'architecture, du durcissement sécurité au déploiement, en 8 mois (~1 650 interventions suivies), en échangeant avec lui sur chaque décision produit, les idées circulant dans les deux sens.
 
 <CardGrid>
-  <Card title="Plateforme principale — Angular 20 (SSR + PWA)">
+  <Card title="Plateforme principale : Angular 20 (SSR + PWA)">
     Portails client & expert : demandes de service, consultations vidéo, messagerie, coffre-fort documentaire, paiements, factures, bilingue FR/EN, fonctionnel hors-ligne via service worker.
   </Card>
-  <Card title="API & back-office — Laravel 12">
+  <Card title="API & back-office : Laravel 12">
     55+ modèles métier (ServiceRequest, VideoSession, Appointment, Invoice, Transaction, Vault…), RBAC à 5 rôles, files d'attente, WebSockets, indexation de recherche, API REST documentée avec Scribe.
   </Card>
-  <Card title="Média juridique — Next.js 15">
+  <Card title="Média juridique : Next.js 15">
     Le blog « La Tribune » avec espace contributeur, annuaire juridique, publication modérée, SEO, et internationalisation FR/EN complète.
   </Card>
 </CardGrid>
 
 ## Ce que j'ai construit
 
-**Moteur métier — la Service Request** : Toute la plateforme est organisée autour d'une entité centrale qui porte le cycle de vie complet : création, assignment à un expert, suivi, paiement, résolution. Une machine à états (`ServiceRequestStatusMachine`) garantit qu'aucun dossier ne peut sauter une étape ni revenir à un état invalide — chaque transition est validée et journalisée. Les 55+ modèles découlent d'un seul MCD : tout le produit partage un vocabulaire cohérent.
+**Moteur métier, la Service Request** : Toute la plateforme est organisée autour d'une entité centrale qui porte le cycle de vie complet : création, assignment à un expert, suivi, paiement, résolution. Une machine à états (`ServiceRequestStatusMachine`) garantit qu'aucun dossier ne peut sauter une étape ni revenir à un état invalide, chaque transition est validée et journalisée. Les 55+ modèles découlent d'un seul MCD : tout le produit partage un vocabulaire cohérent.
 
-**Consultations vidéo & suivi de dossier** : Rendez-vous avec gestion des disponibilités, sessions vidéo intégrées au cycle de vie du dossier, partage de documents, et facturation rattachée automatiquement à la Service Request — un véritable workflow de consultation, pas un simple widget de chat.
+**Consultations vidéo & suivi de dossier** : Rendez-vous avec gestion des disponibilités, sessions vidéo intégrées au cycle de vie du dossier, partage de documents, et facturation rattachée automatiquement à la Service Request, un véritable workflow de consultation, pas un simple widget de chat.
 
-**Paiements séquestrés (MeSomb)** : Mobile money camerounais (MTN Mobile Money, Orange Money) via MeSomb, avec un flux de séquestre qui bloque les fonds jusqu'à la fin de la prestation, des reversements professionnels, le suivi des transactions, et la génération de factures (PDF). La confiance est le produit central d'une legaltech — les paiements ont été conçus autour d'elle.
+**Paiements séquestrés (MeSomb)** : Mobile money camerounais (MTN Mobile Money, Orange Money) via MeSomb, avec un flux de séquestre qui bloque les fonds jusqu'à la fin de la prestation, des reversements professionnels, le suivi des transactions, et la génération de factures (PDF). La confiance est le produit central d'une legaltech, les paiements ont été conçus autour d'elle.
 
-**Communication temps réel** : Messagerie client-expert en WebSocket (Laravel Reverb) avec présence, accusés de lecture, et favoris — zéro polling. Les workers Horizon dispatchient les notifications web push, emails et SMS de façon asynchrone — la livraison ne bloque jamais la requête.
+**Communication temps réel** : Messagerie client-expert en WebSocket (Laravel Reverb) avec présence, accusés de lecture, et favoris, zéro polling. Les workers Horizon dispatchient les notifications web push, emails et SMS de façon asynchrone, la livraison ne bloque jamais la requête.
 
 **Coffre-fort documentaire** : Un espace dédié où les clients rangent leurs documents juridiques sensibles, structuré et contrôlé par les droits d'accès, relié au cycle de vie du dossier.
 
-**Recherche & découverte (Typesense)** : Les profils experts sont indexés avec une recherche facettée et tolérante aux fautes en temps réel — le temps de mise en relation diminue, le contrôle de la pertinence reste côté backend.
+**Recherche & découverte (Typesense)** : Les profils experts sont indexés avec une recherche facettée et tolérante aux fautes en temps réel, le temps de mise en relation diminue, le contrôle de la pertinence reste côté backend.
 
-**CRM & automatisation** : Un module CRM complet suit les contacts, les lifecycle stages, le scoring de leads, et l'automatisation des campagnes — connecté au domaine principal via observers et événements : le CRM réagit aux vrais événements de dossier au lieu de vivre en silo.
+**CRM & automatisation** : Un module CRM complet suit les contacts, les lifecycle stages, le scoring de leads, et l'automatisation des campagnes, connecté au domaine principal via observers et événements : le CRM réagit aux vrais événements de dossier au lieu de vivre en silo.
 
-**Architecture frontend — ApiClient** : Chaque appel API passe par un client centralisé qui gère le backoff exponentiel avec jitter, les clés d'idempotence, la déduplication des requêtes en vol, la normalisation des réponses, et des erreurs typées (`NetworkError`, `ValidationError`, `ServerError`…). Le monolithe `AuthService` (594 lignes, 87 consommateurs) a été découpé en 4 services basés sur les signaux — état, API, cycle de vie du token, permissions — rendant l'authentification prévisible et testable.
+**Architecture frontend, ApiClient** : Chaque appel API passe par un client centralisé qui gère le backoff exponentiel avec jitter, les clés d'idempotence, la déduplication des requêtes en vol, la normalisation des réponses, et des erreurs typées (`NetworkError`, `ValidationError`, `ServerError`…). Le monolithe `AuthService` (594 lignes, 87 consommateurs) a été découpé en 4 services basés sur les signaux, état, API, cycle de vie du token, permissions, rendant l'authentification prévisible et testable.
 
-**Bilingue par conception (FR/EN)** : Les deux langues officielles du système judiciaire camerounais, sur les trois applications — avec des outils de traduction, un audit des clés i18n, et une télémétrie qui remonte les chaînes non traduites avant que les utilisateurs ne les voient.
+**Bilingue par conception (FR/EN)** : Les deux langues officielles du système judiciaire camerounais, sur les trois applications, avec des outils de traduction, un audit des clés i18n, et une télémétrie qui remonte les chaînes non traduites avant que les utilisateurs ne les voient.
 
-**Performance & fiabilité** : Le LCP est passé de 5 004 ms à moins de 1 500 ms. Les images ont été converties en WebP — 68 Mo → 3,9 Mo (94 % plus léger). Les déploiements sont devenus zero-downtime, les crashs de cache périmé s'auto-réparent, PM2 maintient les processus, Redis a remplacé le cache fichier, et les sauvegardes sont automatisées. La plateforme ne casse plus quand on la met à jour.
+**Performance & fiabilité** : Le LCP est passé de 5 004 ms à moins de 1 500 ms. Les images ont été converties en WebP, 68 Mo → 3,9 Mo (94 % plus léger). Les déploiements sont devenus zero-downtime, les crashs de cache périmé s'auto-réparent, PM2 maintient les processus, Redis a remplacé le cache fichier, et les sauvegardes sont automatisées. La plateforme ne casse plus quand on la met à jour.
 
-**Sécurité — défense en profondeur** : Les données juridiques sont hautement sensibles, la plateforme a donc été durcie à travers deux campagnes d'audit (pentest externe + revue interne) :
+**Sécurité, défense en profondeur** : Les données juridiques sont hautement sensibles, la plateforme a donc été durcie à travers deux campagnes d'audit (pentest externe + revue interne) :
 
-- **41 vulnérabilités corrigées** sur le blog, le système RBAC, et le frontend — avant toute exploitation
+- **41 vulnérabilités corrigées** sur le blog, le système RBAC, et le frontend, avant toute exploitation
 - Cookies JWT HTTP-only, CSP finalisée sur les 3 domaines, CORS dédupliqué, `security.txt`
 - Mode sudo (re-confirmation du mot de passe, TTL Redis 10 minutes) pour les actions sensibles : changement 2FA, export de données, opérations admin
 - RBAC granulaire avec séparation stricte Admin / Super Admin ; 2FA avec codes de récupération
@@ -77,16 +77,16 @@ Ce n'est pas un site web. C'est une plateforme produit complète — le produit 
 
 <CardGrid>
   <Card title="41 vulnérabilités corrigées">
-    Deux campagnes d'audit (pentest externe + revue interne) ont identifié et fermé 41 failles de sécurité sur le blog, le RBAC, et le frontend — avant qu'elles ne soient exploitées.
+    Deux campagnes d'audit (pentest externe + revue interne) ont identifié et fermé 41 failles de sécurité sur le blog, le RBAC, et le frontend, avant qu'elles ne soient exploitées.
   </Card>
   <Card title="Chargement 3x plus rapide">
-    LCP passé de 5 secondes à moins de 1,5 seconde — images 94 % plus légères (68 Mo → 3,9 Mo), stratégie de cache reconstruite, budget de poids divisé par deux.
+    LCP passé de 5 secondes à moins de 1,5 seconde, images 94 % plus légères (68 Mo → 3,9 Mo), stratégie de cache reconstruite, budget de poids divisé par deux.
   </Card>
   <Card title="Déploiements zero-downtime">
-    La plateforme affichait une page blanche (520) après chaque mise à jour. Les déploiements sont désormais atomiques, avec auto-récupération des caches périmés — plus de lancement cassé.
+    La plateforme affichait une page blanche (520) après chaque mise à jour. Les déploiements sont désormais atomiques, avec auto-récupération des caches périmés, plus de lancement cassé.
   </Card>
   <Card title="Visibilité dossier en temps réel">
-    Clients et avocats voient chaque changement de statut instantanément via WebSocket — éliminant les échanges emails qui définissaient jusqu'alors la communication de dossier.
+    Clients et avocats voient chaque changement de statut instantanément via WebSocket, éliminant les échanges emails qui définissaient jusqu'alors la communication de dossier.
   </Card>
 </CardGrid>
 
@@ -99,10 +99,10 @@ Ce n'est pas un site web. C'est une plateforme produit complète — le produit 
 
 ## Ce que cette expérience m'a appris
 
-Diriger la construction de bout en bout d'une plateforme legaltech pour un client force à posséder chaque couche — et ça a changé ma façon de concevoir les systèmes. Architecturer une plateforme legaltech impose une discipline particulière : chaque feature doit répondre à deux questions — *"est-ce que cette donnée peut fuiter ?"* et *"est-ce que ce workflow peut être détourné ?"* La sécurité ne peut pas être ajoutée après coup quand le domaine traite des données légales et financières sensibles.
+Diriger la construction de bout en bout d'une plateforme legaltech pour un client force à posséder chaque couche, et ça a changé ma façon de concevoir les systèmes. Architecturer une plateforme legaltech impose une discipline particulière : chaque feature doit répondre à deux questions, *"est-ce que cette donnée peut fuiter ?"* et *"est-ce que ce workflow peut être détourné ?"* La sécurité ne peut pas être ajoutée après coup quand le domaine traite des données légales et financières sensibles.
 
 J'ai aussi appris à arbitrer vitesse et qualité : livrer des correctifs de sécurité sans casser l'expérience, migrer une codebase Angular sans arrêter la production, et documenter les décisions d'architecture (machine à états, idempotence, mode sudo) pour que la plateforme continue d'évoluer sans accumuler de dette.
 
 ## La suite
 
-La plateforme sert maintenant de terrain d'expérimentation pour l'intégration d'agents IA — réponses automatisées, analyse de documents juridiques, et orchestration de workflows complexes connectés directement aux données de production.
+La plateforme sert maintenant de terrain d'expérimentation pour l'intégration d'agents IA, réponses automatisées, analyse de documents juridiques, et orchestration de workflows complexes connectés directement aux données de production.

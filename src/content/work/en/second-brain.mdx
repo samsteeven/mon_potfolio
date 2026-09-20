@@ -1,8 +1,8 @@
 ---
-title: "Second Brain — Personal AI Knowledge Base over MCP"
-description: "A self-hosted 'second brain': an Obsidian vault made readable AND writable by any AI via a dedicated MCP server (OAuth) — RAG with local Ollama embeddings + Qdrant, DeepSeek generation, idempotent differential indexing, human-validated AI writes."
+title: "Second Brain : Personal AI Knowledge Base over MCP"
+description: "A self-hosted 'second brain': an Obsidian vault made readable AND writable by any AI via a dedicated MCP server (OAuth), RAG with local Ollama embeddings + Qdrant, DeepSeek generation, idempotent differential indexing, human-validated AI writes."
 date: "2026-09-19"
-role: "Designer & Builder (solo) — full-stack, infra, MCP"
+role: "Designer & Builder (solo), full-stack, infra, MCP"
 stack: ["n8n", "MCP", "RAG", "Qdrant", "Ollama", "DeepSeek", "Docker", "GitHub"]
 status: "shipped"
 featured: false
@@ -13,7 +13,7 @@ cover: "/blog/second-brain-cover.png"
 
 ## The Context
 
-Every AI conversation started from zero. I had to re-explain who I am, my projects, my skills, my CV — context scattered across files, never up to date, and no AI has a durable memory I control. I wanted my knowledge base to be **reachable by any AI** (ChatGPT, Claude, Cursor, opencode), not locked in one tool.
+Every AI conversation started from zero. I had to re-explain who I am, my projects, my skills, my CV, context scattered across files, never up to date, and no AI has a durable memory I control. I wanted my knowledge base to be **reachable by any AI** (ChatGPT, Claude, Cursor, opencode), not locked in one tool.
 
 ## What I Built
 
@@ -29,7 +29,7 @@ A self-hosted "second brain": an **Obsidian vault** as the source of truth, vers
     Any AI can write notes. Each note is auto-classified (type, tags, folder), checked against duplicates, and held in quarantine until I validate.
   </Card>
   <Card title="second_brain_project_details">
-    The AI dives into a project's <strong>source</strong> (README or a specific GitHub file) on demand — without bloating the vault.
+    The AI dives into a project's <strong>source</strong> (README or a specific GitHub file) on demand, without bloating the vault.
   </Card>
   <Card title="Differential ingestion (every 30 min)">
     Private repo → deterministic-ID chunking → only new or changed chunks are embedded (~2 s in steady state). Idempotent, loss-free.
@@ -48,10 +48,10 @@ A self-hosted "second brain": an **Obsidian vault** as the source of truth, vers
     A single MCP URL (`/mcp/second-brain-kb`, OAuth) lets ChatGPT, Claude, Cursor or opencode read AND write my knowledge with source citations.
   </Card>
   <Card title="Privacy by design">
-    Embeddings run 100% locally (Ollama) on my VPS — no third party indexes my notes. Zero extra API cost.
+    Embeddings run 100% locally (Ollama) on my VPS, no third party indexes my notes. Zero extra API cost.
   </Card>
   <Card title="Human gate">
-    Nothing an AI writes enters the searchable base without my validation (`status: pending`) — a guard against prompt injection.
+    Nothing an AI writes enters the searchable base without my validation (`status: pending`), a guard against prompt injection.
   </Card>
   <Card title="Robust ingestion">
     Deterministic IDs → no duplicates even under concurrent runs; timestamped cleanup → no data loss. ~2 s in steady state.

@@ -1,6 +1,6 @@
 ---
 title: "DIGITRANS-CM"
-description: "Épreuves certifiantes RNCP (blocs BC02 + BC04) : architecture microservices cloud-native et pilotage de projet pour un groupe agroalimentaire camerounais simulé — ERP, CRM, Supply Chain offline-first, BI, AWS hybride, blockchain Hyperledger Fabric, budget et KPI. Équipe de 3, livrée en 3 jours."
+description: "Épreuves certifiantes RNCP (blocs BC02 + BC04) : architecture microservices cloud-native et pilotage de projet pour un groupe agroalimentaire camerounais simulé, ERP, CRM, Supply Chain offline-first, BI, AWS hybride, blockchain Hyperledger Fabric, budget et KPI. Équipe de 3, livrée en 3 jours."
 date: "2026-05-01"
 role: "Architecte Cloud & Chef de projet numérique (équipe de 3)"
 stack: ["Node.js", "Express", "FastAPI", "PostgreSQL", "Redis", "Docker", "Kubernetes", "Terraform", "AWS", "Azure", "Hyperledger Fabric", "GitHub Actions"]
@@ -10,25 +10,25 @@ url: "https://github.com/samsteeven/digitram-cm-microservices"
 lang: "fr"
 ---
 
-## Le contexte — une épreuve certifiante en conditions réelles
+## Le contexte : une épreuve certifiante en conditions réelles
 
-En mai 2026, dans le cadre de ma 4ème année à EADL (année académique 2025/2026, semestre II), j'ai passé deux épreuves certifiantes RNCP39765 sur le même fil directeur — le projet DIGITRANS-CM :
+En mai 2026, dans le cadre de ma 4ème année à EADL (année académique 2025/2026, semestre II), j'ai passé deux épreuves certifiantes RNCP39765 sur le même fil directeur, le projet DIGITRANS-CM :
 - **Bloc BC04 « Optimiser le Système d'Information par l'apport du Cloud Computing »** (compétences C21–C26) : le volet technique.
-- **Bloc BC02 « Manager les Projets Numériques »** (compétences C10–C15) : le volet gestion de projet — plan, budget, KPI, coordination d'équipe, veille et RETEX.
+- **Bloc BC02 « Manager les Projets Numériques »** (compétences C10–C15) : le volet gestion de projet, plan, budget, KPI, coordination d'équipe, veille et RETEX.
 
-La mise en situation reconstituée : CAMTECH SOLUTIONS S.A., une ESN camerounaise, vient de remporter l'appel d'offres DIGITRANS-CM lancé par AGROCAM S.A., groupe agroalimentaire de 1 200 employés. La mission : remplacer un SI legacy monolithique (2009) par un écosystème applicatif moderne, distribué et partiellement cloud — ERP, CRM, Supply Chain et BI. Les données sensibles (RH, financières, clients) doivent rester sur le sol camerounais (loi n°2010/012), et l'ensemble doit tenir les réalités locales : délestages, connectivité inégale, latence de 150 à 250 ms vers les régions cloud européennes.
+La mise en situation reconstituée : CAMTECH SOLUTIONS S.A., une ESN camerounaise, vient de remporter l'appel d'offres DIGITRANS-CM lancé par AGROCAM S.A., groupe agroalimentaire de 1 200 employés. La mission : remplacer un SI legacy monolithique (2009) par un écosystème applicatif moderne, distribué et partiellement cloud, ERP, CRM, Supply Chain et BI. Les données sensibles (RH, financières, clients) doivent rester sur le sol camerounais (loi n°2010/012), et l'ensemble doit tenir les réalités locales : délestages, connectivité inégale, latence de 150 à 250 ms vers les régions cloud européennes.
 
 **Format** : 3 jours, en équipe de 3 étudiants. Livrables évalués par un jury : code source + documentation technique + rapport collectif (Partie I), et soutenance individuelle de 15–20 min devant jury (Partie II).
 
 <CardGrid>
   <Card title="Le problème de connectivité">
-    Les agents terrain travaillent dans des zones sans internet fiable. Tout système nécessitant une connexion permanente était inutilisable — et les pertes de données sur le terrain sont inacceptables.
+    Les agents terrain travaillent dans des zones sans internet fiable. Tout système nécessitant une connexion permanente était inutilisable, et les pertes de données sur le terrain sont inacceptables.
   </Card>
   <Card title="Le problème de conformité">
     La loi camerounaise (n°2010/012) impose que les données RH et financières restent sur le territoire national. Une approche 100% cloud n'était pas légalement viable.
   </Card>
   <Card title="Le problème de traçabilité">
-    La chaîne d'approvisionnement n'avait aucun audit immuable. Les enregistrements d'expéditions pouvaient être modifiés après coup — un risque de responsabilité pour un producteur alimentaire.
+    La chaîne d'approvisionnement n'avait aucun audit immuable. Les enregistrements d'expéditions pouvaient être modifiés après coup, un risque de responsabilité pour un producteur alimentaire.
   </Card>
   <Card title="Le problème de scalabilité">
     Le système monolithique de 2009 ne permettait pas de mises à jour modulaires. Chaque changement risquait de casser d'autres parties du métier.
@@ -37,25 +37,25 @@ La mise en situation reconstituée : CAMTECH SOLUTIONS S.A., une ESN camerounais
 
 ## Ce que j'ai construit
 
-**Partie I — application et infrastructure cloud (C21 à C24) :**
+**Partie I, application et infrastructure cloud (C21 à C24) :**
 
-**5 microservices isolés** avec une API Gateway comme point d'entrée unique — centralisant JWT/OAuth2, le rate limiting, et jouant le rôle de reverse proxy. Les services métier ne valident jamais les tokens directement ; ils font confiance aux en-têtes injectés par le gateway. Chaque service possède sa propre base PostgreSQL avec un schéma dédié et 17 index de performance.
+**5 microservices isolés** avec une API Gateway comme point d'entrée unique, centralisant JWT/OAuth2, le rate limiting, et jouant le rôle de reverse proxy. Les services métier ne valident jamais les tokens directement ; ils font confiance aux en-têtes injectés par le gateway. Chaque service possède sa propre base PostgreSQL avec un schéma dédié et 17 index de performance.
 
-**RBAC granulaire (5 rôles)** : `admin`, `manager`, `comptable`, `agent_terrain`, `analyste` — chacun avec une matrice d'accès précise appliquée par des middlewares partagés entre tous les services. Un agent terrain ne voit que CRM et Supply Chain. Un comptable ne voit que l'ERP. Zéro fuite de données cross-modules par construction.
+**RBAC granulaire (5 rôles)** : `admin`, `manager`, `comptable`, `agent_terrain`, `analyste`, chacun avec une matrice d'accès précise appliquée par des middlewares partagés entre tous les services. Un agent terrain ne voit que CRM et Supply Chain. Un comptable ne voit que l'ERP. Zéro fuite de données cross-modules par construction.
 
-**Supply Chain offline-first** : Conçu spécifiquement pour les agents en zones de faible connectivité. Un endpoint `POST /sync/push` accepte un lot d'opérations INSERT/UPDATE/DELETE avec un `offline_id` pour la déduplication côté serveur. Un worker Redis traite la queue toutes les 30 secondes avec mécanisme de retry et dead-letter — les opérations saisies hors ligne se synchronisent automatiquement dès que la connexion revient.
+**Supply Chain offline-first** : Conçu spécifiquement pour les agents en zones de faible connectivité. Un endpoint `POST /sync/push` accepte un lot d'opérations INSERT/UPDATE/DELETE avec un `offline_id` pour la déduplication côté serveur. Un worker Redis traite la queue toutes les 30 secondes avec mécanisme de retry et dead-letter, les opérations saisies hors ligne se synchronisent automatiquement dès que la connexion revient.
 
-**Traçabilité blockchain (Hyperledger Fabric)** : Chaque expédition et checkpoint est enregistré sur la blockchain Fabric via un chaincode de 147 lignes. `getHistoryForKey()` fournit des historiques d'audit complets. Une fonction `verifyChainIntegrity()` valide l'intégrité de toute la chaîne — chaque checkpoint est lié au précédent via un index composite. Les enregistrements ne peuvent pas être modifiés rétroactivement.
+**Traçabilité blockchain (Hyperledger Fabric)** : Chaque expédition et checkpoint est enregistré sur la blockchain Fabric via un chaincode de 147 lignes. `getHistoryForKey()` fournit des historiques d'audit complets. Une fonction `verifyChainIntegrity()` valide l'intégrité de toute la chaîne, chaque checkpoint est lié au précédent via un index composite. Les enregistrements ne peuvent pas être modifiés rétroactivement.
 
-**BI Service (FastAPI/Python)** : Agrège les KPIs de tous les services via HTTP avec cache Redis de 5 minutes. Expose des endpoints de snapshots, tendances, et tableaux de bord — donnant à la direction une visibilité temps réel sur l'ensemble de l'opération sans requêter les bases de production directement.
+**BI Service (FastAPI/Python)** : Agrège les KPIs de tous les services via HTTP avec cache Redis de 5 minutes. Expose des endpoints de snapshots, tendances, et tableaux de bord, donnant à la direction une visibilité temps réel sur l'ensemble de l'opération sans requêter les bases de production directement.
 
-**Infrastructure cloud hybride** : AWS af-south-1 (Cape Town) pour le compute — ECS Fargate, RDS PostgreSQL Multi-AZ, ElastiCache Redis, ALB. Azure South Africa North pour l'identité entreprise (Azure AD). On-premise Douala pour les données RH et financières (conformité légale). Entièrement géré par Terraform via 8 modules, avec rotation des secrets (90 jours) et monitoring GuardDuty.
+**Infrastructure cloud hybride** : AWS af-south-1 (Cape Town) pour le compute, ECS Fargate, RDS PostgreSQL Multi-AZ, ElastiCache Redis, ALB. Azure South Africa North pour l'identité entreprise (Azure AD). On-premise Douala pour les données RH et financières (conformité légale). Entièrement géré par Terraform via 8 modules, avec rotation des secrets (90 jours) et monitoring GuardDuty.
 
 **Pipeline CI/CD (GitHub Actions, 5 étapes)** : Lint → Tests Jest → Lint Python (Ruff) → Build Docker multi-stage + push ECR → Deploy ECS. Environnements staging et production séparés.
 
-**Partie II — rapport de sécurisation (C25–C26)** : analyse de 4 risques cloud majeurs sous le modèle de responsabilité partagée, politique IAM multi-rôles, procédure de départ d'un développeur, rotation des clés, plan de réponse aux incidents, chiffrement en transit et au repos. Et la solution de traçabilité : choix d'Hyperledger Fabric justifié face aux contraintes du projet (réseau privé d'entreprise, latence, hébergement local), structure de bloc, consensus adapté, smart contracts protégés contre les vulnérabilités classiques (reentrancy, integer overflow), conformité avec la loi n°2010/012.
+**Partie II, rapport de sécurisation (C25–C26)** : analyse de 4 risques cloud majeurs sous le modèle de responsabilité partagée, politique IAM multi-rôles, procédure de départ d'un développeur, rotation des clés, plan de réponse aux incidents, chiffrement en transit et au repos. Et la solution de traçabilité : choix d'Hyperledger Fabric justifié face aux contraintes du projet (réseau privé d'entreprise, latence, hébergement local), structure de bloc, consensus adapté, smart contracts protégés contre les vulnérabilités classiques (reentrancy, integer overflow), conformité avec la loi n°2010/012.
 
-## Le volet gestion de projet — Manager les Projets Numériques (BC02, C10–C15)
+## Le volet gestion de projet : Manager les Projets Numériques (BC02, C10–C15)
 
 Le même projet était aussi évalué sous l'angle du **management et du pilotage**, pas seulement de la technique. Sur le module qui m'était assigné, j'ai produit un tableau de bord de pilotage complet, rédigé en style professionnel lisible par un Directeur Général non technique :
 
@@ -63,7 +63,7 @@ Le même projet était aussi évalué sous l'angle du **management et du pilotag
 
 **Coordination d'équipe & outils collaboratifs (C11)** : journal de bord (sprint log) documentant réunions, décisions et problèmes ; tableau Kanban ; dépôt Git versionné ; répartition explicite des tâches ; actions de montée en compétences (pair-programming, revues de code).
 
-**Suivi budgétaire & KPI (C12)** : suivi du budget du projet — 480 M FCFA sur 18 mois, ventilé entre modules — avec analyse des écarts (ex. dépassement de +6,5 % sur le module Supply Chain lié à l'intégration des APIs douanières, compensé par une sous-consommation sur CRM/BI). Suivi des charges en jours-homme et de 5 KPI : couverture de tests (≥80 %), bugs critiques en revue (≤3/sprint), durée de déploiement CI/CD (≤15 min), disponibilité offline-first (≥70 %), vélocité (≥30 SP). Pour chaque écart : quantification, cause racine, action corrective et impact sur le jalon contractuel suivant.
+**Suivi budgétaire & KPI (C12)** : suivi du budget du projet, 480 M FCFA sur 18 mois, ventilé entre modules, avec analyse des écarts (ex. dépassement de +6,5 % sur le module Supply Chain lié à l'intégration des APIs douanières, compensé par une sous-consommation sur CRM/BI). Suivi des charges en jours-homme et de 5 KPI : couverture de tests (≥80 %), bugs critiques en revue (≤3/sprint), durée de déploiement CI/CD (≤15 min), disponibilité offline-first (≥70 %), vélocité (≥30 SP). Pour chaque écart : quantification, cause racine, action corrective et impact sur le jalon contractuel suivant.
 
 **Veille technologique & résolution de problèmes (C13)** : documentation de problèmes techniques rencontrés, avec sources consultées (dont des sources en anglais) et justification des solutions retenues face aux alternatives.
 
@@ -73,10 +73,10 @@ Le même projet était aussi évalué sous l'angle du **management et du pilotag
 
 <CardGrid>
   <Card title="Livré en 3 jours">
-    Code source, documentation technique, rapport de pilotage et soutenance individuelle — en équipe de 3, sous contrainte de délai.
+    Code source, documentation technique, rapport de pilotage et soutenance individuelle, en équipe de 3, sous contrainte de délai.
   </Card>
   <Card title="Deux blocs certifiants couverts">
-    RNCP39765 — BC04 (compétences C21–C26 : cloud, IaC, sécurité, blockchain) et BC02 (C10–C15 : plan, budget, KPI, coordination, RETEX).
+    RNCP39765, BC04 (compétences C21–C26 : cloud, IaC, sécurité, blockchain) et BC02 (C10–C15 : plan, budget, KPI, coordination, RETEX).
   </Card>
   <Card title="Souveraineté par conception">
     Données RH et financières on-premise à Douala, workloads à forte charge sur régions cloud africaines (AWS af-south-1, Azure South Africa North).
@@ -95,4 +95,4 @@ Le même projet était aussi évalué sous l'angle du **management et du pilotag
 
 ## Ce que cette expérience m'a appris
 
-Trois jours pour livrer un SI complet, ça force à trancher : on n'a pas le luxe de l'infini, et chaque choix d'architecture doit être défendable devant un jury. J'ai appris à justifier des décisions — Terraform plutôt que CloudFormation, Hyperledger plutôt qu'Ethereum, régions cloud africaines plutôt qu'européennes — et à produire des livrables lisibles par un tiers. Travailler à trois sur des livrables indivisibles, c'est aussi apprendre à découper le travail sans casser la cohérence d'ensemble.
+Trois jours pour livrer un SI complet, ça force à trancher : on n'a pas le luxe de l'infini, et chaque choix d'architecture doit être défendable devant un jury. J'ai appris à justifier des décisions, Terraform plutôt que CloudFormation, Hyperledger plutôt qu'Ethereum, régions cloud africaines plutôt qu'européennes, et à produire des livrables lisibles par un tiers. Travailler à trois sur des livrables indivisibles, c'est aussi apprendre à découper le travail sans casser la cohérence d'ensemble.
