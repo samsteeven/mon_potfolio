@@ -135,6 +135,44 @@ This is the part I'm proudest of, because it's invisible and it took the most th
 
 ![Before / after: ingestion drops from several minutes to two seconds](/blog/second-brain-perf.png)
 
+## A concrete example, from question to answer
+
+To make this concrete, here's a real question asked from an MCP client, and everything that happens next.
+
+**The question:** "What are my Laravel and Angular projects?"
+
+1. **The AI calls the MCP tool** `second_brain_ask` with that question.
+2. **The question becomes a vector**: Ollama (bge-m3) turns it into 1024 numbers.
+3. **Qdrant finds the closest chunks** by meaning. Here are the top 8:
+   - `01-Identity/About-Me.md` (0.593)
+   - `05-Skills/Laravel.md` (0.590)
+   - `06-Knowledge/Security/AntiBot-Securite-Applicative.md` (0.590)
+   - `05-Skills/Angular.md` (0.562)
+   - `03-Projects/SIGGE.md` (0.561)
+   - `00-Dashboard/Home.md` (0.553)
+   - `02-Career/CV.md` (0.550)
+   - `03-Projects/TribuneJustice.md` (0.549)
+4. **The context is assembled**: those 8 pieces, each prefixed with its source file.
+5. **The LLM answers only from that context**, citing the files.
+6. **The answer comes back to the AI**, with sources.
+
+**The generated answer:**
+
+> From the context:
+>
+> **Laravel projects**
+> - **TribuneJustice**, Laravel 12, in production `[05-Skills/Laravel.md]` `[03-Projects/TribuneJustice.md]`
+> - **SIGGE**, ESTLC lab management, Laravel + React `[05-Skills/Laravel.md]` `[03-Projects/SIGGE.md]`
+>
+> **Angular projects**
+> - **TribuneJustice**, Angular 18 SSR, auth rewrite with Signals `[05-Skills/Angular.md]` `[03-Projects/TribuneJustice.md]`
+> - **EasyPharma**, Angular 21, Tailwind `[05-Skills/Angular.md]`
+> - **eapp**, Angular frontend for a Spring Boot e-commerce app `[05-Skills/Angular.md]`
+>
+> So **TribuneJustice** is the project that appears in both Laravel and Angular. Note: **SIGGE** is Laravel + **React**, not Angular `[05-Skills/Laravel.md]` `[03-Projects/SIGGE.md]`.
+
+What matters: the answer doesn't come from a vague memory of the model. It comes from **my notes**, it **cites its sources**, and it even **flags a nuance** (SIGGE is React, not Angular). That's exactly what a working RAG should do.
+
 ## The problems I hit (and how I solved them)
 
 This is the part I wish I'd read when I started. Nothing went as planned.

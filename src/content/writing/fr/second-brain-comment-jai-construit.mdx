@@ -135,6 +135,44 @@ C'est la partie dont je suis le plus fier, parce qu'elle est invisible et qu'ell
 
 ![Avant / après : l'ingestion passe de plusieurs minutes à deux secondes](/blog/second-brain-perf.png)
 
+## Un exemple concret, de la question à la réponse
+
+Pour rendre ça concret, voici une vraie question posée depuis un client MCP, et tout ce qui se passe ensuite.
+
+**La question :** « Quels sont mes projets en Laravel et Angular ? »
+
+1. **L'IA appelle l'outil MCP** `second_brain_ask` avec cette question.
+2. **La question devient un vecteur** : Ollama (bge-m3) la transforme en 1024 nombres.
+3. **Qdrant cherche les chunks les plus proches** par le sens. Ici, les 8 premiers :
+   - `01-Identity/About-Me.md` (0,593)
+   - `05-Skills/Laravel.md` (0,590)
+   - `06-Knowledge/Security/AntiBot-Securite-Applicative.md` (0,590)
+   - `05-Skills/Angular.md` (0,562)
+   - `03-Projects/SIGGE.md` (0,561)
+   - `00-Dashboard/Home.md` (0,553)
+   - `02-Career/CV.md` (0,550)
+   - `03-Projects/TribuneJustice.md` (0,549)
+4. **Le contexte est assemblé** : ces 8 morceaux, chacun précédé de son fichier source.
+5. **Le LLM répond uniquement à partir de ce contexte**, en citant les fichiers.
+6. **La réponse revient à l'IA**, sourcée.
+
+**La réponse générée :**
+
+> D'après le contexte :
+>
+> **Projets Laravel**
+> - **TribuneJustice**, Laravel 12, en production `[05-Skills/Laravel.md]` `[03-Projects/TribuneJustice.md]`
+> - **SIGGE**, gestion labo ESTLC, Laravel + React `[05-Skills/Laravel.md]` `[03-Projects/SIGGE.md]`
+>
+> **Projets Angular**
+> - **TribuneJustice**, Angular 18 SSR, refonte auth en Signals `[05-Skills/Angular.md]` `[03-Projects/TribuneJustice.md]`
+> - **EasyPharma**, Angular 21, Tailwind `[05-Skills/Angular.md]`
+> - **eapp**, frontend Angular d'un e-commerce Spring Boot `[05-Skills/Angular.md]`
+>
+> Donc **TribuneJustice** est le projet qui apparaît à la fois en Laravel et en Angular. À noter : **SIGGE** est en Laravel + **React**, pas Angular `[05-Skills/Laravel.md]` `[03-Projects/SIGGE.md]`.
+
+Ce qui compte : la réponse ne vient pas d'une mémoire vague du modèle. Elle vient de **mes notes**, elle **cite ses sources**, et elle **signale même une nuance** (SIGGE est en React, pas Angular). C'est exactement ce qu'on attend d'un RAG qui fonctionne.
+
 ## Les problèmes rencontrés (et comment je les ai réglés)
 
 C'est la partie que j'aurais aimé lire quand j'ai commencé. Rien ne s'est passé comme prévu.
