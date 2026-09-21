@@ -153,43 +153,28 @@ Aujourd'hui, il connaît mon **identité**, ma **carrière**, mes **projets**, m
 
 Et c'est fait pour grandir : demain, ma **vie quotidienne**, ma **veille**, mes **décisions**, mes **idées**. Une mémoire qui s'enrichit à chaque note.
 
-## Un exemple concret, de la question à la réponse
+## Un exemple concret : un CV taillé pour une offre
 
-Pour rendre ça concret, voici une vraie question posée depuis un client MCP, et tout ce qui se passe ensuite.
+Voici l'usage le plus parlant, celui qui a déclenché tout le projet.
 
-**La question :** « Quels sont mes projets en Laravel et Angular ? »
+**Le contexte.** Je tombe sur une offre de stage (Takima, « AI Software & DevOps Engineer », projet PopApp autour du Green IT et de Kubernetes). Elle demande Java/Spring, React, Docker, Kubernetes et de l'IA.
 
-1. **L'IA appelle l'outil MCP** `second_brain_ask` avec cette question.
-2. **La question devient un vecteur** : Ollama (bge-m3) la transforme en 1024 nombres.
-3. **Qdrant cherche les chunks les plus proches** par le sens. Ici, les 8 premiers :
-   - `01-Identity/About-Me.md` (0,593)
-   - `05-Skills/Laravel.md` (0,590)
-   - `06-Knowledge/Security/AntiBot-Securite-Applicative.md` (0,590)
-   - `05-Skills/Angular.md` (0,562)
-   - `03-Projects/SIGGE.md` (0,561)
-   - `00-Dashboard/Home.md` (0,553)
-   - `02-Career/CV.md` (0,550)
-   - `03-Projects/TribuneJustice.md` (0,549)
-4. **Le contexte est assemblé** : ces 8 morceaux, chacun précédé de son fichier source.
-5. **Le LLM répond uniquement à partir de ce contexte**, en citant les fichiers.
-6. **La réponse revient à l'IA**, sourcée.
+**La demande.** Je branche une IA sur mon serveur MCP et je lui écris : « Génère-moi un CV adapté à cette offre, à partir de ma base. N'invente rien. »
 
-**La réponse générée :**
+**Ce qui se passe ensuite :**
 
-> D'après le contexte :
->
-> **Projets Laravel**
-> - **TribuneJustice**, Laravel 12, en production `[05-Skills/Laravel.md]` `[03-Projects/TribuneJustice.md]`
-> - **SIGGE**, gestion labo ESTLC, Laravel + React `[05-Skills/Laravel.md]` `[03-Projects/SIGGE.md]`
->
-> **Projets Angular**
-> - **TribuneJustice**, Angular 18 SSR, refonte auth en Signals `[05-Skills/Angular.md]` `[03-Projects/TribuneJustice.md]`
-> - **EasyPharma**, Angular 21, Tailwind `[05-Skills/Angular.md]`
-> - **eapp**, frontend Angular d'un e-commerce Spring Boot `[05-Skills/Angular.md]`
->
-> Donc **TribuneJustice** est le projet qui apparaît à la fois en Laravel et en Angular. À noter : **SIGGE** est en Laravel + **React**, pas Angular `[05-Skills/Laravel.md]` `[03-Projects/SIGGE.md]`.
+1. L'IA interroge ma base (`second_brain_ask`) : identité, parcours, projets, compétences, CV.
+2. Pour les projets clés, elle plonge dans la **source** (`second_brain_project_details`) pour vérifier les détails réels.
+3. Elle sélectionne et **réordonne** mes projets par pertinence pour l'offre.
+4. Elle signale honnêtement les **écarts** : Kotlin, etcd, Operator Framework ne sont pas dans ma base, elle ne les invente pas.
 
-Ce qui compte : la réponse ne vient pas d'une mémoire vague du modèle. Elle vient de **mes notes**, elle **cite ses sources**, et elle **signale même une nuance** (SIGGE est en React, pas Angular). C'est exactement ce qu'on attend d'un RAG qui fonctionne.
+**Le résultat.** Un CV ciblé : Kubernetes et Terraform pour le DevOps, Spring Boot pour le Java, React pour le front, Second Brain pour l'IA, et une section qui relie honnêtement mon expérience au **Green IT** (maîtrise des coûts et des ressources cloud).
+
+![CV généré pour l'offre Takima à partir du second cerveau](/blog/second-brain-cv-takima.png)
+
+*Le CV produit par l'IA, uniquement à partir de mes notes, sans que je réexplique quoi que ce soit.*
+
+Et le détail qui compte : pendant la génération, l'IA a aussi **révélé les trous** de ma base (email, téléphone, années de formation, référentiels RNCP manquants). Un CV ne sort pas seulement juste : il montre ce qu'il fallait compléter.
 
 ## Les problèmes rencontrés (et comment je les ai réglés)
 
