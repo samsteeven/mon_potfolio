@@ -159,7 +159,35 @@ Here's the most telling use case, the one that started the whole project.
 
 **The context.** I come across an internship posting ([Takima, "AI Software & DevOps Engineer", the PopApp project](https://www.jobteaser.com/fr/job-offers/2298006f-f332-4fa6-bdb2-41c1dc629c43-takima-stage-de-fin-d-etudes-ai-software-devops-engineer-projet-popapp-devops-greenit)) around Green IT and Kubernetes. It asks for Java/Spring, React, Docker, Kubernetes and AI.
 
-**The request.** I plug an AI into my MCP server and write: "Generate a CV tailored to this posting, from my base. Don't invent anything."
+**The request.** I plug an AI into my MCP server and paste this prompt:
+
+```text
+You are connected to my second brain via MCP (tools: second_brain_ask, second_brain_project_details, second_brain_add).
+Goal: generate a CV tailored to the internship posting below, relying ONLY on my knowledge base. Don't invent anything.
+
+Method:
+
+1. Query my base with second_brain_ask to retrieve: my identity, background, studies, projects, skills, CV.
+2. For the projects most relevant to the posting, dive into the source if you need details: second_brain_project_details, format "repo" or "repo#path".
+3. Select and reorder my projects by relevance to the posting. Rewrite each item as result-oriented bullets.
+4. If the posting asks for a skill my base doesn't contain, don't invent it: flag it as a gap, honestly.
+
+Green IT section:
+The posting mentions Green IT. Explicitly tie that theme to my cloud cost and resource optimisation (Terraform, budgets.tf) rather than inventing Green IT experience I don't have. Rely only on what exists in my base.
+
+Constraints:
+
+- Verifiable facts only: no number, date, technology or result that doesn't come from my base.
+- No em dashes, no arrows.
+- French, one page.
+- Title, hook (objective), skills, projects, education, languages.
+
+Before writing, list the information you found in my base and any gaps with the posting. Then propose the CV.
+```
+
+*Translated from French, the language I actually wrote it in.*
+
+Three things matter in this prompt: **the order of the tools** (the base first, the source only when detail is needed), **the ban on inventing** (with a duty to flag gaps), and **the instruction to list what was found first**. That last line is what produces the screenshots below.
 
 **What happens next:**
 

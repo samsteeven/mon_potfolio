@@ -159,7 +159,33 @@ Voici l'usage le plus parlant, celui qui a déclenché tout le projet.
 
 **Le contexte.** Je tombe sur une offre de stage ([Takima, « AI Software & DevOps Engineer », projet PopApp](https://www.jobteaser.com/fr/job-offers/2298006f-f332-4fa6-bdb2-41c1dc629c43-takima-stage-de-fin-d-etudes-ai-software-devops-engineer-projet-popapp-devops-greenit)) autour du Green IT et de Kubernetes. Elle demande Java/Spring, React, Docker, Kubernetes et de l'IA.
 
-**La demande.** Je branche une IA sur mon serveur MCP et je lui écris : « Génère-moi un CV adapté à cette offre, à partir de ma base. N'invente rien. »
+**La demande.** Je branche une IA sur mon serveur MCP et je lui colle ce prompt :
+
+```text
+Tu es connecté à mon second cerveau via MCP (outils : second_brain_ask, second_brain_project_details, second_brain_add).
+Objectif : génère-moi un CV adapté à l'offre de stage ci-dessous, en te basant UNIQUEMENT sur ma base de connaissances. N'invente rien.
+
+Méthode :
+
+1. Interroge ma base avec second_brain_ask pour récupérer : mon identité, mon parcours, mes études, mes projets, mes compétences, mon CV.
+2. Pour les projets les plus pertinents pour l'offre, plonge dans la source si tu as besoin du détail : second_brain_project_details, format "repo" ou "repo#chemin".
+3. Sélectionne et réordonne mes projets par pertinence pour l'offre. Reformule chaque élément en puces orientées résultat.
+4. Si l'offre demande une compétence que ma base ne contient pas, ne l'invente pas : signale-la comme un écart, honnêtement.
+
+Section Green IT :
+L'offre mentionne le Green IT. Relie explicitement ce thème à mon optimisation des coûts et des ressources cloud (Terraform, budgets.tf) plutôt que d'inventer une expérience Green IT que je n'ai pas. Appuie-toi uniquement sur ce qui existe dans ma base.
+
+Contraintes :
+
+- Faits vérifiables uniquement : pas de chiffre, date, techno ou résultat qui ne vienne pas de ma base.
+- Pas de tirets cadratins, pas de flèches.
+- Français, une page.
+- Titre, accroche (objectif), compétences, projets, formation, langues.
+
+Avant de rédiger, liste-moi les infos que tu as trouvées dans ma base et les écarts éventuels avec l'offre. Puis propose le CV.
+```
+
+Trois choses comptent dans ce prompt : **l'ordre des outils** (la base d'abord, la source seulement si besoin de détail), **l'interdiction d'inventer** (avec obligation de signaler les écarts), et **la demande de lister d'abord ce qui a été trouvé**. C'est cette dernière ligne qui produit les captures ci-dessous.
 
 **Ce qui se passe ensuite :**
 
