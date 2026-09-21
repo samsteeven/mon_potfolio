@@ -157,7 +157,7 @@ Et c'est fait pour grandir : demain, ma **vie quotidienne**, ma **veille**, mes 
 
 Voici l'usage le plus parlant, celui qui a déclenché tout le projet.
 
-**Le contexte.** Je tombe sur une offre de stage (Takima, « AI Software & DevOps Engineer », projet PopApp autour du Green IT et de Kubernetes). Elle demande Java/Spring, React, Docker, Kubernetes et de l'IA.
+**Le contexte.** Je tombe sur une offre de stage ([Takima, « AI Software & DevOps Engineer », projet PopApp](https://www.jobteaser.com/fr/job-offers/2298006f-f332-4fa6-bdb2-41c1dc629c43-takima-stage-de-fin-d-etudes-ai-software-devops-engineer-projet-popapp-devops-greenit)) autour du Green IT et de Kubernetes. Elle demande Java/Spring, React, Docker, Kubernetes et de l'IA.
 
 **La demande.** Je branche une IA sur mon serveur MCP et je lui écris : « Génère-moi un CV adapté à cette offre, à partir de ma base. N'invente rien. »
 
@@ -168,13 +168,17 @@ Voici l'usage le plus parlant, celui qui a déclenché tout le projet.
 3. Elle sélectionne et **réordonne** mes projets par pertinence pour l'offre.
 4. Elle signale honnêtement les **écarts** : Kotlin, etcd, Operator Framework ne sont pas dans ma base, elle ne les invente pas.
 
+<ScreenshotCarousel
+  images={[
+    { src: "/blog/second-brain-cv-takima-prompt.png", alt: "Demande de CV adressée à l'IA connectée au second cerveau via MCP", caption: "La demande : générer un CV ciblé uniquement à partir de la base, en interrogeant second_brain_ask puis la source." },
+    { src: "/blog/second-brain-cv-takima-found.png", alt: "Synthèse de ce que l'IA a trouvé dans la base", caption: "Ce que l'IA a trouvé : 8 requêtes sur la base et 4 fichiers sources lus, dont l'identité, les études, les projets utiles et ce qui relie mon parcours au Green IT." },
+    { src: "/blog/second-brain-cv-takima-gaps.png", alt: "Écarts entre l'offre et la base de connaissances", caption: "Les écarts, listés sans complaisance : ce que l'offre demande et que la base ne contient pas, mais aussi ce que la base décrit mal." },
+  ]}
+/>
+
 **Le résultat.** Un CV ciblé : Kubernetes et Terraform pour le DevOps, Spring Boot pour le Java, React pour le front, Second Brain pour l'IA, et une section qui relie honnêtement mon expérience au **Green IT** (maîtrise des coûts et des ressources cloud).
 
-![CV généré pour l'offre Takima à partir du second cerveau](/blog/second-brain-cv-takima.png)
-
-*Le CV produit par l'IA, uniquement à partir de mes notes, sans que je réexplique quoi que ce soit.*
-
-Et le détail qui compte : pendant la génération, l'IA a aussi **révélé les trous** de ma base (email, téléphone, années de formation, référentiels RNCP manquants). Un CV ne sort pas seulement juste : il montre ce qu'il fallait compléter.
+Ce que j'ai trouvé le plus utile n'est pourtant pas le CV. C'est la liste des écarts. L'IA y pointe les **manques de ma base** : des projets décrits trop vite (React seulement via SIGGE, sans détail de ce que j'y ai fait), le rôle que je tenais sur TribuneJustice jamais précisé, un projet présenté comme un cas d'étude plutôt qu'une mission réelle. Et sa remarque la plus juste : « certains fichiers remontés semblent tronqués, donc absent veut dire non trouvé, pas forcément inexistant ». Le cerveau ne vaut que par ce qu'on y met. C'est un début, et il rend ces trous visibles.
 
 ## Les problèmes rencontrés (et comment je les ai réglés)
 

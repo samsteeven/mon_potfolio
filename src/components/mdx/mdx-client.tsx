@@ -11,7 +11,9 @@ import {
   CheckCircle, 
   AlertOctagon,
   Copy,
-  Check
+  Check,
+  ChevronLeft,
+  ChevronRight
 } from "lucide-react";
 import { getTextContent } from "@/lib/text";
 
@@ -157,6 +159,170 @@ export function ZoomableImage({
         document.body
       )}
     </>
+  );
+}
+
+// -------------------------------------------------------------
+// CARROUSEL DE CAPTURES D'ÉCRAN (avec zoom plein écran)
+// -------------------------------------------------------------
+export function ScreenshotCarousel({
+  images,
+}: {
+  images: { src: string; alt: string; caption?: string }[];
+}) {
+  const [index, setIndex] = useState(0);
+  const [isOpen, setIsOpen] = useState(false);
+  const [mounted, setMounted] = useState(false);
+  const count = images.length;
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  const go = (dir: number) => setIndex((i) => (i + dir + count) % count);
+
+  useEffect(() => {
+    if (!isOpen) return;
+    const handleKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setIsOpen(false);
+      if (e.key === "ArrowRight") go(1);
+      if (e.key === "ArrowLeft") go(-1);
+    };
+    window.addEventListener("keydown", handleKey);
+    return () => window.removeEventListener("keydown", handleKey);
+  }, [isOpen, count]);
+
+  useEffect(() => {
+    document.body.style.overflow = isOpen ? "hidden" : "";
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [isOpen]);
+
+  if (count === 0) return null;
+  const current = images[index];
+
+  return (
+    <figure className="my-8">
+      <div className="overflow-hidden rounded-xl border border-line bg-[#1c1c1e]">
+        <div className="relative aspect-[16/10] w-full">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src={current.src}
+            alt={current.alt}
+            onClick={() => setIsOpen(true)}
+            className="absolute inset-0 h-full w-full cursor-zoom-in object-contain"
+          />
+          {count > 1 && (
+            <>
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  go(-1);
+                }}
+                aria-label="Capture précédente"
+                className="absolute left-3 top-1/2 -translate-y-1/2 rounded-full bg-black/55 p-2 text-white backdrop-blur-sm transition hover:bg-black/75"
+              >
+                <ChevronLeft className="h-4 w-4" />
+              </button>
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  go(1);
+                }}
+                aria-label="Capture suivante"
+                className="absolute right-3 top-1/2 -translate-y-1/2 rounded-full bg-black/55 p-2 text-white backdrop-blur-sm transition hover:bg-black/75"
+              >
+                <ChevronRight className="h-4 w-4" />
+              </button>
+            </>
+          )}
+          <span className="pointer-events-none absolute right-3 top-3 rounded-full bg-black/55 px-2.5 py-1 text-[10px] font-medium text-white/90 backdrop-blur-sm">
+            {index + 1}/{count}
+          </span>
+        </div>
+        {current.caption && (
+          <figcaption className="border-t border-line bg-paper-raised/40 px-4 py-3 text-xs leading-relaxed text-ink-soft">
+            {current.caption}
+          </figcaption>
+        )}
+      </div>
+
+      {count > 1 && (
+        <div className="mt-3 flex items-center justify-center gap-2">
+          {images.map((img, i) => (
+            <button
+              key={img.src}
+              type="button"
+              onClick={() => setIndex(i)}
+              aria-label={`Aller à la capture ${i + 1}`}
+              className={`h-1.5 rounded-full transition-all duration-200 ${
+                i === index ? "w-6 bg-accent" : "w-1.5 bg-line hover:bg-ink-soft/40"
+              }`}
+            />
+          ))}
+        </div>
+      )}
+
+      {isOpen && mounted && createPortal(
+        <div
+          className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/90 p-4 backdrop-blur-md animate-in fade-in"
+          onClick={() => setIsOpen(false)}
+        >
+          <button
+            type="button"
+            className="absolute top-4 right-4 rounded-full bg-white/10 p-2.5 text-white hover:bg-white/20 transition duration-200 z-[10000]"
+            onClick={(e) => {
+              e.stopPropagation();
+              setIsOpen(false);
+            }}
+            aria-label="Fermer"
+          >
+            <X className="h-5 w-5" />
+          </button>
+          {count > 1 && (
+            <button
+              type="button"
+              className="absolute left-4 top-1/2 -translate-y-1/2 rounded-full bg-white/10 p-3 text-white hover:bg-white/20 transition duration-200 z-[10000]"
+              onClick={(e) => {
+                e.stopPropagation();
+                go(-1);
+              }}
+              aria-label="Capture précédente"
+            >
+              <ChevronLeft className="h-6 w-6" />
+            </button>
+          )}
+          <div
+            className="relative max-h-[90vh] max-w-[95vw] overflow-hidden rounded-lg"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src={current.src}
+              alt={current.alt}
+              className="max-h-[90vh] max-w-[95vw] object-contain rounded-lg shadow-2xl animate-in zoom-in-95 duration-200"
+            />
+          </div>
+          {count > 1 && (
+            <button
+              type="button"
+              className="absolute right-4 top-1/2 -translate-y-1/2 rounded-full bg-white/10 p-3 text-white hover:bg-white/20 transition duration-200 z-[10000]"
+              onClick={(e) => {
+                e.stopPropagation();
+                go(1);
+              }}
+              aria-label="Capture suivante"
+            >
+              <ChevronRight className="h-6 w-6" />
+            </button>
+          )}
+        </div>,
+        document.body
+      )}
+    </figure>
   );
 }
 

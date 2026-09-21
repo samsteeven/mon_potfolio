@@ -157,7 +157,7 @@ And it's meant to grow: tomorrow, my **daily life**, my **watch**, my **decision
 
 Here's the most telling use case, the one that started the whole project.
 
-**The context.** I come across an internship posting (Takima, "AI Software & DevOps Engineer", the PopApp project around Green IT and Kubernetes). It asks for Java/Spring, React, Docker, Kubernetes and AI.
+**The context.** I come across an internship posting ([Takima, "AI Software & DevOps Engineer", the PopApp project](https://www.jobteaser.com/fr/job-offers/2298006f-f332-4fa6-bdb2-41c1dc629c43-takima-stage-de-fin-d-etudes-ai-software-devops-engineer-projet-popapp-devops-greenit)) around Green IT and Kubernetes. It asks for Java/Spring, React, Docker, Kubernetes and AI.
 
 **The request.** I plug an AI into my MCP server and write: "Generate a CV tailored to this posting, from my base. Don't invent anything."
 
@@ -168,13 +168,17 @@ Here's the most telling use case, the one that started the whole project.
 3. It selects and **reorders** my projects by relevance to the posting.
 4. It honestly flags the **gaps**: Kotlin, etcd, Operator Framework aren't in my base, so it doesn't invent them.
 
+<ScreenshotCarousel
+  images={[
+    { src: "/blog/second-brain-cv-takima-prompt.png", alt: "CV request sent to the AI connected to the second brain via MCP", caption: "The request: generate a targeted CV purely from the base, querying second_brain_ask and then the source." },
+    { src: "/blog/second-brain-cv-takima-found.png", alt: "Summary of what the AI found in the base", caption: "What the AI found: 8 queries against the base and 4 source files read, covering identity, studies, relevant projects and what ties my background to Green IT." },
+    { src: "/blog/second-brain-cv-takima-gaps.png", alt: "Gaps between the posting and the knowledge base", caption: "The gaps, listed without flattery: what the posting asks for that the base lacks, but also what the base describes poorly." },
+  ]}
+/>
+
 **The result.** A targeted CV: Kubernetes and Terraform for DevOps, Spring Boot for Java, React for the frontend, Second Brain for AI, and a section that honestly ties my experience to **Green IT** (cloud cost and resource control).
 
-![CV generated for the Takima posting from the second brain](/blog/second-brain-cv-takima.png)
-
-*The CV produced by the AI, purely from my notes, without me re-explaining anything.*
-
-And the telling detail: during generation, the AI also **exposed the holes** in my base (missing email, phone, study years, RNCP frameworks). A CV doesn't just come out right: it shows what needed filling.
+What I found most useful wasn't the CV, though. It was the list of gaps. The AI points out the **holes in my base**: projects described too quickly (React only via SIGGE, with no detail of what I did there), the role I held on TribuneJustice never specified, a project presented as a case study rather than a real mission. And its sharpest remark: "some of the files returned look truncated, so absent means not found, not necessarily non-existent". The brain is only worth what you put into it. It's a start, and it makes those holes visible.
 
 ## The problems I hit (and how I solved them)
 

@@ -7,6 +7,7 @@ import {
   CodeWindow,
   CardGrid,
   Card,
+  ScreenshotCarousel,
 } from "./mdx-client";
 
 // Génère un id slugifié à partir du texte enfant d'un heading
@@ -87,6 +88,7 @@ export function getMDXComponents(components?: MDXComponents): MDXComponents {
     CodeWindow,
     CardGrid,
     Card,
+    ScreenshotCarousel,
     ...components,
   };
 }
