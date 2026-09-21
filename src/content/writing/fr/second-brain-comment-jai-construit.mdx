@@ -89,6 +89,10 @@ Une question arrive. Elle est transformée en vecteur. Qdrant retrouve les morce
 
 *La carte des vecteurs. Chaque point est un chunk, et l'infobulle montre le lien direct entre un vecteur et son contenu.*
 
+![Le workflow de requête : question, vectorisation, recherche Qdrant, contexte, LLM, réponse sourcée](/blog/second-brain-ask.png)
+
+*Le pipeline de la requête dans n8n : c'est ce workflow que l'outil MCP `second_brain_ask` appelle.*
+
 Le choix du LLM a été mouvementé (j'y reviens dans les problèmes). Aujourd'hui, la génération passe par la passerelle OpenCode Go, avec le modèle deepseek-v4-flash-vision-exp.
 
 ### Étape 4 : le serveur MCP, brancher n'importe quelle IA

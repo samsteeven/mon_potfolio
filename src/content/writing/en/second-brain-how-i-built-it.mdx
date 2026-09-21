@@ -89,6 +89,10 @@ A question comes in. It's turned into a vector. Qdrant finds the closest pieces.
 
 *The vector map. Each point is a chunk, and the tooltip shows the direct link between a vector and its content.*
 
+![The query workflow: question, vectorization, Qdrant search, context, LLM, sourced answer](/blog/second-brain-ask.png)
+
+*The query pipeline in n8n: this is the workflow the `second_brain_ask` MCP tool calls.*
+
 Choosing the LLM was eventful (more on that in the problems section). Today, generation goes through the OpenCode Go gateway, with the model deepseek-v4-flash-vision-exp.
 
 ### Step 4: the MCP server, plugging in any AI
