@@ -1,7 +1,7 @@
 "use client";
 
 import React, { type ReactNode } from "react";
-import Image from "next/image";
+import Image, { type StaticImageData } from "next/image";
 import { useState, useEffect } from "react";
 import { 
   X, 
@@ -80,9 +80,13 @@ export function ZoomableImage({
   alt, 
   priority, 
   ...props 
-}: { src: string; alt?: string; priority?: boolean } & Omit<React.ImgHTMLAttributes<HTMLImageElement>, "width" | "height" | "priority">) {
+}: { src: string | StaticImageData; alt?: string; priority?: boolean } & Omit<React.ImgHTMLAttributes<HTMLImageElement>, "width" | "height" | "priority" | "src">) {
   const [isOpen, setIsOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
+
+  // Les images markdown sont transformées en imports par le pipeline MDX : `src` peut
+  // donc être un objet StaticImageData. On en extrait une URL utilisable par un <img>.
+  const srcString = typeof src === "string" ? src : src?.src ?? "";
 
   useEffect(() => {
     setMounted(true);
@@ -150,7 +154,7 @@ export function ZoomableImage({
           <div className="relative max-h-[90vh] max-w-[95vw] overflow-hidden rounded-lg" onClick={(e) => e.stopPropagation()}>
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img 
-              src={src} 
+              src={srcString} 
               alt={alt || ""} 
               className="max-h-[90vh] max-w-[95vw] object-contain rounded-lg shadow-2xl animate-in zoom-in-95 duration-200"
             />
