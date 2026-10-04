@@ -1,7 +1,9 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 
-const PUBLIC_FILE = /\.(.*)$/;
+// Fichier statique = dernier segment avec extension (ex. /profile/profil.png).
+// Un point dans un segment intermédiaire (/x.pdf/writing) n'est PAS un fichier.
+const PUBLIC_FILE = /^\/(?:[^/]+\/)*[^/]+\.[^/]+$/;
 
 const CACHE_HEADERS = "public, s-maxage=3600, stale-while-revalidate=3600";
 
@@ -29,7 +31,7 @@ export function proxy(request: NextRequest) {
   }
 
   // /en/... → 308 vers /... (l'anglais est la langue par défaut, sans préfixe visible)
-  if (pathname.startsWith("/en")) {
+  if (pathname === "/en" || pathname.startsWith("/en/")) {
     const cleanPath = pathname.slice(3) || "/";
     const url = new URL(cleanPath, request.url);
     url.search = request.nextUrl.search;
@@ -38,7 +40,7 @@ export function proxy(request: NextRequest) {
     return response;
   }
 
-  const hasFr = pathname.startsWith("/fr");
+  const hasFr = pathname === "/fr" || pathname.startsWith("/fr/");
   // URLs sans préfixe de langue → rewrite interne vers /en/... (invisible pour le visiteur)
   const langPath = hasFr ? pathname : `/en${pathname}`;
 

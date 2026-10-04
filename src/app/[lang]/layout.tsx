@@ -6,6 +6,9 @@ import { WebMCPProvider } from "@/components/webmcp-provider";
 import type { Language } from "@/lib/translations";
 
 export const revalidate = 3600;
+// Seuls `en` et `fr` (generateStaticParams) existent : tout autre premier segment
+// renvoie une 404 sans rendu ni écriture ISR.
+export const dynamicParams = false;
 
 const BASE_URL =
   process.env.NEXT_PUBLIC_SITE_URL || "https://samensteeve.com";

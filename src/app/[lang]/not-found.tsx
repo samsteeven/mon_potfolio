@@ -9,24 +9,24 @@ export default async function NotFound({
   params?: Promise<{ lang: Language }>;
 }>) {
   const resolved = params ? await params : null;
-  const lang: Language = resolved?.lang ?? "en";
+  const lang: Language = resolved?.lang === "fr" ? "fr" : "en";
   const t = getT(lang);
 
   const quickLinks = [
     {
-      href: `/${lang}`,
+      href: lang === "fr" ? "/fr" : "/",
       label: lang === "fr" ? "Retourner à l'accueil" : "Go back home",
       icon: Home,
       desc: lang === "fr" ? "Page principale et contact" : "Main page & contact details",
     },
     {
-      href: `/${lang}/#work`,
+      href: `${lang === "fr" ? "/fr" : ""}/#work`,
       label: lang === "fr" ? "Découvrir mes projets" : "Browse my work",
       icon: Layers,
       desc: lang === "fr" ? "Mes réalisations récentes" : "My recent achievements",
     },
     {
-      href: `/${lang}/writing`,
+      href: `${lang === "fr" ? "/fr" : ""}/writing`,
       label: lang === "fr" ? "Lire mes articles" : "Read my articles",
       icon: FileText,
       desc: lang === "fr" ? "Mes billets de blog tech" : "My latest technical posts",
@@ -92,7 +92,7 @@ export default async function NotFound({
 
         {/* Bouton de retour direct */}
         <Link
-          href={`/${lang}`}
+          href={lang === "fr" ? "/fr" : "/"}
           className="mt-10 inline-flex items-center gap-2 rounded-full border border-line bg-paper-raised/40 px-5 py-2.5 font-mono text-xs uppercase tracking-wide text-ink transition-all duration-300 hover:scale-105 hover:border-accent/30 hover:bg-paper-raised hover:text-accent hover:shadow-md active:scale-[0.96]"
         >
           <ArrowLeft className="h-3.5 w-3.5" />
