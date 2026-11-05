@@ -1,0 +1,107 @@
+---
+title: "EvalForge: Measuring the Quality, Cost and Safety of LLM, RAG and Agent Applications"
+description: "Platform that measures the answers of a model, a RAG pipeline or an agent, detects regressions and fails the CI. Python and FastAPI, LLM judge, Ragas and DeepEval, agent trajectories, prompt injection, RabbitMQ workers, OpenTelemetry, OpenShift-compatible Kubernetes deployed with Ansible. 184 tests, 10-job CI."
+date: "2026-11-05"
+role: "Design and development (personal project)"
+stack: ["Python", "FastAPI", "SQLAlchemy", "RabbitMQ", "PostgreSQL", "React", "TypeScript", "OpenTelemetry", "Cypress", "Docker", "Kubernetes", "OpenShift", "Ansible", "Terraform", "GitHub Actions"]
+status: "in-progress"
+featured: true
+url: "https://github.com/samsteeven/evalforge"
+cover: "/projects/evalforge-run.png"
+lang: "en"
+---
+
+## The problem
+
+Plugging a language model into a product is easy. Knowing whether its answers are right, whether a RAG pipeline actually relies on its sources, whether an agent uses the right tools, whether a new prompt broke something, and what all of it costs, is much harder. EvalForge makes these questions measurable: versioned test datasets, models compared on the same cases, and a clear answer before deployment.
+
+<CardGrid>
+  <Card title="Quality">
+    Deterministic metrics, an LLM judge with versioned rubrics that justifies every score, context faithfulness with Ragas and DeepEval.
+  </Card>
+  <Card title="Agents">
+    Not just the answer: the trajectory. The right tools, in order, with the right arguments, without useless steps.
+  </Card>
+  <Card title="Regression">
+    Case-by-case paired comparison against a baseline, exact McNemar test, and a CLI that fails the CI.
+  </Card>
+  <Card title="Safety">
+    Direct and indirect prompt injection: what the application must never say, or do.
+  </Card>
+</CardGrid>
+
+![A run: two models compared on five questions, scored by an LLM judge, with latency and cost](/projects/evalforge-run.png)
+
+## A missing metric is not a zero
+
+Two rules run through the whole project. A metric that cannot be computed (no expected answer, unreadable judge output) is **unavailable**, never counted as a failure. An unknown cost is never 0. And what was not measured does not pass a quality gate.
+
+Regression detection follows the same caution. Comparing two averages is not enough: they can stay equal while different cases broke and others were fixed. EvalForge pairs answers case by case and applies an **exact McNemar test**. In the demo, a new prompt breaks 5 cases out of 5: the regression is clear, yet p = 0.0625, and the tool says five cases are not enough to prove it.
+
+![Regression detection: a new prompt without context breaks all five answers of the grounded model](/projects/evalforge-regression.png)
+
+## Judging an agent by its path
+
+I built a customer support agent for the purpose: four tools (order lookup, return policy, ticket, handover to a human), validated arguments, a function-calling loop, every step traced. EvalForge calls it through a simple HTTP contract that any agent can expose.
+
+Two versions answer the same requests. Both complete their answers (`task_completion` at 100%). The second one hands over for no reason, sends a malformed order number and makes up the return policy: only the trajectory metrics catch it (`tool_selection` at 20%).
+
+![Two versions of the agent: the tools called, failed calls in red](/projects/evalforge-agent.png)
+
+<Callout type="warning">
+  For prompt injection, a gullible agent obeys an instruction hidden in an order note returned by a tool. An output guard catches its leaks (a canary code planted in its instructions), but not its actions: it still opens the ticket it was told to. Guarding the answer does not protect the tools; that would take per-tool authorization.
+</Callout>
+
+## An architecture that survives failures
+
+The API (FastAPI, async SQLAlchemy) never runs an evaluation itself: it stores the run **together with its event in the same transaction** (outbox), then a publisher sends it to RabbitMQ. Workers execute it under a **lease** renewed by heartbeats. If a worker stops mid-run, another one takes over and only redoes the missing answers.
+
+<CodeWindow filename="runner.py">
+```python
+# End of the run, message marked as processed and completion event: one transaction, all or nothing.
+async with session_factory() as session:
+    run = await session.get(EvaluationRun, run_id, with_for_update=True)
+    run.status, run.finished_at = status, utcnow()
+    await session.execute(
+        insert(ProcessedMessage).values(message_id=message_id, consumer=consumer).on_conflict_do_nothing()
+    )
+    enqueue(session, EVALUATION_COMPLETED, {"run_id": str(run_id), "status": status.value}, correlation_id=str(run_id))
+    await session.commit()
+```
+</CodeWindow>
+
+## Traces that found the real problems
+
+Every run produces a single OpenTelemetry trace, from the HTTP request to the worker, then to the agent and its tools: the context travels inside the outbox event. The load test (Locust, in CI) revealed two defects that the traces explained:
+
+- password hashing (Argon2) ran on the event loop and froze the whole API: sign-up went from **5.8 s to 0.22 s**;
+- on Windows, `localhost` tried IPv6 first: **2 s lost per connection**, visible as `connect` spans of exactly 2,050 ms. The test suite went from 5 min 52 s to 1 min 40 s.
+
+![A trace in Jaeger: the request, the worker, the evaluated case, then the agent, its model calls and tool calls](/projects/evalforge-trace.png)
+
+## What is verified
+
+<CardGrid>
+  <Card title="184 tests">
+    174 in Python, including 59 API tests against real PostgreSQL and RabbitMQ, 7 Vitest and 3 Cypress tests in a real browser.
+  </Card>
+  <Card title="Quality gates in CI">
+    The careful agent passes; the careless and the gullible ones are blocked by the CLI exit code.
+  </Card>
+  <Card title="Load">
+    Locust, 20 users: no errors, 95% of reads between 6 and 12 ms on the Linux runner.
+  </Card>
+  <Card title="OpenShift reproduced">
+    Deployed with Ansible on a kind cluster at the "restricted" level with an arbitrary UID; a root pod is rejected, network policies are checked.
+  </Card>
+</CardGrid>
+
+The CI also builds the images (non-root, 0 vulnerabilities reported by Trivy), validates the AWS Terraform (ECS Fargate, RDS, Amazon MQ) and scans its configuration.
+
+<Callout type="info">
+  No real model has been evaluated yet: the mechanics are proven against a fake provider, not the quality of a real model. The judge's agreement with humans is not measured, OpenShift is reproduced through its constraints rather than tested on a real cluster, and the Terraform was never applied. Built with the help of an AI coding assistant; the choices, measurements and their limits are documented in the repository (19 ADRs).
+</Callout>
+
+## What I take away
+
+Evaluating AI is mostly about refusing to fool yourself: a missing metric is not a failure, an unknown cost is not free, five cases prove nothing and the tool has to say so. And a load test is only worth something with the traces that explain it: without them, I would have looked in the code for a problem that came from name resolution.
