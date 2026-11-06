@@ -1,0 +1,110 @@
+---
+title: "StockPilot: Stock, Orders and Shipping for Many Companies, Without Ever Selling What You Don't Have"
+description: "Multi-tenant B2B SaaS built with NestJS and PostgreSQL: atomic stock reservation, Row-Level Security isolation, orders with Idempotency-Key, signed payment notifications and compensation, outbox, shipping and emails, Angular front end. k6 load tests, observability, supply-chain security, AWS deployment in Terraform. 167 tests, 8-job CI."
+date: "2026-11-06"
+role: "Design and development (personal project)"
+stack: ["NestJS", "TypeScript", "PostgreSQL", "Prisma", "Redis", "BullMQ", "Angular", "Cypress", "k6", "Prometheus", "Grafana", "Docker", "Terraform", "AWS", "GitHub Actions"]
+status: "in-progress"
+featured: true
+url: "https://github.com/samsteeven/stockpilot"
+cover: "/projects/stockpilot-commandes.png"
+lang: "en"
+---
+
+## The problem
+
+Two customers order the last five headphones at the same moment. If the application reads "5 available" for each of them before writing, it sells ten headphones it does not have. Add several companies on the same database, payments that arrive late or twice, a customer who double-clicks: StockPilot is a stock, order and shipping platform built so that none of these situations ever produces overselling, a duplicate order or data leaking between companies.
+
+<CardGrid>
+  <Card title="No overselling">
+    Reservation through a conditional update: 20 simultaneous orders for 5 units, exactly 5 succeed, every time.
+  </Card>
+  <Card title="Isolation enforced by the database">
+    PostgreSQL Row-Level Security: a query that forgets its filter still only sees its own company.
+  </Card>
+  <Card title="Nothing twice">
+    Idempotency-Key on orders, signed payment notifications processed once, events with a single effect.
+  </Card>
+  <Card title="Measured and operable">
+    k6 load tests, tested metrics and alerts, verified supply chain, AWS infrastructure in Terraform.
+  </Card>
+</CardGrid>
+
+![Orders: confirmed, cancelled for lack of payment, or paid too late (refund required)](/projects/stockpilot-commandes.png)
+
+## The guarantee comes from the database, not the code
+
+Checking stock and then reserving leaves a window between the read and the write. StockPilot does not read: it writes under a condition, and PostgreSQL serialises concurrent writes on the row. A constraint rejects a reserved quantity above the physical one anyway.
+
+<CodeWindow filename="reservation">
+```sql
+UPDATE stock_items
+SET quantity_reserved = quantity_reserved + $quantity, version = version + 1
+WHERE id = $line AND quantity_on_hand - quantity_reserved >= $quantity
+RETURNING id;   -- no row: insufficient stock, nothing was reserved
+```
+</CodeWindow>
+
+The lines of a multi-item order are locked in a fixed order, so two orders A+B and B+A never wait on each other. Confirming, releasing or expiring a reservation all go through a conditional update of its status: only one wins, even when the payment and the expiry arrive in the same millisecond.
+
+Tenant isolation follows the same idea: the application connects with a PostgreSQL role that cannot bypass Row-Level Security, and the current company is set **for the transaction only**. A connection returned to the pool keeps nothing from the previous request.
+
+## Order, payment, compensation
+
+An order is created with an `Idempotency-Key`: the same request sent again (dropped connection, double click) returns the same order; the same key with a different body is rejected. The order, the reservation, the expected payment, the audit entry, the event and the key are written **in a single transaction**. Prices come from the catalogue, never from the client.
+
+![A paid then shipped order, with its history](/projects/stockpilot-commande.png)
+
+The payment provider reports the result through a **signed** call (HMAC of the timestamp and the body). Everything that can go wrong has a planned answer:
+
+- payment refused: the reservation is released and the order cancelled;
+- no payment in time: the worker cancels the order when the reservation expires;
+- payment arriving **after** the expiry: nothing leaves the stock, the order is cancelled and a refund is required;
+- notification sent twice, unexpected amount, forged or stale signature: no effect, rejected.
+
+What follows (shipping, customer emails) goes through an **outbox**: the event is written with the change it announces, published to BullMQ afterwards, and each consumer handles it once.
+
+![The warehouse manager ships paid orders](/projects/stockpilot-expeditions.png)
+
+## Measured under load
+
+<CodeWindow filename="k6 run tests/load/contention.js">
+```text
+200 buyers for the last 50 units
+✓ reservations_acceptees  count==50       ✓ reservations_refusees  count==150
+✓ reserved = on hand, never above         ✓ http_req_failed  rate==0
+```
+</CodeWindow>
+
+On the full journey (stock read, order, payment or cancellation), 20 concurrent sellers pass comfortably: 67 ms at p95 to create an order. At 100 sellers, throughput levels off around 125 requests per second. I checked the hypotheses one by one: a bigger connection pool changes nothing, PostgreSQL uses 1.2 cores out of 16, but the API process uses a full one. The limit is **one API instance**, not the database: the answer is to run several.
+
+## Operations
+
+<CardGrid>
+  <Card title="Observability">
+    JSON logs correlated by X-Request-Id, with no secrets; Prometheus metrics per route template and outbox lag; alerts tested with promtool, Grafana dashboard.
+  </Card>
+  <Card title="Supply chain">
+    npm audit blocking for production dependencies (one high-severity issue found and fixed), SBOM, licences, registry signatures, pinned GitHub Actions, gitleaks, CodeQL.
+  </Card>
+  <Card title="Images">
+    Non-root, read-only file system, base pinned by digest; started like production in the CI and scanned by Trivy.
+  </Card>
+  <Card title="AWS in Terraform">
+    ECS Fargate, RDS PostgreSQL, ElastiCache, CloudFront with a VPC origin; deployment through OIDC with no stored key, automatic rollback, outage and restore scenarios written.
+  </Card>
+</CardGrid>
+
+![Audit log: every sensitive action, written in its own transaction, which the database refuses to modify](/projects/stockpilot-journal.png)
+
+## What is verified
+
+**167 tests** against real PostgreSQL, Redis and SMTP servers, 12 of them in a real browser (Cypress), and an 8-job CI: tests, browser journeys, demos against the built applications, observability, load, security, infrastructure. I also **deliberately broke 46 safeguards**, one at a time: 44 make a test fail, the other two are redundant with another protection, and that is documented.
+
+<Callout type="info">
+  The AWS infrastructure is written, validated and scanned in the CI, but **not applied yet**: the real deployment, the induced outages and the restore on AWS are the next step. Payment is simulated (the tests play the provider and sign its notifications). Built with the help of an AI coding assistant; the choices, the measurements and their limits are documented in the repository (16 ADRs).
+</Callout>
+
+## What I take away
+
+A guarantee that depends on code discipline eventually breaks the day someone forgets a filter. So I handed the most important ones to the database: conditional writes, constraints, Row-Level Security, triggers that refuse to modify a log. And a load-test number is worth nothing without the verified hypothesis that explains it.

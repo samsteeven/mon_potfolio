@@ -1,0 +1,110 @@
+---
+title: "StockPilot : stocks, commandes et expéditions pour plusieurs entreprises, sans jamais vendre ce qu'on n'a pas"
+description: "SaaS B2B multi-entreprises en NestJS et PostgreSQL : réservation de stock atomique, isolation par Row-Level Security, commandes avec Idempotency-Key, paiement signé et compensation, outbox, expéditions et e-mails, front Angular. Tests de charge k6, observabilité, chaîne d'approvisionnement sécurisée, déploiement AWS en Terraform. 167 tests, CI à 8 jobs."
+date: "2026-11-06"
+role: "Conception et développement (projet personnel)"
+stack: ["NestJS", "TypeScript", "PostgreSQL", "Prisma", "Redis", "BullMQ", "Angular", "Cypress", "k6", "Prometheus", "Grafana", "Docker", "Terraform", "AWS", "GitHub Actions"]
+status: "in-progress"
+featured: true
+url: "https://github.com/samsteeven/stockpilot"
+cover: "/projects/stockpilot-commandes.png"
+lang: "fr"
+---
+
+## Le problème
+
+Deux clients commandent en même temps les cinq derniers casques. Si l'application lit « 5 disponibles » pour chacun avant d'écrire, elle vend dix casques qu'elle n'a pas. Ajoutez plusieurs entreprises sur la même base, des paiements qui arrivent en retard ou deux fois, un client qui double-clique : StockPilot est une plateforme de gestion des stocks, des commandes et des expéditions construite pour que ces situations ne produisent **jamais** de survente, de commande en double ni de fuite entre entreprises.
+
+<CardGrid>
+  <Card title="Aucune survente">
+    Réservation par mise à jour conditionnelle : 20 commandes simultanées pour 5 unités, exactement 5 passent, à chaque fois.
+  </Card>
+  <Card title="Isolation garantie par la base">
+    Row-Level Security de PostgreSQL : une requête qui oublie son filtre ne voit quand même que son entreprise.
+  </Card>
+  <Card title="Rien en double">
+    Idempotency-Key sur les commandes, notifications de paiement signées et traitées une fois, événements à effet unique.
+  </Card>
+  <Card title="Mesuré et exploitable">
+    Tests de charge k6, métriques et alertes testées, chaîne d'approvisionnement vérifiée, infrastructure AWS en Terraform.
+  </Card>
+</CardGrid>
+
+![Commandes : confirmées, annulées faute de paiement ou payées trop tard (remboursement exigé)](/projects/stockpilot-commandes.png)
+
+## La garantie vient de la base, pas du code
+
+Vérifier le stock puis réserver, c'est laisser une fenêtre entre la lecture et l'écriture. StockPilot ne lit pas : il écrit sous condition, et PostgreSQL sérialise les écritures concurrentes sur la ligne. Une contrainte refuse de toute façon un réservé supérieur au physique.
+
+<CodeWindow filename="réservation">
+```sql
+UPDATE stock_items
+SET quantity_reserved = quantity_reserved + $quantité, version = version + 1
+WHERE id = $ligne AND quantity_on_hand - quantity_reserved >= $quantité
+RETURNING id;   -- aucune ligne : stock insuffisant, rien n'a été réservé
+```
+</CodeWindow>
+
+Les lignes d'une commande à plusieurs articles sont verrouillées dans un ordre fixe : deux commandes A+B et B+A ne s'attendent pas l'une l'autre. Confirmer, libérer ou expirer une réservation passent tous par une mise à jour conditionnelle de son statut : un seul gagne, même quand le paiement et l'expiration arrivent à la même milliseconde.
+
+L'isolation entre entreprises suit la même logique : l'application se connecte avec un rôle PostgreSQL qui ne peut pas contourner la Row-Level Security, et l'entreprise courante est posée **pour la seule transaction**. Une connexion rendue au pool ne garde rien de la requête précédente.
+
+## Commande, paiement, compensation
+
+Une commande se crée avec une `Idempotency-Key` : la même requête renvoyée (réseau coupé, double clic) rend la même commande ; la même clé avec un autre contenu est refusée. Commande, réservation, paiement attendu, journal d'audit, événement et clé sont écrits **dans une seule transaction**. Le prix vient du catalogue, jamais du client.
+
+![Une commande payée puis expédiée, avec son historique](/projects/stockpilot-commande.png)
+
+Le prestataire de paiement notifie le résultat par un appel **signé** (HMAC de l'horodatage et du corps). Ce qui peut mal tourner a une réponse prévue :
+
+- paiement refusé : la réservation est rendue, la commande annulée ;
+- pas de paiement à temps : le worker annule la commande à l'échéance de la réservation ;
+- paiement arrivé **après** l'échéance : rien ne sort du stock, la commande est annulée et le remboursement exigé ;
+- notification renvoyée, montant inattendu, signature fausse ou trop ancienne : sans effet, refusée.
+
+Les suites (expédition, e-mails aux clients) partent par une **outbox** : l'événement est écrit avec le changement qu'il annonce, publié ensuite dans BullMQ, et chaque consommateur ne le traite qu'une fois.
+
+![Le responsable d'entrepôt expédie les commandes payées](/projects/stockpilot-expeditions.png)
+
+## Mesuré sous charge
+
+<CodeWindow filename="k6 run tests/load/contention.js">
+```text
+200 acheteurs pour les 50 dernières unités
+✓ reservations_acceptees  count==50       ✓ reservations_refusees  count==150
+✓ réservé = physique, jamais au-delà      ✓ http_req_failed  rate==0
+```
+</CodeWindow>
+
+Sur le parcours complet (lecture du stock, commande, paiement ou annulation), 20 vendeurs simultanés passent largement : 67 ms au p95 pour créer une commande. À 100 vendeurs, le débit plafonne vers 125 requêtes par seconde. J'ai vérifié les hypothèses une à une : agrandir le pool de connexions n'y change rien, PostgreSQL n'utilise que 1,2 cœur sur 16, mais le processus de l'API en occupe un entier. La limite est **une instance** de l'API, pas la base : la réponse est d'en lancer plusieurs.
+
+## Exploitation
+
+<CardGrid>
+  <Card title="Observabilité">
+    Journaux JSON corrélés par X-Request-Id, sans secret ; métriques Prometheus par gabarit de route, retard de l'outbox ; alertes testées par promtool, tableau de bord Grafana.
+  </Card>
+  <Card title="Chaîne d'approvisionnement">
+    Audit npm bloquant en production (une vulnérabilité élevée trouvée et corrigée), SBOM, licences, signatures du registre, actions GitHub épinglées, gitleaks, CodeQL.
+  </Card>
+  <Card title="Images">
+    Non root, système de fichiers en lecture seule, base épinglée par empreinte ; démarrées comme en production dans la CI, analysées par Trivy.
+  </Card>
+  <Card title="AWS en Terraform">
+    ECS Fargate, RDS PostgreSQL, ElastiCache, CloudFront avec origine VPC ; déploiement par OIDC sans clé stockée, retour automatique, scénarios de panne et de restauration écrits.
+  </Card>
+</CardGrid>
+
+![Journal d'audit : chaque action sensible, écrite dans sa transaction, que la base refuse de modifier](/projects/stockpilot-journal.png)
+
+## Ce qui est vérifié
+
+**167 tests** contre PostgreSQL, Redis et un serveur SMTP réels, dont 12 dans un vrai navigateur (Cypress), et une CI à 8 jobs : tests, parcours dans le navigateur, démonstrations contre les applications construites, observabilité, charge, sécurité, infrastructure. J'ai aussi **cassé volontairement 46 garde-fous**, un à la fois : 44 font échouer un test, les deux autres sont redondants avec une autre protection, et c'est écrit.
+
+<Callout type="info">
+  L'infrastructure AWS est écrite, validée et analysée dans la CI, mais **pas encore appliquée** : le déploiement réel, les pannes provoquées et la restauration sur AWS sont la prochaine étape. Le paiement est simulé (les tests jouent le prestataire et signent ses notifications). Projet réalisé avec l'aide d'un assistant IA de programmation ; les choix, les mesures et leurs limites sont documentés dans le dépôt (16 ADR).
+</Callout>
+
+## Ce que j'en retiens
+
+Une garantie qui dépend de la discipline du code finit par tomber le jour où quelqu'un oublie un filtre. Les plus importantes, je les ai donc confiées à la base : conditions d'écriture, contraintes, Row-Level Security, déclencheurs qui refusent de modifier un journal. Et un chiffre de charge ne vaut rien sans l'hypothèse vérifiée qui l'explique.
