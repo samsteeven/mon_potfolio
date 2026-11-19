@@ -1,0 +1,86 @@
+---
+title: "ContractFlow: Draft, Approve, Sign and Track Contracts, with a History Nobody Can Rewrite"
+description: "Contract management SaaS built with AdonisJS 7, Inertia, React and PostgreSQL: immutable versions enforced by the database, approval workflows under row locks, PDFs on S3, signing through signed webhooks, deadlines and reminders on a Redis queue, invitations, antivirus-scanned attachments, CSP. Docker image and AWS infrastructure in Terraform. 164 tests and 15 Cypress scenarios, 4-job CI."
+date: "2026-11-19"
+role: "Design and development (personal project)"
+stack: ["AdonisJS", "TypeScript", "React", "Inertia", "PostgreSQL", "Redis", "BullMQ", "ClamAV", "Cypress", "Docker", "Terraform", "AWS", "GitHub Actions"]
+status: "in-progress"
+featured: true
+url: "https://github.com/samsteeven/contractflow"
+cover: "/projects/contractflow-validation.png"
+lang: "en"
+---
+
+## The problem
+
+A contract travels between a drafter, a lawyer, management, then a counterparty. Anyone may want to edit it, two people can decide at the same moment, and six months later you must be able to prove **what was approved, by whom and from which text**. ContractFlow is a contract management platform built so that this history can be neither rewritten nor contradicted, even by a bug.
+
+<CardGrid>
+  <Card title="Untouchable history">
+    Every version is immutable: a PostgreSQL trigger rejects any update or delete, even from the application itself.
+  </Card>
+  <Card title="Decisions without races">
+    Two simultaneous approvals go through the contract row lock: one final state, never two.
+  </Card>
+  <Card title="Files judged before being stored">
+    Attachments go through ClamAV and a byte-level check; if the antivirus is unreachable, the file is refused.
+  </Card>
+  <Card title="From laptop to cloud">
+    Non-root Docker image, AWS infrastructure described in Terraform, analysed and validated in CI.
+  </Card>
+</CardGrid>
+
+![A contract awaiting signature: version 2 compared with version 1, signers and approval workflow](/projects/contractflow-validation.png)
+
+## The history comes from the database
+
+A contract version and every audit log line are written once. That is not an application convention: a trigger raises an error on any `UPDATE` or `DELETE`. Fixing a text creates a new version, compared line by line with the previous one. On submission, the approval workflow is **copied** into the contract's decisions: editing the workflow later does not change what applies to a contract already in progress.
+
+Every decision (approve, reject, cancel a signature request) re-reads the contract under `SELECT … FOR UPDATE`. When management and legal approve in the same millisecond, one waits for the other, re-reads the state, and only one outcome exists. Once signed, the contract is frozen by the database itself: no new version, no new approval comment.
+
+## Signing, term and reminders
+
+A signing provider reports through a **signed** webhook (HMAC over the timestamp and the raw body); replays, wrong or stale signatures are rejected, and the evidence is archived. That provider is fictional (a sandbox emitting events signed with the same secret and going through the same code): no real service is connected.
+
+A signed contract carries a term and obligations (payment, report, review). Deadlines are tracked by a **BullMQ queue on Redis**: a daily pass sends an email at 30 days, 7 days, 1 day, the day itself and when overdue, one reminder per obligation and per step, even if the worker restarts. Renewing or ending a contract is decided under lock and creates the next deadline.
+
+![Deadlines of signed contracts, nearest first, with their owner](/projects/contractflow-echeances.png)
+
+## Files and pages: distrust what arrives
+
+- **Invitations**: a 32-byte token of which only the SHA-256 hash is stored, valid 7 days, single use; the address comes from the invitation, never from the form, and an existing account's password is never overwritten.
+- **Attachments**: size and type checked from the first bytes (neither the browser nor the extension is trusted), scanned by the ClamAV daemon, and only then written under the contract lock. Downloads use a five-minute presigned URL, always as an attachment.
+- **Content Security Policy** with a nonce renewed on every response: an injected script has no nonce and does not run.
+
+![A signed contract: PDF, signature evidence, term and obligation tracking](/projects/contractflow-contrat-signe.png)
+
+## Taken to production
+
+<CardGrid>
+  <Card title="Docker image">
+    Four stages, unprivileged user, health probe that queries the database; one image for the web app, the worker and the migration.
+  </Card>
+  <Card title="AWS in Terraform">
+    Private network across two zones, encrypted RDS, ElastiCache, private S3, ECS Fargate with ClamAV next to the app, load balancer and certificate, SES, secrets in Secrets Manager.
+  </Card>
+  <Card title="Keyless deployment">
+    GitHub Actions assumes an AWS role through OIDC, limited to one branch; the migration runs before anything is replaced.
+  </Card>
+  <Card title="Analysed in CI">
+    `terraform validate`, a Trivy scan with no high finding, and the image built and started with its database on every push.
+  </Card>
+</CardGrid>
+
+![The dashboard: contracts by state and decisions waiting on me](/projects/contractflow-tableau-de-bord.png)
+
+## What is verified
+
+**164 tests** against a real PostgreSQL, a real Redis, a real ClamAV and an SMTP server, and **15 Cypress scenarios** in a browser (approval journey, invitation read from the real inbox, clean, infected and misleading files, renewal). I also **deliberately broke 63 safeguards**, one at a time: 60 make a test fail, the other three are covered by another protection, and that is written down. One test exposed a real defect (the signature evidence omitted the last signer's event), and an overly strict header policy broke every page return: found by walking through the interface, fixed.
+
+<Callout type="info">
+  The Docker image was built and started with the full stack. The AWS infrastructure is written, validated and analysed, but **never applied**: no real deployment has happened, and I do not yet know whether AWS will accept every parameter. Signing goes through a sandbox, not a real provider. Built with the help of an AI coding assistant; the choices and their limits are documented in the repository (12 ADRs).
+</Callout>
+
+## What I take from it
+
+A rule enforced only by code gets bypassed one day. For a contract, the guarantees that matter (immutability, decision order, unsafe file refused) are handed to the database or to a check that fails towards refusal. And saying clearly what has not been proven beats a "deployed" you cannot show.

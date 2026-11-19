@@ -1,0 +1,86 @@
+---
+title: "ContractFlow : rédiger, faire valider, signer et suivre ses contrats, avec un historique que personne ne peut réécrire"
+description: "SaaS de gestion de contrats en AdonisJS 7, Inertia, React et PostgreSQL : versions immuables garanties par la base, circuits de validation sous verrou, PDF sur S3, signature par webhook signé, échéances et rappels par file Redis, invitations, pièces jointes analysées par antivirus, CSP. Image Docker et infrastructure AWS en Terraform. 164 tests et 15 scénarios Cypress, CI à 4 jobs."
+date: "2026-11-19"
+role: "Conception et développement (projet personnel)"
+stack: ["AdonisJS", "TypeScript", "React", "Inertia", "PostgreSQL", "Redis", "BullMQ", "ClamAV", "Cypress", "Docker", "Terraform", "AWS", "GitHub Actions"]
+status: "in-progress"
+featured: true
+url: "https://github.com/samsteeven/contractflow"
+cover: "/projects/contractflow-validation.png"
+lang: "fr"
+---
+
+## Le problème
+
+Un contrat circule entre un rédacteur, un juriste, la direction, puis une contrepartie. Chacun peut vouloir le modifier, deux personnes peuvent décider en même temps, et six mois plus tard on doit pouvoir prouver **ce qui a été validé, par qui et à partir de quel texte**. ContractFlow est une plateforme de gestion de contrats construite pour que cette histoire ne puisse être ni réécrite ni contredite, même par une erreur de code.
+
+<CardGrid>
+  <Card title="Historique intouchable">
+    Chaque version est immuable : un déclencheur PostgreSQL refuse toute modification ou suppression, même venant de l'application.
+  </Card>
+  <Card title="Décisions sans course">
+    Deux validations simultanées passent sous le verrou de la ligne du contrat : un seul état final, jamais deux.
+  </Card>
+  <Card title="Fichiers jugés avant d'être stockés">
+    Les pièces jointes passent par ClamAV et un contrôle des octets ; antivirus injoignable, fichier refusé.
+  </Card>
+  <Card title="De l'ordinateur au cloud">
+    Image Docker non root, infrastructure AWS décrite en Terraform, analysée et validée en CI.
+  </Card>
+</CardGrid>
+
+![Un contrat en signature : comparaison de la version 2 à la version 1, signataires et circuit de validation](/projects/contractflow-validation.png)
+
+## L'historique vient de la base
+
+Une version de contrat et chaque ligne du journal d'audit sont écrites une fois. Ce n'est pas une convention de l'application : c'est un déclencheur qui lève une erreur sur tout `UPDATE` ou `DELETE`. Corriger un texte crée une nouvelle version, comparée à la précédente ligne à ligne. À la soumission, le circuit de validation est **copié** dans les décisions du contrat : modifier le circuit plus tard ne change pas ce qui s'applique à un contrat déjà en cours.
+
+Chaque décision (valider, rejeter, annuler une demande de signature) relit le contrat sous `SELECT … FOR UPDATE`. Quand la direction et le juridique valident à la même milliseconde, l'un attend l'autre, relit l'état, et un seul résultat existe. Une fois signé, le contrat est figé par la base elle-même : plus de nouvelle version, plus de nouveau commentaire de validation.
+
+## Signature, durée et rappels
+
+Un prestataire de signature notifie par un webhook **signé** (HMAC de l'horodatage et du corps brut) ; rejeu, signature fausse ou trop ancienne sont refusés, et la preuve est archivée. Ce prestataire est fictif (un bac à sable qui émet des événements signés avec le même secret et passe par le même code) : aucun service réel n'est branché.
+
+Un contrat signé porte une durée et des obligations (paiement, rapport, revue). Les échéances sont suivies par une file **BullMQ sur Redis** : un parcours quotidien envoie un e-mail à 30 jours, 7 jours, 1 jour, le jour même et en cas de retard, un seul rappel par obligation et par palier, même si le worker redémarre. La reconduction ou la fin d'un contrat se décide sous verrou et crée la nouvelle échéance.
+
+![Les échéances des contrats signés, la plus proche en premier, avec leur responsable](/projects/contractflow-echeances.png)
+
+## Fichiers et pages : se défier de ce qui arrive
+
+- **Invitations** : un jeton de 32 octets dont seule l'empreinte SHA-256 est stockée, valable 7 jours, à usage unique ; l'adresse vient de l'invitation, jamais du formulaire, et on n'écrase jamais le mot de passe d'un compte existant.
+- **Pièces jointes** : taille et type vérifiés par les premiers octets (on ne croit ni le navigateur ni l'extension), analyse par le démon ClamAV, et seulement ensuite écriture sous le verrou du contrat. Le téléchargement se fait par URL pré-signée de cinq minutes, toujours en pièce jointe.
+- **Politique de contenu** (CSP) avec jeton renouvelé à chaque réponse : un script injecté n'a pas le jeton et ne s'exécute pas.
+
+![Un contrat signé : PDF, preuve de signature, durée et suivi des obligations](/projects/contractflow-contrat-signe.png)
+
+## Mis en production
+
+<CardGrid>
+  <Card title="Image Docker">
+    Quatre étapes, utilisateur sans droits, sonde de santé qui interroge la base ; une image pour le web, le worker et la migration.
+  </Card>
+  <Card title="AWS en Terraform">
+    Réseau privé sur deux zones, RDS chiffré, ElastiCache, S3 privé, ECS Fargate avec ClamAV à côté de l'application, ALB et certificat, SES, secrets dans Secrets Manager.
+  </Card>
+  <Card title="Déploiement sans clé">
+    GitHub Actions assume un rôle AWS par OIDC, limité à une branche ; la migration passe avant tout remplacement.
+  </Card>
+  <Card title="Analysé en CI">
+    `terraform validate`, analyse Trivy sans constat élevé, image construite et démarrée avec sa base à chaque envoi.
+  </Card>
+</CardGrid>
+
+![Le tableau de bord : contrats par état et décisions attendues de moi](/projects/contractflow-tableau-de-bord.png)
+
+## Ce qui est vérifié
+
+**164 tests** contre un vrai PostgreSQL, un vrai Redis, un vrai ClamAV et un serveur SMTP, et **15 scénarios Cypress** dans un navigateur (parcours de validation, invitation lue dans la vraie boîte de réception, fichiers sains, infectés et trompeurs, reconduction). J'ai aussi **cassé volontairement 63 garde-fous**, un à la fois : 60 font échouer un test, les trois autres sont doublés par une autre protection, et c'est écrit. Un test a révélé un défaut réel (la preuve de signature omettait l'événement du dernier signataire), et une politique d'en-tête trop stricte a cassé tous les retours de page : trouvé en parcourant l'interface, corrigé.
+
+<Callout type="info">
+  L'image Docker a été construite et démarrée avec la pile complète. L'infrastructure AWS est écrite, validée et analysée, mais **jamais appliquée** : aucun déploiement réel n'a eu lieu, et je ne sais pas encore si AWS acceptera chaque paramètre. La signature passe par un bac à sable, pas par un vrai prestataire. Projet réalisé avec l'aide d'un assistant IA de programmation ; les choix et leurs limites sont documentés dans le dépôt (12 ADR).
+</Callout>
+
+## Ce que j'en retiens
+
+Une règle que seul le code applique finit par être contournée un jour. Pour un contrat, les garanties qui comptent (immuabilité, ordre des décisions, fichier non sain refusé) sont confiées à la base ou à un contrôle qui échoue vers le refus. Et dire clairement ce qui n'a pas été éprouvé vaut mieux qu'un « déployé » qu'on ne peut pas montrer.
